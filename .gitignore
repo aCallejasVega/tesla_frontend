@@ -60,3 +60,9 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/vue,vuejs,windows,visualstudiocode
 node_modules
+
+### Prepros ###
+# Config Prepros files to ignore
+prepros.cfg
+prepros-6.config
+prepros.config
