@@ -4,7 +4,8 @@ import Home from '../views/Home/Home.vue';
 
 import Login from '../views/Home/Login.vue';
 import UploadFile from '../views/Entidades/UploadFile.vue';
-
+import SearchEntidades from '../views/Recaudaciones/SearchEntidades.vue';
+import Debts from '../views/Recaudaciones/Debts.vue';
 Vue.use(VueRouter);
 
 const routes = [
@@ -28,6 +29,22 @@ const routes = [
     path: '/UploadFile',
     name: 'UploadFile',
     component: UploadFile,
+    meta: {
+      libre: false,
+    },
+  },
+  {
+    path: '/search',
+    name: 'SearchEntidades',
+    component: SearchEntidades,
+    meta: {
+      libre: false,
+    },
+  },
+  {
+    path: '/debts',
+    name: 'Debts',
+    component: Debts,
     meta: {
       libre: false,
     },
