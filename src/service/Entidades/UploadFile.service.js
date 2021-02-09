@@ -15,8 +15,8 @@ export default {
   processFile(archivoId) {
     return Api().post(`api/deudaCliente/processFile/${archivoId}`, {}, this.headersConfig());
   },
-  findDeudasClientesByArchivoId(archivoId, paramBusqueda) {
-    return Api().get(`api/deudaCliente/findDeudasClientesByArchivoId/${archivoId}/${paramBusqueda}`, this.headersConfig());
+  findDeudasClientesByArchivoId(archivoId, page,paramBusqueda) {
+    return Api().get(`api/deudaCliente/findDeudasClientesByArchivoId/${archivoId}/${page}/${paramBusqueda}`, this.headersConfig());
   },
 
 };

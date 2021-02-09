@@ -1,54 +1,55 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import Home from '../views/Home/Home.vue';
-
-import Login from '../views/Home/Login.vue';
-import UploadFile from '../views/Entidades/UploadFile.vue';
+import Vue from "vue";
+import VueRouter from "vue-router";
+import home from "../views/Home/Home.vue";
+import Login from "../views/Home/Login.vue";
+import UploadFile from "../views/Entidades/UploadFile.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/home',
-    name: 'home',
-    component: Home,
+    path: "/",
+    name: "home",
+    component: home,
     meta: {
-      libre: false,
+      libre: false
     },
+    children: [
+      {
+        path: "/UploadFile",
+        name: "UploadFile",
+        component: UploadFile,
+        meta: {
+          libre: false
+        }
+      }
+    ]
+    
   },
   {
-    path: '/',
-    name: 'login',
+    path: "/login",
+    name: "login",
     component: Login,
     meta: {
-      libre: true,
-    },
-  },
-  {
-    path: '/UploadFile',
-    name: 'UploadFile',
-    component: UploadFile,
-    meta: {
-      libre: false,
-    },
-  },
-
+      libre: true
+    }
+  }
 ];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
-  routes,
+  routes
 });
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token');
-  if (to.matched.some((record) => record.meta.libre)) {
+  const token = localStorage.getItem("token");
+  if (to.matched.some(record => record.meta.libre)) {
     next();
   } else if (token) {
     next();
   } else {
-    next({ name: 'login' });
+    next({ name: "login" });
   }
 });
 
