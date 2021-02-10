@@ -110,17 +110,21 @@ export default {
     cargarTiposEntidades() {
       PaymentDebts.cargarTiposEntidades()
         .then((r) => {
+          
           this.lstTipoEntidades = r.data.result;
         })
         .catch((error) => {
+            
             console.log(error.response.data.mensaje);
         });
     },
 
     seleccionar(item) {
-      localStorage.setItem("entidadId", item.entidadId);
+      //Todo 
+      //localStorage.setItem("entidadId", item.entidadId);
       this.$router.push({
         name: "Debts",
+        params: { entidadId: item.entidadId }
       });
     },
     cargarEntidades(tipo) {

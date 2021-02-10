@@ -148,14 +148,9 @@ const columnsA = [
 export default {
   data() {
     return {
-      //TOKEN
-      token: {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      },
       //BÚSQUEDA DE CLIENTE
-      entidadId: localStorage.getItem("entidadId"),
+      //entidadId: localStorage.getItem("entidadId"),
+      entidadId: null,
       search: null,
       form: null,
       lstClientes: [],
@@ -177,7 +172,9 @@ export default {
       value: null,
     };
   },
-
+  created() {
+    this.entidadId = this.$route.params.entidadId;
+  },
   computed: {
     rowSelectionC() {
       return {
