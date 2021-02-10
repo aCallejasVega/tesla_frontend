@@ -5,8 +5,8 @@
 
           <a-sub-menu key="sub1">
             <span slot="title"><a-icon type="user" /><span>ADMINISTRACIÒN</span></span>
-            <a-menu-item key="3" > Tom </a-menu-item>
-            <a-menu-item key="4"> Bill </a-menu-item>
+            <a-menu-item key="3"><router-link to="/search">Busqueda Deudas</router-link></a-menu-item>
+             <a-menu-item key="4"><router-link to="/debts">Deudas</router-link></a-menu-item>
             <a-menu-item key="5"> Alex </a-menu-item>
           </a-sub-menu>
           <a-sub-menu key="sub2">

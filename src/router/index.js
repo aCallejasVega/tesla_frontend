@@ -3,6 +3,8 @@ import VueRouter from "vue-router";
 import home from "../views/Home/Home.vue";
 import Login from "../views/Home/Login.vue";
 import UploadFile from "../views/Entidades/UploadFile.vue";
+import SearchEntidades from '../views/Recaudaciones/SearchEntidades.vue';
+import Debts from '../views/Recaudaciones/Debts.vue';
 
 Vue.use(VueRouter);
 
@@ -22,9 +24,24 @@ const routes = [
         meta: {
           libre: false
         }
+      },
+      {
+        path: "/search",
+        name: "SearchEntidades",
+        component: SearchEntidades,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/debts",
+        name: "Debts",
+        component: Debts,
+        meta: {
+          libre: false
+        }
       }
     ]
-    
   },
   {
     path: "/login",

@@ -290,8 +290,7 @@ export default {
           this.buttonProcesar=true;
           this.findDeudasClientesByArchivoId(this.archivo.archivoId, 1, "");
         })
-        .catch((error) => {
-          console.log(error.response.data);
+        .catch((error) => {       
           if (error.response.data.causa == "A") {
             this.mensaje = error.response.data.mensaje;
             this.detalle = error.response.data.detalle;
