@@ -1,36 +1,60 @@
 <template>
-    <a-layout-sider v-model="collapsed" collapsible>
-        <div class="logo" />
-        <a-menu theme="dark" :default-selected-keys="['1']" mode="inline">
 
-          <a-sub-menu key="sub1">
-            <span slot="title"><a-icon type="user" /><span>ADMINISTRACIÒN</span></span>
-            <a-menu-item key="3"><router-link to="/search">Busqueda Deudas</router-link></a-menu-item>
-             <a-menu-item key="4"><router-link to="/debts">Deudas</router-link></a-menu-item>
-            <a-menu-item key="5"> Alex </a-menu-item>
-          </a-sub-menu>
-          <a-sub-menu key="sub2">
-            <span slot="title"><a-icon type="team" /><span>ENTIDADES</span></span>
-            <a-menu-item key="6"><router-link to="/UploadFile">Subir Archivo</router-link></a-menu-item>
-           
-          </a-sub-menu>
-          <a-sub-menu key="sub3">
-            <span slot="title"><a-icon type="team" /><span>RECAUDACIÒN</span></span>
-            <a-menu-item key="6"> Team 1 </a-menu-item>
-            <a-menu-item key="8"> Team 2 </a-menu-item>
-          </a-sub-menu>
+ <a-layout-sider v-model="collapsed" collapsible >
+    <div class="logo" />
+    <a-menu theme="dark" breakpoint="xl" :default-selected-keys="['1']" mode="inline" collapsedWidth='150'>
+      <a-sub-menu key="sub1" v-for="(menu, index) in menuList" :key="index">
+        <span slot="title"
+          ><a-icon :type="menu.icono" /><span>{{ menu.descripcion }}</span></span
+        >
+        <a-menu-item
+          v-for="(subMenu, index2) in menu.segPrivilegioEntityList"
+          :key="index2"
+          style="padding-right: 0px"
+        >
+          <router-link :to="subMenu.link">
+           <span>{{
+              subMenu.descripcion
+            }}</span>
+          </router-link>
+        </a-menu-item>
+      </a-sub-menu>
+    </a-menu>
+  </a-layout-sider>
 
-        </a-menu>
-      </a-layout-sider>
-
+ 
 </template>
 
 <script>
+import Sidebar from "@/service/Home/Sidebar.service";
 export default {
   data() {
     return {
-      collapsed: false,
+      collapsed: true,
+      menuList: [],
     };
+  },
+  created() {
+    this.getMenu();
+  },
+  methods: {
+    getMenu() {
+      Sidebar.getMenu()
+        .then((response) => {
+          this.menuList = response.data.data;
+          console.log(JSON.stringify(this.menuList));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   },
 };
 </script>
+<style>
+#components-layout-demo-responsive .logo {
+  height: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px;
+}
+</style>
