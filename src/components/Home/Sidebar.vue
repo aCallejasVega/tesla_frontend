@@ -16,8 +16,7 @@
           </a-sub-menu>
           <a-sub-menu key="sub3">
             <span slot="title"><a-icon type="team" /><span>RECAUDACIÒN</span></span>
-            <a-menu-item key="6"> Team 1 </a-menu-item>
-            <a-menu-item key="8"> Team 2 </a-menu-item>
+            <a-menu-item key="6"><router-link to="/search">Cobro Deudas</router-link></a-menu-item>
           </a-sub-menu>
 
         </a-menu>
