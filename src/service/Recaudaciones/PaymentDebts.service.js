@@ -27,5 +27,7 @@ export default {
   cargarServicioDeudas(entidadId,codigoCliente) {
     return Api().get(`api/entidades/${entidadId}/clientes/${codigoCliente}/deudas`, this.headersConfig());
   },
-
+  cobrarDeudas(cliente, comprobanteAllinOne, metodoPagoId) {
+    return Api().post(`api/cobros/${comprobanteAllinOne}/${metodoPagoId}`, cliente, this.headersConfig());
+  },
 };

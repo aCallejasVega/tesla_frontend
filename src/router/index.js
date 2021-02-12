@@ -34,7 +34,7 @@ const routes = [
         }
       },
       {
-        path: "/debts/:entidadId",
+        path: "/debts/:entidadId/:entidad",
         name: "Debts",
         component: Debts,
         meta: {
