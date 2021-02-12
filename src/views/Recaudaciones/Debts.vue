@@ -37,7 +37,7 @@
        
           <!-- Lista de Deudas-->
           <div v-if="displayCliente">
-            <table style="width: 100%; background-color: #f2f0ef" size="small">
+            <table style="width: 100%; background-color: #f2f0ef;" size="small">
               <tr>
                 <td><b>Nro. Documento</b></td>
                 <td><a-input v-model="clienteDto.nroDocumento" size="small"/></td>
@@ -50,14 +50,17 @@
               </tr>
             </table>
             <!--TABLA DE DEUDAS-->
-            {{comprobanteAllinOne}}
+            {{sumTotal}}
+            <!--
+            {{selectedRowKeys}}
+            {{clienteDto.servicioDeudaDtoList}}-->
             <a-table :columns="columnsA" :data-source="lstServiciosDeudas" bordered 
             :row-selection="rowSelectionS"
             :pagination="false"
             :scroll="{x:350}" >
               <template slot="key" slot-scope="text, record">
                 <table style="width: 100%; background-color: #f2f0ef"
-                  >
+                  :scroll="{x:400}">
                   <tr>
                     <td><b>Tipo Servicio:</b></td>
                     <td>{{ record.tipoServicio }}</td>
@@ -102,7 +105,13 @@
                   </tr>
                   <tr>
                     <td align="right"><b>Efectivo</b></td>
-                    <td><a-input v-model="efectivo" align="right" :disabled="!selectedServicio" size="small" type="number"/></td>
+                    <td><a-input v-model="efectivo" align="right" :disabled="!selectedServicio" 
+                    type="number"
+                      size="small"
+                      :min="0"
+                      defaultValue="0.00"
+                      class="ant-iput-cambio"
+                      /></td>
                   </tr>
                   <tr>
                     <td align="right"><b>Cambio</b></td>
@@ -116,7 +125,7 @@
             
             <!--SECTOR BOTONES-->
             <br/>
-            <div>
+            <div v-if="clienteDto.servicioDeudaDtoList.length > 0">
             <template class="ant-card-actions">
               <a-row type="flex" justify="space-around">
                 <a-col>
@@ -130,7 +139,13 @@
                   </a-radio-group>
                 </a-col>
                 <a-col>
-                  <a-button type="primary" @click="cobrarDeudas"> Cobrar </a-button> 
+                  <a-popconfirm title="¿Esta seguro de Cobrar las deudas seleccionadas?"
+                    ok-text="Si"
+                    cancel-text="No"
+                    @confirm="confirm"
+                    @cancel="cancel">
+                    <a-button type="primary"> Cobrar </a-button> 
+                  </a-popconfirm>  
                 </a-col>
               </a-row>
               </template>   
@@ -186,6 +201,7 @@ export default {
       sumTotal: 0,
       efectivo: 0,
       selectedServicio: false,
+      selectedRowKeys: [],
 
       //SECCION COBRO
       comprobanteAllinOne: null,
@@ -219,19 +235,24 @@ export default {
     },
     rowSelectionS() {
       return {
-        /*onChange: (selectedRowKeys, selectedRows) => {
+        selectedRowKeys: this.selectedRowKeys,
+        onChange: (selectedRowKeys, selectedRows) => {
           console.log("onChange");
           console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             "selectedRows: ",
             selectedRows
           );
-        },*/
+          this.selectedRowKeys = selectedRowKeys;
+        },
         onSelect: (record, selected, selectedRows) => {
           console.log("onSelect");
           console.log(record, selected, selectedRows);
           //calcular suma
-          this.sumTotal = this.sumTotal + (selected ? record.subTotal : -1 * record.subTotal);
+          this.sumTotal = 0;
+          this.sumTotal = selectedRows.reduce((tot, current) => {
+            return tot + current.subTotal;
+          }, 0);
           //control de cambio
           this.selectedServicio = selected;
           //asignar deudas seleccionadas
@@ -255,9 +276,8 @@ export default {
       };
     },
     cambio() {
-      return this.efectivo > 0
-        ? -1 * Number((this.sumTotal - this.efectivo).toFixed(2))
-        : 0;
+      let vFormateado = this.efectivo > 0 ? -1 * (this.sumTotal - this.efectivo) : 0;
+      return Number(vFormateado).toFixed(2)
     },
   },
 
@@ -284,19 +304,27 @@ export default {
       else {
         this.lstClientes = []
       }
-      this.displayCliente = false
-      this.sumTotal = 0
-      comprobanteAllinOne: null
+
+      //Restrablecer valores iniciales
+      this.displayCliente = false;
+      this.inicializar();
     },
 
 
     /*********************************************** 
     SERVICIOS DEUDAS
     ************************************************/
+    inicializar() {
+      this.selectedRowKeys = [];
+      this.sumTotal = Number(0).toFixed(2);
+      this.comprobanteAllinOne = null;
+      this.selectedServicio = false;
+      this.efectivo = Number(0).toFixed(2);
+      this.selectedRowsArray = [];
+    },
     cargarServicioDeudas() {
       PaymentDebts.cargarServicioDeudas(this.entidadId, this.clienteDto.codigoCliente)
         .then((r) => {
-          console.log(JSON.stringify(r.data.result));
           this.lstServiciosDeudas = r.data.result;
         })
         .catch((error) => {
@@ -307,20 +335,30 @@ export default {
      /*********************************************** 
     COBROS DEUDAS
     ************************************************/
+    confirm(e) {
+      this.cobrarDeudas();
+    },
+    cancel(e) {
+      this.$message.warning('Proceda a modificar el cobro')
+    },
     cobrarDeudas() {
-      PaymentDebts.cobrarDeudas(this.clienteDto, this.comprobanteAllinOne, 5)
-        .then((r) => {
-          console.log(r);
-          this.$message.success(r.data.message);
-          //debe actualizar las deudas
-          this.cargarServicioDeudas();
-
-
-        })
-        .catch((error) => {
-          console.log(error)
-          this.$message.error(error.response.data.message);
-        });
+      if(this.comprobanteAllinOne == null ) {
+        this.$message.warning('Debe definir la emisión de comprobantes')
+      }
+      else {
+        PaymentDebts.cobrarDeudas(this.clienteDto, this.comprobanteAllinOne, 5)
+          .then((r) => {
+            console.log(r);
+            this.$message.success(r.data.message);
+            //debe actualizar las deudas
+            this.cargarServicioDeudas();
+            this.inicializar();
+          })
+          .catch((error) => {
+            console.log(error)
+            this.$message.error(error.response.data.message);
+          });
+      }
     }
   },
 };
@@ -332,5 +370,8 @@ export default {
   }
   .ant-table-body {
     overflow-x: auto !important;
+  }
+  .ant-iput-cambio {
+    text-align: right;
   }
 </style>
