@@ -26,7 +26,7 @@ const routes = [
         }
       },
       {
-        path: "/search",
+        path: "/SearchEntidades",
         name: "SearchEntidades",
         component: SearchEntidades,
         meta: {

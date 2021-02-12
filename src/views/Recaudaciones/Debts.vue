@@ -254,6 +254,7 @@ export default {
     cargarServicioDeudas() {
       PaymentDebts.cargarServicioDeudas(this.entidadId, this.cliente.codigoCliente)
         .then((r) => {
+          console.log(JSON.stringify(r.data.result));
           this.lstServiciosDeudas = r.data.result;
         })
         .catch((error) => {});

@@ -7,17 +7,19 @@
         <span slot="title"
           ><a-icon :type="menu.icono" /><span>{{ menu.descripcion }}</span></span
         >
+ 
         <a-menu-item
           v-for="(subMenu, index2) in menu.segPrivilegioEntityList"
-          :key="index2"
-          style="padding-right: 0px"
-        >
-          <router-link :to="subMenu.link">
+          :key="index2" 
+          >
+          <router-link :to="subMenu.link" >
            <span>{{
               subMenu.descripcion
             }}</span>
           </router-link>
         </a-menu-item>
+ 
+        
       </a-sub-menu>
     </a-menu>
   </a-layout-sider>
