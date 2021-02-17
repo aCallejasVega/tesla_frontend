@@ -40,6 +40,7 @@
               block
               @click="showConfirmProcearArchivo"
               :disabled="buttonProcesar"
+            icon="file-ppt"
             >
               Procesar Datos
             </a-button>

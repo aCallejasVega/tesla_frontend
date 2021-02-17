@@ -5,6 +5,7 @@ import Login from "../views/Home/Login.vue";
 import UploadFile from "../views/Entidades/UploadFile.vue";
 import SearchEntidades from '../views/Recaudaciones/SearchEntidades.vue';
 import Debts from '../views/Recaudaciones/Debts.vue';
+import decode from 'jwt-decode';
 
 Vue.use(VueRouter);
 
@@ -60,12 +61,18 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem("token");
-  if (to.matched.some(record => record.meta.libre)) {
+  const token = localStorage.getItem("token");  
+  if (to.matched.some(record => record.meta.libre)) {    
     next();
   } else if (token) {
-    next();
-  } else {
+    const { exp } = decode(token);    
+    if (exp < (new Date().getTime() + 1) / 1000) {   
+      localStorage.clear();
+      next({ name: "login" });
+    }else{      
+      next();
+    }    
+  } else {    
     next({ name: "login" });
   }
 });

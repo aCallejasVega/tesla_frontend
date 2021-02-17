@@ -5,15 +5,17 @@
       <Sidebar />
       <a-layout-content style="margin: 0 16px">
         <router-view></router-view>
+
+        
       </a-layout-content>
     </a-layout>
     <Footer />
   </a-layout>
 </template>
 <script>
-import Footer from '@/components/Home/Footer.vue';
-import Header from '@/components/Home/Header.vue';
-import Sidebar from '@/components/Home/Sidebar.vue';
+import Footer from "@/components/Home/Footer.vue";
+import Header from "@/components/Home/Header.vue";
+import Sidebar from "@/components/Home/Sidebar.vue";
 
 export default {
   components: {

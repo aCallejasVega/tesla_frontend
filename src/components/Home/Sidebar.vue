@@ -1,25 +1,17 @@
 <template>
 
- <a-layout-sider v-model="collapsed" collapsible >
+ <a-layout-sider v-model="collapsed" collapsible style="width: 256px" theme="dark">
     <div class="logo" />
-    <a-menu theme="dark" breakpoint="xl" :default-selected-keys="['1']" mode="inline" collapsedWidth='150'>
+    <a-menu  theme="dark" breakpoint="xl"   :default-selected-keys="['1']" mode="inline" collapsedWidth='150'>
       <a-sub-menu key="sub1" v-for="(menu, index) in menuList" :key="index">
-        <span slot="title"
-          ><a-icon :type="menu.icono" /><span>{{ menu.descripcion }}</span></span
-        >
- 
-        <a-menu-item
-          v-for="(subMenu, index2) in menu.segPrivilegioEntityList"
-          :key="index2" 
-          >
+        <span slot="title"><a-icon :type="menu.icono" /><span>{{ menu.descripcion }}</span></span> 
+        <a-menu-item v-for="(subMenu, index2) in menu.segPrivilegioEntityList"  :key="index2" >
           <router-link :to="subMenu.link" >
-           <span>{{
+           {{
               subMenu.descripcion
-            }}</span>
+            }}
           </router-link>
-        </a-menu-item>
- 
-        
+        </a-menu-item>        
       </a-sub-menu>
     </a-menu>
   </a-layout-sider>
