@@ -50,7 +50,6 @@
               </tr>
             </table>
             <!--TABLA DE DEUDAS-->
-            {{sumTotal}}
             <!--
             {{selectedRowKeys}}
             {{clienteDto.servicioDeudaDtoList}}-->
@@ -83,19 +82,30 @@
                   <tr v-for="(deuda, i) in record.deudaClienteDtos" :key="i">
                     <td align="center">{{ deuda.cantidad }}</td>
                     <td>{{ deuda.concepto }}</td>
-                    <td align="right">{{ deuda.montoUnitario }}</td>
-                    <td align="right">{{ deuda.subTotal }}</td>
+                    <td align="right" v-if="deuda.esPostpago">{{ deuda.montoUnitario }}</td>
+                    <td align="right" v-if="!deuda.esPostpago">
+                      <a-input v-model="deuda.montoUnitario" align="right" 
+                      type="number"
+                      size="small"
+                      :min="0"
+                      defaultValue="0.00"
+                      class="ant-iput-cambio" 
+                      />
+                    </td>
+                    <td align="right" v-if="deuda.esPostpago">{{ deuda.subTotal }}</td>
+                    <td align="right" v-if="!deuda.esPostpago">{{ montoPrepago(deuda) }}</td>
                   </tr>
-                  <tr style="background: #ffead8">
+                  <tr style="background: #cc99cc; border-size:1px">
                     <td></td>
                     <td></td>
                     <td align="right"><b>SubTotal</b></td>
-                    <td align="right"><b>{{record.subTotal}}</b></td> 
+                    <td align="right"><b>{{ sumSubTotal(record) }}</b></td>
+                    
                   </tr>
                 </table>
               </template>
               <template slot="footer">
-                <a-row style="background: #ffd5b1">
+                <a-row style="background: #cc99ff">
                   <a-col align="right">
                 <table style="width: 30%;">
                 <!--  <table style="width: 30%; background: #ffd5b1">-->
@@ -128,16 +138,6 @@
             <div v-if="clienteDto.servicioDeudaDtoList.length > 0">
             <template class="ant-card-actions">
               <a-row type="flex" justify="space-around">
-                <a-col>
-                  <a-radio-group v-model="comprobanteAllinOne">
-                    <a-radio :value="false">
-                      Un comprobante por tiqueo
-                    </a-radio>
-                    <a-radio :value="true">
-                      En un solo comprobante
-                    </a-radio>
-                  </a-radio-group>
-                </a-col>
                 <a-col>
                   <a-popconfirm title="¿Esta seguro de Cobrar las deudas seleccionadas?"
                     ok-text="Si"
@@ -279,9 +279,13 @@ export default {
       let vFormateado = this.efectivo > 0 ? -1 * (this.sumTotal - this.efectivo) : 0;
       return Number(vFormateado).toFixed(2)
     },
+  
   },
 
   methods: {
+    
+
+   
     /*********************************************** 
     BUSQUEDA DE CLIENTE
     ************************************************/
@@ -326,15 +330,39 @@ export default {
       PaymentDebts.cargarServicioDeudas(this.entidadId, this.clienteDto.codigoCliente)
         .then((r) => {
           this.lstServiciosDeudas = r.data.result;
+          console.log(JSON.stringify(this.lstServiciosDeudas));
         })
         .catch((error) => {
           this.$message.error(error.response.data.message);
         });
     },
+    montoPrepago(deuda) {
+      if(deuda.cantidad != null && deuda.montoUnitario != null ) {
+        deuda.subTotal = deuda.cantidad * deuda.montoUnitario;
+      }
+      return deuda.subTotal; 
+    },
+
+    sumSubTotal(record) {
+        record.subTotal = record.deudaClienteDtos.reduce((sum, item) => 
+        sum + Number(item.subTotal), 0);
+        return record.subTotal;
+    },
 
      /*********************************************** 
     COBROS DEUDAS
     ************************************************/
+    verificarMontoPrepago(lst) {
+      for(var i in lst) {
+        for(var j in lst[i].deudaClienteDtos) {
+          console.log(lst[i].deudaClienteDtos[j].subTotal)
+          if(lst[i].deudaClienteDtos[j].subTotal == null || lst[i].deudaClienteDtos[j].subTotal == '' || lst[i].deudaClienteDtos[j].subTotal == 0)
+            return false;
+        }
+       
+      }
+      return true;
+    },
     confirm(e) {
       this.cobrarDeudas();
     },
@@ -342,11 +370,9 @@ export default {
       this.$message.warning('Proceda a modificar el cobro')
     },
     cobrarDeudas() {
-      if(this.comprobanteAllinOne == null ) {
-        this.$message.warning('Debe definir la emisión de comprobantes')
-      }
-      else {
-        PaymentDebts.cobrarDeudas(this.clienteDto, this.comprobanteAllinOne, 5)
+      console.log(JSON.stringify(this.clienteDto.servicioDeudaDtoList));
+      if(this.verificarMontoPrepago(this.clienteDto.servicioDeudaDtoList)) {
+        PaymentDebts.cobrarDeudas(this.clienteDto, 5)
           .then((r) => {
             console.log(r);
             this.$message.success(r.data.message);
@@ -356,8 +382,10 @@ export default {
           })
           .catch((error) => {
             console.log(error)
-            this.$message.error(error.response.data.message);
+            this.$message.error(error.response.data.message + '\n. Código de error: ' + error.response.data.code );
           });
+      } else {
+        this.$message.warning('Para el caso de prepagos debe llenar el monto correspondiente, por favor verifique');
       }
     }
   },
