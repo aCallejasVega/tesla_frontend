@@ -1,35 +1,30 @@
 <template>
-  <a-layout-header style="background: #fff">
+  <a-layout-header
+    style="background: #89136b; height: 100px; padding-left: 0px; padding-right: 0px"
+  >
     <a-row type="flex" justify="space-around" align="top">
-      <a-col :span="20">TESLA</a-col>
-      <a-col :span="4" justify="space-around">
+      <a-col :span="20" style="height: 100%"
+        ><img src="../../../public/teslapng.png"
+      /></a-col>
+      <a-col :span="4" justify="space-around" style="height: 100%">
         <a-row type="flex" justify="space-around" align="top">
-          <a-col :span="20">
-            <div
-              style="
-                line-height: 100%;
-                padding-top: 10%;
-                float: right;
-                padding-right: 10px;
-              "
-            >
-              <b>Adalid Callejas</b>
-              <br />
-              <b style="font-size: x-small">BANCO FIES</b>
-            </div>
-          </a-col>
+          <a-col :span="20" style="height: 100%"> </a-col>
           <a-col :span="4">
-            <a-popover
-              placement="bottomRight"
-              title="Configuración de datos de usuario."
-              trigger="click"
-            >
-              <template slot="content">
-                <a-row type="flex" justify="end" align="top" block>
-                  <a-col :xs="24" :sm="24" :md="6" :lg="4" :xl="4" flex="auto" style="text-align:center" >
-                    <a-avatar :size="80" icon="user" />
+            <a-popover placement="left" trigger="click" style="height: 100px">
+              <template slot="content" style="height: 100px">
+                <a-row type="flex" justify="end" align="top" block style="height: 70px">
+                  <a-col
+                    :xs="24"
+                    :sm="24"
+                    :md="6"
+                    :lg="4"
+                    :xl="4"
+                    flex="auto"
+                    style="text-align: center"
+                  >
+                    <a-avatar :size="60" icon="user" />
                   </a-col>
-                  <a-col  :xs="24" :sm="24" :md="11" :lg="13" :xl="13"  >
+                  <a-col :xs="24" :sm="24" :md="11" :lg="13" :xl="13">
                     <a-row type="flex" justify="space-around" align="top">
                       <a-col :span="8">Usuario:</a-col>
                       <a-col :span="16">Adalid Callejas Vega</a-col>
@@ -39,7 +34,7 @@
                       <a-col :span="16">6 de Agoto</a-col>
                     </a-row>
                   </a-col>
-                  <a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7"  >
+                  <a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
                     <a-row type="flex" justify="start" align="top"
                       ><a-col :span="24"
                         ><a-button type="primary" icon="logout" block @click="logout">
@@ -58,8 +53,13 @@
                   </a-col>
                 </a-row>
               </template>
-              <a-button type="link">
-                <a-avatar :size="50" icon="user" />
+              <a-button
+                type="link"
+                style="background-color: #ffffff; padding-left: 5px"
+                @mouseover="changeUnlock"
+                @mouseleave="changeLock"
+              >
+                <a-icon :type="iconConfig" :style="{ fontSize: '25px' }" />
               </a-button>
             </a-popover>
           </a-col>
@@ -72,9 +72,20 @@
 <script>
 import store from "../../store/index";
 export default {
+  data() {
+    return {
+      iconConfig: "lock",
+    };
+  },
   methods: {
     logout() {
       this.$store.dispatch("salir");
+    },
+    changeUnlock() {
+      this.iconConfig = "unlock";
+    },
+    changeLock() {
+      this.iconConfig = "lock";
     },
   },
 };
@@ -95,5 +106,31 @@ export default {
 /* Darker background on mouse-over */
 .btn:hover {
   background-color: RoyalBlue;
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+.header {
+  background: rgb(249, 251, 251);
+  background: -moz-linear-gradient(
+    90deg,
+    rgba(249, 251, 251, 1) 0%,
+    rgba(233, 108, 201, 1) 53%,
+    rgba(149, 43, 122, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    90deg,
+    rgba(249, 251, 251, 1) 0%,
+    rgba(233, 108, 201, 1) 53%,
+    rgba(149, 43, 122, 1) 100%
+  );
+  background: linear-gradient(
+    90deg,
+    rgba(249, 251, 251, 1) 0%,
+    rgba(233, 108, 201, 1) 53%,
+    rgba(149, 43, 122, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#f9fbfb",endColorstr="#952b7a",GradientType=1);
 }
 </style>
