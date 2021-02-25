@@ -1,27 +1,32 @@
 <template>
   <div>
+    
     <a-row type="flex" justify="space-around" align="middle">
       <a-col :span="20">
         <a-card style="width: 100%">
-
-          <a-row type="flex" justify="space-around">
-            <a-col :xs="24" :sm="24" :md="8" :lg="8">
-              <h1>Deudas Clientes {{ entidad }}</h1>
-            </a-col>
-            <a-col :xs="24" :sm="24" :md="12" :lg="12">
-              <a-input
-                v-model="search"
-                placeholder="Código, CI/NIT o Nombre "
-                @keyup="buscar"
-              />
-            </a-col>
-            <a-col :xs="24" :sm="4" :md="4" :lg="4">
-              <a-button type="primary" @click="buscar"> Buscar </a-button>
-            </a-col>
-          </a-row>
-          <br/>
-          <!--Lista de Clientes-->
+         
           <div v-if="!displayCliente">
+            
+            <!--bBuscar Clientes-->
+            <a-row type="flex" justify="space-around">
+              <a-col :xs="24" :sm="24" :md="12" :lg="12">
+                <h1>Buscar Deudas Clientes en {{ entidad }}</h1>
+              </a-col>
+              <a-col :xs="24" :sm="24" :md="12" :lg="12">
+                <a-input-search
+                  v-model="search"
+                  placeholder="Código, CI/NIT o Nombre "
+                  @keyup="buscar"
+                  @search="buscar"
+                  enter-button="Buscar"
+                  :maxLength=50
+                  size="small"
+                />
+              </a-col>
+              
+            </a-row>
+            <br/>
+            <!--Lista de Clientes-->
             <a-table
               :row-selection="rowSelectionC"
               :columns="columns"
@@ -37,6 +42,11 @@
        
           <!-- Lista de Deudas-->
           <div v-if="displayCliente">
+            <a-row type="flex" justify="space-around" >
+              <a-col :xs="24" :sm="24" :md="24" :lg="24" align="right">
+                <a-button type="primary" @click="reload" size="small">Nueva Búsqueda</a-button>
+              </a-col>
+            </a-row>
             <table style="width: 100%; background-color: #f2f0ef;" size="small">
               <tr>
                 <td><b>Nro. Documento</b></td>
@@ -53,10 +63,13 @@
             <!--
             {{selectedRowKeys}}
             {{clienteDto.servicioDeudaDtoList}}-->
+           
+           
             <a-table :columns="columnsA" :data-source="lstServiciosDeudas" bordered 
             :row-selection="rowSelectionS"
             :pagination="false"
             :scroll="{x:350}" >
+              
               <template slot="key" slot-scope="text, record">
                 <table style="width: 100%; background-color: #f2f0ef"
                   :scroll="{x:400}">
@@ -82,18 +95,20 @@
                   <tr v-for="(deuda, i) in record.deudaClienteDtos" :key="i">
                     <td align="center">{{ deuda.cantidad }}</td>
                     <td>{{ deuda.concepto }}</td>
-                    <td align="right" v-if="deuda.esPostpago">{{ deuda.montoUnitario }}</td>
+                    <td align="right">{{ deuda.montoUnitario }}</td>
+                    <td align="right" v-if="deuda.esPostpago">{{ deuda.subTotal }}</td>
                     <td align="right" v-if="!deuda.esPostpago">
-                      <a-input v-model="deuda.montoUnitario" align="right" 
+                      <a-input v-model="deuda.subTotal" 
+                      align="right" 
+                      defaultValue="0.00" 
                       type="number"
                       size="small"
                       :min="0"
-                      defaultValue="0.00"
-                      class="ant-iput-cambio" 
-                      />
+                      class="ant-iput-cambio"
+                      @keyup="deuda.montoUnitario = deuda.subTotal" 
+                     
+                      />    
                     </td>
-                    <td align="right" v-if="deuda.esPostpago">{{ deuda.subTotal }}</td>
-                    <td align="right" v-if="!deuda.esPostpago">{{ montoPrepago(deuda) }}</td>
                   </tr>
                   <tr style="background: #cc99cc; border-size:1px">
                     <td></td>
@@ -172,7 +187,7 @@ const columns = [
 //TABLA SERVICIOSDEUDAS
 const columnsA = [
   {
-    title: "DEUDA DE LOS CLIENTES",
+    title: "DEUDA DEL CLIENTE",
     dataIndex: "key",
     scopedSlots: { customRender: "key" },
   },
@@ -182,7 +197,6 @@ export default {
   data() {
     return {
       //BÚSQUEDA DE CLIENTE
-      //entidadId: localStorage.getItem("entidadId"),
       entidadId: null,
       entidad: null,
       search: null,
@@ -203,13 +217,13 @@ export default {
       selectedServicio: false,
       selectedRowKeys: [],
 
-      //SECCION COBRO
-      comprobanteAllinOne: null,
+      
     };
   },
   created() {
     this.entidadId = this.$route.params.entidadId;
     this.entidad= this.$route.params.entidad;
+    console.log('create')
   },
   computed: {
     rowSelectionC() {
@@ -273,13 +287,30 @@ export default {
           this.clienteDto.servicioDeudaDtoList = selectedRows;
           console.log(JSON.stringify(this.clienteDto));
         },
+        
       };
+      
     },
     cambio() {
       let vFormateado = this.efectivo > 0 ? -1 * (this.sumTotal - this.efectivo) : 0;
       return Number(vFormateado).toFixed(2)
     },
-  
+
+   
+  },
+  watch: {
+    "clienteDto.servicioDeudaDtoList": {
+        handler: function(val, oldVal) {
+          
+          this.sumTotal = 0
+          this.sumTotal = this.sumTotal + val.reduce((tot, current) => {
+            return tot + current.subTotal;
+          }, 0);
+        },
+        deep: true
+    }
+    
+
   },
 
   methods: {
@@ -294,8 +325,13 @@ export default {
       PaymentDebts.cargarClientes(this.entidadId, dato)
         .then((r) => {
           console.log(r)
-          console.log(JSON.stringify(r.data.result));
-          this.lstClientes = r.data.result;
+          if(r.status == 200) { 
+            this.lstClientes = r.data.result;
+          } else {
+            this.$message.error("No existen deudas para el cliente ingresado");
+            return;
+          } 
+          
         })
         .catch((error) => {
           this.$message.error(error.response.data.message);
@@ -320,10 +356,9 @@ export default {
     ************************************************/
     inicializar() {
       this.selectedRowKeys = [];
-      this.sumTotal = Number(0).toFixed(2);
-      this.comprobanteAllinOne = null;
+      this.sumTotal = 0//Number(0).toFixed(2);
       this.selectedServicio = false;
-      this.efectivo = Number(0).toFixed(2);
+      this.efectivo = 0//Number(0).toFixed(2);
       this.selectedRowsArray = [];
     },
     cargarServicioDeudas() {
@@ -336,20 +371,21 @@ export default {
           this.$message.error(error.response.data.message);
         });
     },
-    montoPrepago(deuda) {
+    /*montoPrepago(deuda) {
       if(deuda.cantidad != null && deuda.montoUnitario != null ) {
         deuda.subTotal = deuda.cantidad * deuda.montoUnitario;
       }
+     
       return deuda.subTotal; 
     },
-
+*/
     sumSubTotal(record) {
         record.subTotal = record.deudaClienteDtos.reduce((sum, item) => 
         sum + Number(item.subTotal), 0);
         return record.subTotal;
     },
 
-     /*********************************************** 
+    /*********************************************** 
     COBROS DEUDAS
     ************************************************/
     verificarMontoPrepago(lst) {
@@ -387,8 +423,18 @@ export default {
       } else {
         this.$message.warning('Para el caso de prepagos debe llenar el monto correspondiente, por favor verifique');
       }
-    }
+    },
+    reload() {
+      location.reload()
+    },
+    /*existeDeudaPrepago(lst) {
+      return lst.some((el) => {
+          return !el.esPostpago && (el.montoUnitario !== null || el.montoUnitario !== '' || el.montoUnitario !== 0)
+        })
+    }*/
+    
   },
+  
 };
 </script>
 
