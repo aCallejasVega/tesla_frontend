@@ -11,10 +11,8 @@
       <a-menu-item v-for="(menu, index) in menuList" :key="index">
         <a-icon :type="menu.icono" />
 
-        <span
-          ><router-link :to="menu.link">
-            {{ menu.descripcion }}
-          </router-link>
+        <span @click="navegar(menu.link)">
+          {{ menu.descripcion }}
         </span>
       </a-menu-item>
     </a-menu>
@@ -43,6 +41,11 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+    navegar(link) {
+      this.$router.replace({
+        name: link,
+      });
     },
   },
 };

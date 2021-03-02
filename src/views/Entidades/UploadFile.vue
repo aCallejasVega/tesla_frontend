@@ -333,7 +333,7 @@ export default {
     findDeudasClientesByArchivoId(archivoId, page, paramBusqueda) {
       UploadFileService.findDeudasClientesByArchivoId(archivoId, page, paramBusqueda)
         .then((response) => {
-          this.pagination.pageSize = response.data.data.totalPages + 1;
+          this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
           this.data = response.data.data.content;
         })

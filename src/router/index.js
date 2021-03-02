@@ -3,6 +3,8 @@ import VueRouter from "vue-router";
 import home from "../views/Home/Home.vue";
 import Login from "../views/Home/Login.vue";
 import UploadFile from "../views/Entidades/UploadFile.vue";
+import HistoricoDeudas from "../views/Entidades/HistoricoDeudas.vue";
+import HistoricoDeudasDetalle from "../views/Entidades/HistoricoDeudasDetalle";
 import SearchEntidades from '../views/Recaudaciones/SearchEntidades.vue';
 import Debts from '../views/Recaudaciones/Debts.vue';
 import decode from 'jwt-decode';
@@ -32,7 +34,25 @@ const routes = [
         component: SearchEntidades,
         meta: {
           libre: false
-        }
+        },
+        
+      },
+      {
+        path: "/HistoricoDeudas",
+        name: "HistoricoDeudas",
+        component: HistoricoDeudas,
+        meta: {
+          libre: false
+        },
+      
+      }, 
+      {
+        path: "/HistoricoDeudasDetalle/:archivoId",
+        name: "HistoricoDeudasDetalle",
+        component: HistoricoDeudasDetalle,
+        meta: {
+          libre: false
+        },
       },
       {
         path: "/debts/:entidadId/:entidad",
@@ -53,15 +73,17 @@ const routes = [
     }
   }
 ];
-
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes
 });
 
+
+
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");  
+
   if (to.matched.some(record => record.meta.libre)) {    
     next();
   } else if (token) {
@@ -70,6 +92,7 @@ router.beforeEach((to, from, next) => {
       localStorage.clear();
       next({ name: "login" });
     }else{      
+      
       next();
     }    
   } else {    
