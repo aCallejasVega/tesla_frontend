@@ -5,6 +5,7 @@ import Login from "../views/Home/Login.vue";
 import UploadFile from "../views/Entidades/UploadFile.vue";
 import HistoricoDeudas from "../views/Entidades/HistoricoDeudas.vue";
 import HistoricoDeudasDetalle from "../views/Entidades/HistoricoDeudasDetalle";
+import ReporteDeudasEntidades from "../views/Entidades/ReporteDeudasEntidades";
 import SearchEntidades from '../views/Recaudaciones/SearchEntidades.vue';
 import Debts from '../views/Recaudaciones/Debts.vue';
 import decode from 'jwt-decode';
@@ -50,6 +51,14 @@ const routes = [
         path: "/HistoricoDeudasDetalle/:archivoId",
         name: "HistoricoDeudasDetalle",
         component: HistoricoDeudasDetalle,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/ReporteDeudasEntidades",
+        name: "ReporteDeudasEntidades",
+        component: ReporteDeudasEntidades,
         meta: {
           libre: false
         },

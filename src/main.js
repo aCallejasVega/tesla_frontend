@@ -4,8 +4,12 @@ import router from './router';
 import store from './store';
 import './plugins/ant-design-vue.js';
 import axios from 'axios';
-const moment = require('moment')
-require('moment/locale/es')
+import VueGoogleCharts from 'vue-google-charts';
+
+const moment = require('moment');
+require('moment/locale/es');
+
+Vue.use(VueGoogleCharts)
 
 Vue.use(require('vue-moment'), {
   moment

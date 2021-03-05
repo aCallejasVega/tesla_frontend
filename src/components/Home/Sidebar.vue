@@ -36,7 +36,6 @@ export default {
       Sidebar.getMenu()
         .then((response) => {
           this.menuList = response.data.data;
-          console.log(JSON.stringify(this.menuList));
         })
         .catch((error) => {
           console.log(error);
