@@ -8,6 +8,9 @@ import HistoricoDeudasDetalle from "../views/Entidades/HistoricoDeudasDetalle";
 import ReporteDeudasEntidades from "../views/Entidades/ReporteDeudasEntidades";
 import SearchEntidades from '../views/Recaudaciones/SearchEntidades.vue';
 import Debts from '../views/Recaudaciones/Debts.vue';
+import AbmEntidades from '../views/Administracion/AbmEntidades.vue';
+import AbmSucursales from '../views/Administracion/AbmSucursales.vue';
+import AbmRecaudadores from '../views/Administracion/AbmRecaudadores.vue';
 import decode from 'jwt-decode';
 
 Vue.use(VueRouter);
@@ -64,13 +67,37 @@ const routes = [
         },
       },
       {
-        path: "/debts/:entidadId/:entidad",
+        path: "/debts/:entidadId",
         name: "Debts",
         component: Debts,
         meta: {
           libre: false
         }
-      }
+      },
+      {
+        path: "/entidades",
+        name: "AbmEntidades",
+        component: AbmEntidades,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/sucursales/:entidadId",
+        name: "AbmSucursales",
+        component: AbmSucursales,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/recaudadores",
+        name: "AbmRecaudadores",
+        component: AbmRecaudadores,
+        meta: {
+          libre: false
+        }
+      },
     ]
   },
   {

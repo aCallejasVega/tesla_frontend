@@ -1,62 +1,79 @@
 <template>
   <div>
-    <a-row type="flex" justify="space-around" align="middle">
-      <a-col :span="20">
-        <a-card style="width: 100%">
-          <a-row>
-            <a-col :xs="24" :sm="24" :md="8" :lg="8">
-              <h1>Entidades</h1>
-            </a-col>
-            <a-col :xs="24" :sm="24" :md="12" :lg="12">
-              <a-input
-                v-model="search"
-                @keyup="buscar"
-                placeholder="Empresa, Universidad, otro"
-              />
-            </a-col>
-            <a-col :xs="24" :sm="4" :md="4" :lg="4">
-              <a-button type="primary" @click="buscar"> Buscar </a-button>
+    <a-card style="width: 100%">
+      <a-page-header
+        style="border: 1px solid rgb(224, 206, 206)"
+        title="Búsqueda de Empresas"
+      />
+      <a-alert
+        message="Empresa: En adelante agrupa a Universidades, Colegios y otros."
+        type="info"
+        show-icon
+      />
+      <br />
+      <a-row>
+        <a-col>
+          <a-input-search
+            v-model="search"
+            placeholder="Empresa, Universidad, Colegio, otro..."
+            @keyup="buscar"
+            @search="buscar"
+            enter-button=" Buscar "
+            :maxLength="50"
+            size="small"
+          />
+        </a-col>
+      </a-row>
+      <!--Tipos de Entidades-->
+    </a-card>
+    <a-card style="width: 100%">
+      <template slot="actions" class="ant-card-actions">
+        <div style="width: 100%">
+          <a-row type="flex" justify="center">
+            <a-col
+              :xs="{ span: 24 }"
+              :sm="{ span: 24 }"
+              :md="{ span: 12 }"
+              :lg="{ span: 6 }"
+              hoverable
+              v-for="(item, i) in lstTipoEntidades"
+              :key="i"
+              @click="cargarEntidades(item.dominioId)"
+            >
+              <a-card hoverable>
+                <a-card-meta :title="item.descripcion">
+                  <a-avatar slot="avatar" :src="item.abreviatura" />
+                </a-card-meta>
+              </a-card>
             </a-col>
           </a-row>
-
-          <br/>
-          <br/>
-          <br/>
-          <!--Tipos de Entidades-->
-          <div v-if="!displayEntidades" style="background: #cfa9df; padding: 50px 50px 50px 50px">
-            <div class="wrapper">
-              <div class="card" v-for="(item, i) in lstTipoEntidades" :key="i"
-                            @click="cargarEntidades(item.dominioId)">
-                <img :src="item.abreviatura"/>
-                <div class="info">
-                  <h1>{{item.descripcion}}</h1>
-                </div>
+        </div>
+      </template>
+    </a-card>
+    <a-card style="width: 100%">
+      <!--Entidades-->
+      <div v-if="displayEntidades" style="width: 100%">
+        <div >
+          <a-row type="flex" justify="center">
+            <a-col
+              :xs="24"
+              :sm="24"
+              :md="12"
+              :lg="6"
+              class="card"
+              v-for="(item, i) in lstEntidadesFilter"
+              :key="i"
+              @click="seleccionar(item)"
+            >
+              <img :src="item.pathLogo" />
+              <div class="info">
+                <h1>{{ item.nombre }}</h1>
               </div>
-            </div>
-          </div>
-          
-          <!--Entidades-->
-          <div v-if="displayEntidades" style="background: #cfa9df; padding: 50px 50px 50px 50px">
-            <div class="wrapper">
-              <div class="card" v-for="(item, i) in lstEntidadesFilter"
-                            :key="i"
-                            @click="seleccionar(item)">
-                <img :src="item.pathLogo"/>
-                <div class="info">
-                  <h1>{{item.nombre}}</h1>
-                </div>
-              </div>
-            </div>
-          </div>
-        </a-card>
-      </a-col>
-    </a-row>
-
-
-
-
-
-
+            </a-col>
+          </a-row>
+        </div>
+      </div>
+    </a-card>
   </div>
 </template>
 <script>
@@ -64,110 +81,119 @@ import PaymentDebts from "../../service/Recaudaciones/PaymentDebts.service";
 export default {
   data() {
     return {
-      //Tipo Entidades
+      /**Datos */
       lstTipoEntidades: [],
-      //Entidades
-      displayEntidades: false,
       lstEntidades: [],
       lstEntidadesFilter: [],
-      search: null,
+      search: "",
+      /**Visaulizaciones */
+      displayEntidades: false,
+      disableCard: null,
     };
   },
 
-  mounted() {
+  created() {
     this.cargarTiposEntidades();
     this.cargarTodasEntidades();
   },
 
   methods: {
+    /**Datos */
+    cargarTodasEntidades() {
+      PaymentDebts.cargarTodasEntidades()
+        .then((r) => {
+          if(r.status === 204) {
+            this.lstEntidades = [];
+            this.lstEntidadesFilter = this.lstEntidades;
+            this.$notification.warning("No existe Empresas asociadas a la Recaudadora");
+            return;
+          }
+
+          this.lstEntidades = r.data.result;
+          this.lstEntidadesFilter = this.lstEntidades;
+          this.$notification.success(r.data.message);
+        })
+        .catch((error) => {
+          this.lstEntidades = [];
+          this.lstEntidadesFilter = this.lstEntidades;
+          this.$notification.error(error.response.data.message,error.response.data.code);
+        });
+    },
     cargarTiposEntidades() {
       PaymentDebts.cargarTiposEntidades()
         .then((r) => {
+          //el control status==204 se visializara en cargado de entidades, para evitar duplicidad 
           this.lstTipoEntidades = r.data.result;
         })
         .catch((error) => {
-          this.$message.error(error.message);
+          this.lstTipoEntidades = [];
+          this.$notification.error(error.response.data.message,error.response.data.code);
         });
     },
-
-    seleccionar(item) {
-      //Todo
-      //localStorage.setItem("entidadId", item.entidadId);
-      this.$router.push({
-        name: "Debts",
-        params: { entidadId: item.entidadId, entidad: item.nombre },
-      });
-    },
     cargarEntidades(tipo) {
+      this.search = "";
       PaymentDebts.cargarEntidades(tipo)
         .then((r) => {
-          this.lstEntidades = r.data.result;
-          this.lstEntidadesFilter = this.lstEntidades;
+          this.lstEntidadesFilter = r.data.result;
           this.displayEntidades = true;
         })
         .catch((error) => {
-          this.$message.error(error.message);
+          this.lstEntidadesFilter = [],
+          this.$notification.error(error.response.data.message,error.response.data.code);
         });
     },
+    /**Acciones*/
+    seleccionar(item) {
+      this.$router.push({
+        name: "Debts",
+        params: { entidadId: item.entidadId },
+      });
+    },   
     buscar() {
       if (this.search.length > 0) {
         this.lstEntidadesFilter = this.lstEntidades.filter((entidad) => {
-          return (
-            entidad.nombre.includes(this.search.toUpperCase()) ||
-            entidad.nombreComercial.includes(this.search.toUpperCase())
-          );
+          if (entidad.nombreComercial != null) {
+            return (
+              entidad.nombre.includes(this.search.toUpperCase()) ||
+              entidad.nombre.includes(this.search.toLowerCase()) ||
+              entidad.nombreComercial.includes(this.search.toUpperCase()) ||
+              entidad.nombreComercial.includes(this.search.toLowerCase())
+            );
+          } else {
+            return (
+              entidad.nombre.includes(this.search.toUpperCase()) ||
+              entidad.nombre.includes(this.search.toLowerCase())
+            );
+          }
         });
         this.displayEntidades = this.lstEntidadesFilter.length > 0;
       } else {
         this.displayEntidades = false;
-        console.log("displayEntidades=false");
       }
-    },
-    cargarTodasEntidades() {
-      PaymentDebts.cargarTodasEntidades()
-        .then((r) => {
-          this.lstEntidades = r.data.result;
-          this.lstEntidadesFilter = this.lstEntidades;
-        })
-        .catch((error) => {
-          this.$message.error(error.message);
-        });
     },
   },
 };
 </script>
-<style scoped>
-* {
-  box-sizing: border-box;
-}
 
-body,
-html {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: orange;
-}
+<style scoped>
 
 .wrapper {
   display: flex;
-  width: 90%;
+  width: 100%;
   justify-content: space-around;
 }
 
 .card {
-  width: 280px;
-  height: 280px;
-  border-radius: 15px;
+  width: 180px;
+  height: 180px;
+  border-radius: 3px;
   padding: 1.5rem;
   background: white;
   position: relative;
   display: flex;
   align-items: flex-end;
   transition: 0.4s ease-out;
-  box-shadow: 0px 7px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
 }
 .card:hover {
   transform: translateY(20px);
@@ -187,7 +213,7 @@ html {
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: 15px;
+  border-radius: 3px;
   background: rgba(0, 0, 0, 0.6);
   z-index: 2;
   transition: 0.5s;
@@ -201,7 +227,7 @@ html {
   position: absolute;
   top: 0;
   left: 0;
-  border-radius: 15px;
+  border-radius: 3px;
 }
 .card .info {
   position: relative;
@@ -223,7 +249,7 @@ html {
   padding: 0.6rem;
   outline: none;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   background: white;
   color: black;
   font-weight: bold;
