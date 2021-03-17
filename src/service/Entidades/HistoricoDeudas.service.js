@@ -15,15 +15,15 @@ export default {
   },
 
   findArchivos(paginacion, fechaInicio, fechaFin, estado) {
-    
-    if (fechaInicio == "Invalid date" || fechaInicio == "null" || fechaInicio==null) {      
+
+    if (fechaInicio == "Invalid date" || fechaInicio == "null" || fechaInicio == null) {
       fechaInicio = moment("01/01/2021", "DD/MM/YYYY");
-    }else{      
+    } else {
       fechaInicio = moment(fechaInicio, "DD/MM/YYYY");
     }
-    if (fechaFin == "Invalid date" || fechaFin == "null" || fechaFin==null) {
+    if (fechaFin == "Invalid date" || fechaFin == "null" || fechaFin == null) {
       fechaFin = moment("01/01/2100", "DD/MM/YYYY");
-    }else{
+    } else {
       fechaFin = moment(fechaFin, "DD/MM/YYYY");
     }
     if (estado == "") {
@@ -36,11 +36,31 @@ export default {
     );
   },
 
-  findDeudasArchivoHistorico(archivoId,paginacion,parametroBusqueda){
+  findDeudasArchivoHistorico(archivoId, paginacion, parametroBusqueda) {
     return Api().get(
       `api/historicoDeuda/groupByDeudasClientes/${archivoId}/${paginacion}/${parametroBusqueda}`,
       this.headersConfig()
     );
+
+  },
+
+  findDominioByDominio() {
+    return Api().get(
+      `api/dominio/findByDominio/tipo_reporte_id`,
+      this.headersConfig()
+    );
+
+  },
+  getEstadoHistoricos() {
+    return Api().get(
+      `api/historicoDeuda/findEstadoHistorico`,
+      this.headersConfig()
+    );
+  },
+
+
+  getRecaudadoresByEntidad() {
+    return Api().get(`api/recaudadores/findRecaudadoresByEntidadId`, this.headersConfig());
 
   }
 };

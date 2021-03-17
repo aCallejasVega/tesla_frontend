@@ -9,6 +9,9 @@ import ReporteDeudasEntidades from "../views/Entidades/ReporteDeudasEntidades";
 import SearchEntidades from '../views/Recaudaciones/SearchEntidades.vue';
 import Debts from '../views/Recaudaciones/Debts.vue';
 import decode from 'jwt-decode';
+import EntidadDeudasCobradasPorArchivo from '../views/Entidades/Reportes/EntidadDeudasCobradasPorArchivo.vue';
+import EntidadReportesDeudasCobradas from '../views/Entidades/Reportes/EntidadReportesDeudasCobradas.vue';
+import RecaudacionReportesDeudasCobradas from '../views/Recaudaciones/Reportes/RecaudacionReportesDeudasCobradas.vue';
 
 Vue.use(VueRouter);
 
@@ -63,6 +66,31 @@ const routes = [
           libre: false
         },
       },
+       {
+        path: "/EntidadDeudasCobradasPorArchivo",
+        name: "EntidadDeudasCobradasPorArchivo",
+        component: EntidadDeudasCobradasPorArchivo,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/EntidadReportesDeudasCobradas",
+        name: "EntidadReportesDeudasCobradas",
+        component: EntidadReportesDeudasCobradas,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/RecaudacionReportesDeudasCobradas",
+        name: "RecaudacionReportesDeudasCobradas",
+        component: RecaudacionReportesDeudasCobradas,
+        meta: {
+          libre: false
+        },
+      },
+      
       {
         path: "/debts/:entidadId/:entidad",
         name: "Debts",
