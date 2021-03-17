@@ -19,7 +19,7 @@ export default {
     return Api().get(`api/entidades/tipos/${tipo}`, this.headersConfig());
   },
   cargarTodasEntidades() {
-    return Api().get(`api/entidades`, this.headersConfig());
+    return Api().get(`api/entidades/recaudadores`, this.headersConfig());
   },
   cargarClientes(entidadId,datoCliente) {
     return Api().get(`api/entidades/${entidadId}/clientes/${datoCliente}`, this.headersConfig());

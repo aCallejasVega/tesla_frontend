@@ -1,182 +1,396 @@
 <template>
   <div>
-    
-    <a-row type="flex" justify="space-around" align="middle">
-      <a-col :span="20">
-        <a-card style="width: 100%">
-         
-          <div v-if="!displayCliente">
-            
-            <!--bBuscar Clientes-->
-            <a-row type="flex" justify="space-around">
-              <a-col :xs="24" :sm="24" :md="12" :lg="12">
-                <h1>Buscar Deudas Clientes en {{ entidad }}</h1>
-              </a-col>
-              <a-col :xs="24" :sm="24" :md="12" :lg="12">
-                <a-input-search
-                  v-model="search"
-                  placeholder="Código, CI/NIT o Nombre "
-                  @keyup="buscar"
-                  @search="buscar"
-                  enter-button="Buscar"
-                  :maxLength=50
-                  size="small"
-                />
-              </a-col>
-              
-            </a-row>
-            <br/>
-            <!--Lista de Clientes-->
-            <a-table
-              :row-selection="rowSelectionC"
-              :columns="columns"
-              :data-source="lstClientes"
-              rowKey="codigoCliente"
-              :locale="{emptyText: 'No existen cliente con parámetro de búsqueda'}"
-              :scroll="{x:350}"
+    <a-card style="width: 100%">
+      <a-page-header
+        style="border: 1px solid rgb(224, 206, 206)"
+        :title="title"
+        @back="$router.back()"
+      />
+      <br />
+      <div v-if="!displayCliente">
+        <!--Buscar Clientes-->
+        <a-row type="flex" justify="end">
+          <a-col :xs="24" :sm="24" :md="18" :lg="18">
+            <a-input-search
+              v-model="search"
+              placeholder="Datos Cliente: Código, CI/NIT o Nombre "
+              @keyup="buscar"
+              @search="buscar"
+              enter-button=" Buscar "
+              :maxLength="15"
               size="small"
-            >
-              <a slot="name" slot-scope="text">{{ text }}</a>
-            </a-table>
-          </div>
-       
-          <!-- Lista de Deudas-->
-          <div v-if="displayCliente">
-            <a-row type="flex" justify="space-around" >
-              <a-col :xs="24" :sm="24" :md="24" :lg="24" align="right">
-                <a-button type="primary" @click="reload" size="small">Nueva Búsqueda</a-button>
-              </a-col>
-            </a-row>
-            <table style="width: 100%; background-color: #f2f0ef;" size="small">
-              <tr>
-                <td><b>Nro. Documento</b></td>
-                <td><a-input v-model="clienteDto.nroDocumento" size="small"/></td>
-                <td><b>Código de Cliente</b></td>
-                <td>{{ clienteDto.codigoCliente }}</td>
-              </tr>
-              <tr>
-                <td><b>Nombre de Cliente</b></td>
-                <td colspan="2"><a-input v-model="clienteDto.nombreCliente" size="small"/></td>
-              </tr>
-            </table>
-            <!--TABLA DE DEUDAS-->
-            <!--
+            />
+          </a-col>
+        </a-row>
+        <br />
+        <!--Lista de Clientes-->
+        <a-table
+          :row-selection="rowSelectionC"
+          :columns="columns"
+          :data-source="lstClientes"
+          rowKey="codigoCliente"
+          :locale="{
+            emptyText: 'No existen cliente con parámetro de búsqueda',
+          }"
+          :scroll="{ x: 350 }"
+          size="small"
+          :pagination="pagination"
+        >
+          <a slot="name" slot-scope="text">{{ text }}</a>
+        </a-table>
+      </div>
+
+      <!-- Lista de Deudas-->
+      <div v-if="displayCliente">
+        <a-row type="flex" justify="space-around">
+          <a-col :xs="24" :sm="24" :md="24" :lg="24" align="right">
+            <a-button type="primary" @click="reload" size="small">
+              Nueva Búsqueda
+            </a-button>
+          </a-col>
+        </a-row>
+        <br />
+        <div class="titulo-tabla">
+          <a-row>
+            <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
+              <b>N° Documento: </b>
+            </a-col>
+            <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:12}" :lg="{span:12}">
+              <a-input v-model="clienteDto.nroDocumento" size="small" :maxLength="13" />
+            </a-col>
+            <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:3}" :lg="{span:3}">
+              <b>Código Cliente: </b>
+            </a-col>
+            <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:3}" :lg="{span:6}">
+              {{ clienteDto.codigoCliente }}
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
+              <b>Nombre Cliente: </b>
+            </a-col>
+            <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:18}" :lg="{span:21}">
+              <a-input v-model="clienteDto.nombreCliente" size="small" :maxLength="200"/>
+            </a-col>
+          </a-row>
+        </div>
+        <!--TABLA DE DEUDAS-->
+        <!--
             {{selectedRowKeys}}
             {{clienteDto.servicioDeudaDtoList}}-->
-           
-           
-            <a-table :columns="columnsA" :data-source="lstServiciosDeudas" bordered 
-            :row-selection="rowSelectionS"
-            :pagination="false"
-            :scroll="{x:350}" >
-              
-              <template slot="key" slot-scope="text, record">
-                <table style="width: 100%; background-color: #f2f0ef"
-                  :scroll="{x:400}">
-                  <tr>
-                    <td><b>Tipo Servicio:</b></td>
-                    <td>{{ record.tipoServicio }}</td>
-                    <td><b>Periodo:</b></td>
-                    <td>{{ record.periodo }}</td>
-                  </tr>
-                  <tr>
-                    <td><b>Servicio</b></td>
-                    <td>{{ record.servicio }}</td>
-                  </tr>
-                </table>
-                <br/>
-                <table style="width: 100%">
-                  <tr>
-                    <th align="center">Cantidad</th>
-                    <th>Concepto</th>
-                    <th class="th-amount">Monto Unit</th>
-                    <th class="th-amount">Monto</th>
-                  </tr>
-                  <tr v-for="(deuda, i) in record.deudaClienteDtos" :key="i">
-                    <td align="center">{{ deuda.cantidad }}</td>
-                    <td>{{ deuda.concepto }}</td>
-                    <td align="right">{{ deuda.montoUnitario }}</td>
-                    <td align="right" v-if="deuda.esPostpago">{{ deuda.subTotal }}</td>
-                    <td align="right" v-if="!deuda.esPostpago">
-                      <a-input v-model="deuda.subTotal" 
-                      align="right" 
-                      defaultValue="0.00" 
-                      type="number"
-                      size="small"
-                      :min="0"
-                      class="ant-iput-cambio"
-                      @keyup="deuda.montoUnitario = deuda.subTotal" 
-                     
-                      />    
-                    </td>
-                  </tr>
-                  <tr style="background: #cc99cc; border-size:1px">
-                    <td></td>
-                    <td></td>
-                    <td align="right"><b>SubTotal</b></td>
-                    <td align="right"><b>{{ sumSubTotal(record) }}</b></td>
-                    
-                  </tr>
-                </table>
-              </template>
-              <template slot="footer">
-                <a-row style="background: #cc99ff">
-                  <a-col align="right">
-                <table style="width: 30%;">
-                <!--  <table style="width: 30%; background: #ffd5b1">-->
-                  <tr>
-                    <td align="right"><b>Total</b></td>
-                    <td style="text-align: right"><b>{{sumTotal}}</b></td> 
-                  </tr>
-                  <tr>
-                    <td align="right"><b>Efectivo</b></td>
-                    <td><a-input v-model="efectivo" align="right" :disabled="!selectedServicio" 
-                    type="number"
-                      size="small"
-                      :min="0"
-                      defaultValue="0.00"
-                      class="ant-iput-cambio"
-                      /></td>
-                  </tr>
-                  <tr>
-                    <td align="right"><b>Cambio</b></td>
-                    <td align="right"><b>{{cambio}}</b></td>
-                  </tr>
-                </table>
-                  </a-col>
-                </a-row>
-              </template>
-            </a-table>
-            
-            <!--SECTOR BOTONES-->
-            <br/>
-            <div v-if="clienteDto.servicioDeudaDtoList.length > 0">
-            <template class="ant-card-actions">
-              <a-row type="flex" justify="space-around">
-                <a-col>
-                  <a-popconfirm title="¿Esta seguro de Cobrar las deudas seleccionadas?"
-                    ok-text="Si"
-                    cancel-text="No"
-                    @confirm="confirm"
-                    @cancel="cancel">
-                    <a-button type="primary"> Cobrar </a-button> 
-                  </a-popconfirm>  
+        <a-table
+          :columns="columnsA"
+          :data-source="lstServiciosDeudas"
+          bordered
+          :row-selection="rowSelectionS"
+          :pagination="false"
+          :scroll="{ x: 350 }"
+          :loading="loading"
+        >
+          <template slot="key" slot-scope="text, record">
+            <div class="grupo-tabla">
+              <a-row>
+                <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
+                  <b>Tipo Servicio:</b>
+                </a-col>
+                <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:12}" :lg="{span:12}">
+                  {{ record.tipoServicio }}
+                </a-col>
+                <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:3}" :lg="{span:3}">
+                  <b>Período:</b>
+                </a-col>
+                <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:3}" :lg="{span:6}">
+                  {{ record.periodo }}
                 </a-col>
               </a-row>
-              </template>   
+              <a-row>
+                <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
+                  <b>Servicio:</b>
+                </a-col>
+                <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:18}" :lg="{span:21}">
+                  {{ record.servicio }}
+                </a-col>
+              </a-row>
             </div>
-          </div>
-        </a-card>
-      </a-col>
-    </a-row>
+
+            <br />
+            <table style="tabla">
+              <tr>
+                <th align="rigth" style="width: 10%">Cantidad</th>
+                <th style="width: 50%">Concepto</th>
+                <th class="th-amount">Monto Unit. (Bs)</th>
+                <th class="th-amount">Monto (Bs)</th>
+                <th style="width: 5px"></th>
+              </tr>
+              <tr v-for="(deuda, i) in record.deudaClienteDtos" :key="i">
+                <td align="center">{{ deuda.cantidad }}</td>
+                <td>{{ deuda.concepto }}</td>
+                <td align="right">
+                  <money
+                    v-model="deuda.montoUnitario"
+                    v-bind="money"
+                    :disabled="true"
+                    class="ant-input"
+                    size="small"
+                  ></money>
+                </td>
+
+                <!-- Mostrando Botones de edicion y resteo-->
+                <td align="right" v-if="deuda.editable && record.editando">
+                  <!-- OJO Sin Botones de edicion y resteo, habilitando los campos con prepago y subtotal=0>
+                <td align="right" v-if="deuda.editable>  -->
+                  <money
+                    v-model="deuda.subTotal"
+                    v-bind="money"
+                    @keydown.native="
+                      $event.key === '-' ? $event.preventDefault() : null
+                    "
+                    @keyup.native="sumSubTotal(record, deuda)"
+                    class="input-amount"
+                  ></money>
+                </td>
+                <td align="right" v-else>
+                  <money
+                    v-model="deuda.subTotal"
+                    v-bind="money"
+                    :disabled="true"
+                    class="ant-input"
+                    max="4"
+                  ></money>
+                </td>
+                <td>
+                  <span v-if="deuda.subTotal == 0" style="color: red">*</span>
+                </td>
+              </tr>
+              <tr class="subgrupo-tabla">
+                <td></td>
+                <td>
+                  <div align="right" v-if="record.editable">
+                    <a-button
+                      type="default"
+                      @click="record.editando = true"
+                      size="small"
+                    >
+                      Editar
+                    </a-button>
+                    <a-button
+                      type="default"
+                      @click="resetear(record)"
+                      size="small"
+                    >
+                      Resetear
+                    </a-button>
+                  </div>
+                </td>
+                <td align="right"><b>Sub Total (Bs)</b></td>
+                <td align="right">
+                  <money
+                    v-model="record.subTotal"
+                    v-bind="money"
+                    :disabled="true"
+                    class="ant-input"
+                  ></money>
+                </td>
+              </tr>
+            </table>
+          </template>
+          <template slot="footer">
+            <div class="grupo-tabla">
+              <a-row>
+                <a-col span="15" align="right">
+                  <b>Total (Bs)</b>
+                </a-col>
+                <a-col span="9">
+                  <money
+                    v-model="sumTotal"
+                    v-bind="money"
+                    class="ant-input"
+                    :disabled="true"
+                  ></money>
+                </a-col>
+              </a-row>
+              <a-row>
+                <a-col span="15" align="right">
+                  <b>Efectivo (Bs)</b>
+                </a-col>
+                <a-col span="9">
+                  <money
+                    v-model="efectivo"
+                    v-bind="money"
+                    class="input-amount"
+                    :disabled="!selectedRowKeys.length > 0"
+                    @keydown.native="
+                      $event.key === '-' ? $event.preventDefault() : null
+                    "
+                  ></money>
+                </a-col>
+              </a-row>
+              <a-row>
+                <a-col span="15" align="right">
+                  <b>Cambio (Bs)</b>
+                </a-col>
+                <a-col span="9">
+                  <money
+                    v-model="cambio"
+                    v-bind="money"
+                    class="ant-input"
+                    :disabled="true"
+                  ></money>
+                </a-col>
+              </a-row>
+            </div>
+          </template>
+        </a-table>
+      </div>
+      <template slot="actions" class="ant-card-actions">
+        <a-tooltip placement="top" title="Registra cobro de deudas">
+          <a-button
+            type="link"
+            :disabled="!selectedRowKeys.length > 0"
+            @click="confirmCobro"
+          >
+            Cobrar
+          </a-button>
+        </a-tooltip>
+      </template>
+      <!--Confirmación Modal de Cobro-->
+      <a-modal
+        v-model="displayModal"
+        title="Confirmación Cobro Deudas"
+        ok-text="Cobrar"
+        cancel-text="Cancelar"
+        @ok="cobrarDeudas"
+        width="80%"
+        :centered="true"
+        :closable="false"
+        :maskClosable="false"
+      >
+        <p> <a-icon type="question-circle" theme="twoTone" two-tone-color="#FAAD14" :style="{ fontSize: '2em' }"/>
+        ¿Está seguro de cobrar las deudas seleccionadas? (Comprobante {{entidadObj.comprobanteEnUno ? 'En Uno' : 'Por Transacción'}})</p>
+        <br/>
+        <div class="titulo-tabla">
+          <a-row>
+            <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
+              <b>N° Documento: </b>
+            </a-col>
+            <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:6}" :lg="{span:6}">
+              {{clienteDto.nroDocumento}}
+            </a-col>
+            <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:5}">
+              <b>Nombre Cliente: </b>
+            </a-col>
+            <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:6}" :lg="{span:10}">
+              {{clienteDto.nombreCliente}}
+            </a-col>
+          </a-row>
+        </div>
+        </a-row>
+        <a-table
+          :columns="columnsA"
+          :data-source="clienteDto.servicioDeudaDtoList"
+          bordered
+          :pagination="false"
+          :scroll="{ x: 350 }"
+          size="small"
+        >
+          <template slot="key" slot-scope="text, record">
+            <div class="grupo-tabla">
+              <a-row>
+                <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
+                  <b>Tipo Servicio:</b>
+                </a-col>
+                <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:12}" :lg="{span:12}">
+                  {{ record.tipoServicio }}
+                </a-col>
+                <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:3}" :lg="{span:3}">
+                  <b>Período:</b>
+                </a-col>
+                <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:3}" :lg="{span:6}">
+                  {{ record.periodo }}
+                </a-col>
+              </a-row>
+              <a-row>
+                <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
+                  <b>Servicio:</b>
+                </a-col>
+                <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:18}" :lg="{span:21}">
+                  {{ record.servicio }}
+                </a-col>
+              </a-row>
+            </div>
+            <br />
+            <table style="tabla">
+              <tr>
+                <th align="rigth" style="width: 10%">Cantidad</th>
+                <th style="width: 50%">Concepto</th>
+                <th class="th-amount">Monto Unit. (Bs)</th>
+                <th class="th-amount">Monto (Bs)</th>
+              </tr>
+              <tr v-for="(deuda, i) in record.deudaClienteDtos" :key="i">
+                <td align="center">{{ deuda.cantidad }}</td>
+                <td>{{ deuda.concepto }}</td>
+                <td align="right">
+                  <money
+                    v-model="deuda.montoUnitario"
+                    v-bind="money"
+                    :disabled="true"
+                    class="ant-input"
+                    size="small"
+                  ></money>
+                </td>
+                <td align="right">
+                  <money
+                    v-model="deuda.subTotal"
+                    v-bind="money"
+                    :disabled="true"
+                    class="ant-input"
+                    max="4"
+                  ></money>
+                </td>
+              </tr>
+              <tr class="subgrupo-tabla">
+                <td><b>{{record.plantilla}}</b></td>
+                <td></td>
+                <td align="right"><b>Sub Total (Bs)</b></td>
+                <td align="right">
+                  <money
+                    v-model="record.subTotal"
+                    v-bind="money"
+                    :disabled="true"
+                    class="ant-input"
+                  ></money>
+                </td>
+              </tr>
+            </table>
+          </template>
+          <template slot="footer">
+            <div class="grupo-tabla">
+              <a-row>
+                <a-col span="15" align="right">
+                  <b>Total (Bs)</b>
+                </a-col>
+                <a-col span="9">
+                  <money
+                    v-model="sumTotal"
+                    v-bind="money"
+                    class="ant-input"
+                    :disabled="true"
+                  ></money>
+                </a-col>
+              </a-row>
+            </div>
+          </template>
+        </a-table>
+
+      </a-modal>
+    </a-card>
   </div>
 </template>
 
-
-
-
 <script>
 import PaymentDebts from "../../service/Recaudaciones/PaymentDebts.service";
+import Entidades from "../../service/Administraciones/Entidad.service";
+import { Money } from "v-money";
 //TABLA CLIENTES
 const columns = [
   { title: "Código Cliente", dataIndex: "codigoCliente", key: "codigoCliente" },
@@ -194,36 +408,54 @@ const columnsA = [
 ];
 
 export default {
+  components: { Money },
   data() {
     return {
       //BÚSQUEDA DE CLIENTE
-      entidadId: null,
-      entidad: null,
-      search: null,
+      search: "",
       form: null,
       lstClientes: [],
       columns,
+
+      //DATOS DE ENTIDAD
+      entidadId: null,
+      entidadObj: {},
+      title: "Deudas Clientes",
 
       //DATOS DE CLIENTE
       displayCliente: false,
       clienteDto: {},
       formC: null,
+      pagination: {
+        pageSize: 10,
+      },
 
       //TABLA SERVICIODEUDAS
       lstServiciosDeudas: [],
       columnsA,
       sumTotal: 0,
       efectivo: 0,
-      selectedServicio: false,
       selectedRowKeys: [],
+      loading: false,
 
-      
+      //MONTOS
+      money: {
+        decimal: ".",
+        thousands: ",",
+        //prefix: 'Bs ',
+        precision: 2,
+        masked: false,
+        maxlength: 17,
+      },
+
+      /**Visualizacion */
+      displayEdition: false,
+      displayModal: false,
     };
   },
   created() {
     this.entidadId = this.$route.params.entidadId;
-    this.entidad= this.$route.params.entidad;
-    console.log('create')
+    this.cargarEntidad(this.entidadId);
   },
   computed: {
     rowSelectionC() {
@@ -233,7 +465,7 @@ export default {
           console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             "selectedRows: ",
-            selectedRows,
+            selectedRows
           );
           this.displayCliente = true;
           this.clienteDto = {
@@ -268,10 +500,11 @@ export default {
             return tot + current.subTotal;
           }, 0);
           //control de cambio
-          this.selectedServicio = selected;
+          this.efectivo = selected ? this.efectivo : 0;
+
           //asignar deudas seleccionadas
           this.clienteDto.servicioDeudaDtoList = selectedRows;
-          console.log(JSON.stringify(this.clienteDto)); 
+          console.log(JSON.stringify(this.clienteDto));
         },
         onSelectAll: (selected, selectedRows, changeRows) => {
           console.log("onSelectAll");
@@ -282,170 +515,283 @@ export default {
             return tot + current.subTotal;
           }, 0);
           //control de cambio
-          this.selectedServicio = selected;
+          this.efectivo = selected ? this.efectivo : 0;
+
           //asignar deudas seleccionadas
           this.clienteDto.servicioDeudaDtoList = selectedRows;
           console.log(JSON.stringify(this.clienteDto));
         },
-        
       };
-      
     },
-    cambio() {
-      let vFormateado = this.efectivo > 0 ? -1 * (this.sumTotal - this.efectivo) : 0;
-      return Number(vFormateado).toFixed(2)
+    cambio: {
+      get: function () {
+        let vFormateado =
+          this.efectivo > 0 ? -1 * (this.sumTotal - this.efectivo) : 0;
+        return Number(vFormateado).toFixed(2);
+      },
+      set: function () {
+        0;
+      },
     },
-
-   
   },
   watch: {
     "clienteDto.servicioDeudaDtoList": {
-        handler: function(val, oldVal) {
-          
-          this.sumTotal = 0
-          this.sumTotal = this.sumTotal + val.reduce((tot, current) => {
+      handler: function (val, oldVal) {
+        this.sumTotal = 0;
+        this.sumTotal =
+          this.sumTotal +
+          val.reduce((tot, current) => {
             return tot + current.subTotal;
           }, 0);
-        },
-        deep: true
-    }
-    
-
+      },
+      deep: true,
+    },
   },
 
   methods: {
-    
+  /********ENTIDADES***********/
+  cargarEntidad(entidadId) {
+    Entidades.getEntidad(entidadId).then((r) => {
+        this.entidadObj = r.data.result;
+        this.title = this.entidadObj.nombre + ": Deudas Clientes";
+      }).catch((error) => {
+          console.log(error);
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
+      });
+    },
 
-   
     /*********************************************** 
     BUSQUEDA DE CLIENTE
     ************************************************/
     cargarClientes(dato) {
-      
       PaymentDebts.cargarClientes(this.entidadId, dato)
         .then((r) => {
-          console.log(r)
-          if(r.status == 200) { 
-            this.lstClientes = r.data.result;
-          } else {
-            this.$message.error("No existen deudas para el cliente ingresado");
+          console.log(r);
+          if (r.status === 204) {
+            this.lstClientes = [];
+            this.$notification.warning(
+              "No existen cliente con parámetro de búsqueda: " + dato + "."
+            );
             return;
-          } 
-          
+          }
+
+          this.lstClientes = r.data.result;
         })
         .catch((error) => {
-          this.$message.error(error.response.data.message);
+          this.lstClientes = [];
+          this.$notification.error(error.response.data.message,error.response.data.code);
         });
     },
     buscar() {
-      if(this.search.length > 0) {
-        this.cargarClientes(this.search)
+      if (this.search.length > 0) {
+        this.cargarClientes(this.search);
+      } else {
+        this.lstClientes = [];
       }
-      else {
-        this.lstClientes = []
-      }
-
       //Restrablecer valores iniciales
       this.displayCliente = false;
       this.inicializar();
     },
-
 
     /*********************************************** 
     SERVICIOS DEUDAS
     ************************************************/
     inicializar() {
       this.selectedRowKeys = [];
-      this.sumTotal = 0//Number(0).toFixed(2);
-      this.selectedServicio = false;
-      this.efectivo = 0//Number(0).toFixed(2);
-      this.selectedRowsArray = [];
+      this.sumTotal = 0; 
+      this.efectivo = 0; 
     },
     cargarServicioDeudas() {
-      PaymentDebts.cargarServicioDeudas(this.entidadId, this.clienteDto.codigoCliente)
+      this.$Progress.start();
+      PaymentDebts.cargarServicioDeudas(
+        this.entidadId,
+        this.clienteDto.codigoCliente
+      )
         .then((r) => {
+          if (r.status === 204) {
+            this.$notification.warning(
+              "No existe registro de deudas para el cliente seleccionado"
+            );
+            this.lstServiciosDeudas = [];    
+            this.loading = false;
+            this.$Progress.finish();
+            return;
+          }
+
           this.lstServiciosDeudas = r.data.result;
+          this.loading = false;
           console.log(JSON.stringify(this.lstServiciosDeudas));
+          //this.$notification.success(r.data.message);
+          this.$Progress.finish();
         })
         .catch((error) => {
-          this.$message.error(error.response.data.message);
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
+          this.lstServiciosDeudas = [];
+          this.loading = false;
+          this.$Progress.fail();
         });
     },
-    /*montoPrepago(deuda) {
-      if(deuda.cantidad != null && deuda.montoUnitario != null ) {
-        deuda.subTotal = deuda.cantidad * deuda.montoUnitario;
+    sumSubTotal(record, deuda) {
+      //debe ser solo de campos editables
+      if (deuda.subTotal < 0 && deuda.editable) {
+        console.log("negat");
+        deuda.subTotal = 0;
       }
-     
-      return deuda.subTotal; 
-    },
-*/
-    sumSubTotal(record) {
-        record.subTotal = record.deudaClienteDtos.reduce((sum, item) => 
-        sum + Number(item.subTotal), 0);
-        return record.subTotal;
+      deuda.montoUnitario = deuda.subTotal;
+      record.subTotal = record.deudaClienteDtos.reduce(
+        (sum, item) => sum + Number(item.subTotal),
+        0
+      );
+      return record.subTotal;
     },
 
-    /*********************************************** 
-    COBROS DEUDAS
-    ************************************************/
-    verificarMontoPrepago(lst) {
-      for(var i in lst) {
-        for(var j in lst[i].deudaClienteDtos) {
-          console.log(lst[i].deudaClienteDtos[j].subTotal)
-          if(lst[i].deudaClienteDtos[j].subTotal == null || lst[i].deudaClienteDtos[j].subTotal == '' || lst[i].deudaClienteDtos[j].subTotal == 0)
-            return false;
+    /************************************************/
+    //COBROS DEUDAS
+    //************************************************/
+    verificarMontoPrepago(lstServiciosDeudas) {
+      for (var i in lstServiciosDeudas) {
+        for (var j in lstServiciosDeudas[i].deudaClienteDtos) {
+          if (lstServiciosDeudas[i].deudaClienteDtos[j].editable) {
+            if (
+              lstServiciosDeudas[i].deudaClienteDtos[j].subTotal == null ||
+              lstServiciosDeudas[i].deudaClienteDtos[j].subTotal == "" ||
+              lstServiciosDeudas[i].deudaClienteDtos[j].subTotal == 0
+            )
+              return false;
+            else return true;
+          }
         }
-       
       }
       return true;
     },
-    confirm(e) {
-      this.cobrarDeudas();
-    },
-    cancel(e) {
-      this.$message.warning('Proceda a modificar el cobro')
-    },
-    cobrarDeudas() {
-      console.log(JSON.stringify(this.clienteDto.servicioDeudaDtoList));
-      if(this.verificarMontoPrepago(this.clienteDto.servicioDeudaDtoList)) {
-        PaymentDebts.cobrarDeudas(this.clienteDto, 5)
-          .then((r) => {
-            console.log(r);
-            this.$message.success(r.data.message);
-            //debe actualizar las deudas
-            this.cargarServicioDeudas();
-            this.inicializar();
-          })
-          .catch((error) => {
-            console.log(error)
-            this.$message.error(error.response.data.message + '\n. Código de error: ' + error.response.data.code );
-          });
-      } else {
-        this.$message.warning('Para el caso de prepagos debe llenar el monto correspondiente, por favor verifique');
+    confirmCobro() {
+      console.log(this.clienteDto.nombreCliente);
+      console.log(this.clienteDto.nroDocumento);
+      if(this.clienteDto.nombreCliente === null || this.clienteDto.nroDocumento === null) {
+        this.$notification.warning("Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO.");  
+        this.displayModal = false;
+        return;
       }
+
+      if(this.clienteDto.nombreCliente.trim() === '' || this.clienteDto.nroDocumento.trim() === '') {
+        this.$notification.warning("Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO.");  
+        this.displayModal = false;
+        return;
+      }
+      //this.cobrarDeudas();
+      this.displayModal = true;
     },
-    reload() {
-      location.reload()
+    cancelCobro(e) {
+      this.$notificarion.warning("Ha cancelado el Cobro, puede proceder a modificar.");
     },
-    /*existeDeudaPrepago(lst) {
-      return lst.some((el) => {
-          return !el.esPostpago && (el.montoUnitario !== null || el.montoUnitario !== '' || el.montoUnitario !== 0)
+    cobrarDeudas(e) {
+      if (!this.verificarMontoPrepago(this.clienteDto.servicioDeudaDtoList)) {
+        //this.displayModal = false;
+        this.$notification.warning("Para el caso de prepagos debe llenar el monto correspondiente, por favor verifique.");
+        this.displayModal = false;
+        return;
+      }
+
+      this.$Progress.start();
+      PaymentDebts.cobrarDeudas(this.clienteDto, 5) //Debe ser Ctte = 5
+        .then((r) => {
+          console.log(r);
+          this.$notification.success(r.data.message);
+          //debe actualizar las deudas
+          this.cargarServicioDeudas();
+          this.inicializar();
+          this.displayModal = false;
+
+          this.$Progress.finish();
         })
-    }*/
-    
+        .catch((error) => {
+          console.log(error);
+          this.displayModal = false;
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
+          this.$Progress.fail();
+        });
+        
+    },
+    /*******************************************
+     * Otros
+     *******************************************/
+    reload() {
+      location.reload();
+    },
+    resetear(record) {
+      record.editando = false;
+      record.deudaClienteDtos.forEach((deuda) => {
+        if (deuda.editable) {
+          deuda.subTotal = 0;
+          deuda.montoUnitario = 0;
+        }
+        this.sumSubTotal(record, deuda);
+      });
+    },
   },
-  
 };
 </script>
 
 <style scoped>
-  .th-amount {
-    text-align: right;
-  }
-  .ant-table-body {
-    overflow-x: auto !important;
-  }
-  .ant-iput-cambio {
-    text-align: right;
-  }
+.th-amount {
+  text-align: right;
+}
+.ant-table-body {
+  overflow-x: auto !important;
+}
+
+.input-amount {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-variant: tabular-nums;
+  list-style: none;
+  font-feature-settings: "tnum";
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  transition: all 0.3s;
+  height: 24px;
+  padding: 1px 7px;
+  text-align: right;
+}
+
+.ant-input[disabled] {
+  color: rgba(0, 0, 0, 0.65);
+  background-color: rgb(238, 235, 238);
+  text-align: right;
+  height: 24px;
+  padding: 1px 7px;
+}
+
+.titulo-tabla {
+  width: 100%;
+  background-color: #593d56;
+  color: white;
+}
+.grupo-tabla {
+  width: 100%;
+  background-color: #7e687d;
+  color: white;
+}
+.subgrupo-tabla {
+  background: #ded8da; 
+  border: 1px;
+}
 </style>

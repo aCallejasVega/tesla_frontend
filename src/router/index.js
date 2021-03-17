@@ -8,10 +8,15 @@ import HistoricoDeudasDetalle from "../views/Entidades/HistoricoDeudasDetalle";
 import ReporteDeudasEntidades from "../views/Entidades/ReporteDeudasEntidades";
 import SearchEntidades from '../views/Recaudaciones/SearchEntidades.vue';
 import Debts from '../views/Recaudaciones/Debts.vue';
+import AbmEntidades from '../views/Administracion/AbmEntidades.vue';
+import AbmSucursalesEntidades from '../views/Administracion/AbmSucursaleseEntidades.vue';
+import AbmRecaudadores from '../views/Administracion/AbmRecaudadores.vue';
 import decode from 'jwt-decode';
 import EntidadDeudasCobradasPorArchivo from '../views/Entidades/Reportes/EntidadDeudasCobradasPorArchivo.vue';
 import EntidadReportesDeudasCobradas from '../views/Entidades/Reportes/EntidadReportesDeudasCobradas.vue';
 import RecaudacionReportesDeudasCobradas from '../views/Recaudaciones/Reportes/RecaudacionReportesDeudasCobradas.vue';
+import AbmSucursales from '../views/Administracion/AbmSucursales.vue';
+
 
 Vue.use(VueRouter);
 
@@ -92,13 +97,46 @@ const routes = [
       },
       
       {
-        path: "/debts/:entidadId/:entidad",
+        path: "/debts/:entidadId",
         name: "Debts",
         component: Debts,
         meta: {
           libre: false
         }
-      }
+      },
+      {
+        path: "/AbmEntidades",
+        name: "AbmEntidades",
+        component: AbmEntidades,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/sucursalesentidades/:entidadId",
+        name: "AbmSucursalesEntidades",
+        component: AbmSucursalesEntidades,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/AbmRecaudadores",
+        name: "AbmRecaudadores",
+        component: AbmRecaudadores,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/sucursales/:recaudadorId",
+        name: "AbmSucursales",
+        component: AbmSucursales,
+        meta: {
+          libre: false
+        }
+      },
+      
     ]
   },
   {
