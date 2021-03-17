@@ -13,20 +13,23 @@ export default {
     return configuracion;
   },
   getSucursalEntidad(sucursalEntidadId) {
-    return Api().get(`api/adm/entidadessucursales/${sucursalEntidadId}`, this.headersConfig());
+    return Api().get(`api/sucursalesentidades/${sucursalEntidadId}`, this.headersConfig());
   },
-  getLstSucursalEntidad() {
-    return Api().get(`api/adm/sucursalesentidades`, this.headersConfig());
+  getlstSucursalesEntidades() {
+    return Api().get(`api/sucursalesentidades`, this.headersConfig());
   },
   getLstSucursalEntidadByEntidadId(entidadId) {
-    return Api().get(`api/adm/sucursalesentidades/entidades/${entidadId}`, this.headersConfig());
+    return Api().get(`api/sucursalesentidades/entidades/${entidadId}`, this.headersConfig());
   },
   postSucursalEntidad(sucursalEntidadObj) {
     console.log(JSON.stringify(sucursalEntidadObj))
-    return Api().post(`api/adm/sucursalesentidades`, sucursalEntidadObj, this.headersConfig());
+    return Api().post(`api/sucursalesentidades`, sucursalEntidadObj, this.headersConfig());
   },
   putSucursalEntidadTransaccion(sucursalEntidadId, transaccion) {
-    return Api().put(`api/adm/sucursalesentidades/${sucursalEntidadId}/${transaccion}`, {}, this.headersConfig());
+    return Api().put(`api/sucursalesentidades/${sucursalEntidadId}/${transaccion}`, {}, this.headersConfig());
+  },
+  putLstSucursalEntidadTransaccion(sucursaEntidadlIdLst, transaccion) {
+    return Api().put(`api/sucursalesentidades/listas/${transaccion}`, sucursaEntidadlIdLst, this.headersConfig());
   },
   
 };

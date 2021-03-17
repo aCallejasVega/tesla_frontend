@@ -243,13 +243,15 @@
         </a-table>
       </div>
       <template slot="actions" class="ant-card-actions">
-        <a-button
-          type="link"
-          :disabled="!selectedRowKeys.length > 0"
-          @click="displayModal = true"
-        >
-          Cobrar
-        </a-button>
+        <a-tooltip placement="top" title="Registra cobro de deudas">
+          <a-button
+            type="link"
+            :disabled="!selectedRowKeys.length > 0"
+            @click="confirmCobro"
+          >
+            Cobrar
+          </a-button>
+        </a-tooltip>
       </template>
       <!--Confirmación Modal de Cobro-->
       <a-modal
@@ -257,7 +259,7 @@
         title="Confirmación Cobro Deudas"
         ok-text="Cobrar"
         cancel-text="Cancelar"
-        @ok="confirmCobro()"
+        @ok="cobrarDeudas"
         width="80%"
         :centered="true"
         :closable="false"
@@ -577,7 +579,6 @@ export default {
           }
 
           this.lstClientes = r.data.result;
-          console.log(this.lstClientes.length);
         })
         .catch((error) => {
           this.lstClientes = [];
@@ -604,6 +605,7 @@ export default {
       this.efectivo = 0; 
     },
     cargarServicioDeudas() {
+      this.$Progress.start();
       PaymentDebts.cargarServicioDeudas(
         this.entidadId,
         this.clienteDto.codigoCliente
@@ -615,6 +617,7 @@ export default {
             );
             this.lstServiciosDeudas = [];    
             this.loading = false;
+            this.$Progress.finish();
             return;
           }
 
@@ -622,6 +625,7 @@ export default {
           this.loading = false;
           console.log(JSON.stringify(this.lstServiciosDeudas));
           //this.$notification.success(r.data.message);
+          this.$Progress.finish();
         })
         .catch((error) => {
           this.$notification.error(
@@ -630,6 +634,7 @@ export default {
           );
           this.lstServiciosDeudas = [];
           this.loading = false;
+          this.$Progress.fail();
         });
     },
     sumSubTotal(record, deuda) {
@@ -665,21 +670,27 @@ export default {
       }
       return true;
     },
-    confirmCobro(e) {
-      this.cobrarDeudas();
+    confirmCobro() {
+      console.log(this.clienteDto.nombreCliente);
+      console.log(this.clienteDto.nroDocumento);
+      if(this.clienteDto.nombreCliente === null || this.clienteDto.nroDocumento === null) {
+        this.$notification.warning("Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO.");  
+        this.displayModal = false;
+        return;
+      }
+
+      if(this.clienteDto.nombreCliente.trim() === '' || this.clienteDto.nroDocumento.trim() === '') {
+        this.$notification.warning("Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO.");  
+        this.displayModal = false;
+        return;
+      }
+      //this.cobrarDeudas();
+      this.displayModal = true;
     },
     cancelCobro(e) {
       this.$notificarion.warning("Ha cancelado el Cobro, puede proceder a modificar.");
     },
-    cobrarDeudas() {
-      console.log(JSON.stringify(this.clienteDto.servicioDeudaDtoList));
-      if(this.clienteDto.nombreCliente.trim() === '' || this.clienteDto.nombreCliente === null ||
-        this.clienteDto.nroDocumento.trim() === '' || this.clienteDto.nroDocumento === null) {
-          this.$notification.warning("Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO.");  
-          this.displayModal = false;
-          return;
-      }
-
+    cobrarDeudas(e) {
       if (!this.verificarMontoPrepago(this.clienteDto.servicioDeudaDtoList)) {
         //this.displayModal = false;
         this.$notification.warning("Para el caso de prepagos debe llenar el monto correspondiente, por favor verifique.");
@@ -687,6 +698,7 @@ export default {
         return;
       }
 
+      this.$Progress.start();
       PaymentDebts.cobrarDeudas(this.clienteDto, 5) //Debe ser Ctte = 5
         .then((r) => {
           console.log(r);
@@ -695,6 +707,8 @@ export default {
           this.cargarServicioDeudas();
           this.inicializar();
           this.displayModal = false;
+
+          this.$Progress.finish();
         })
         .catch((error) => {
           console.log(error);
@@ -703,6 +717,7 @@ export default {
             error.response.data.message,
             error.response.data.code
           );
+          this.$Progress.fail();
         });
         
     },

@@ -13,23 +13,29 @@ export default {
     return configuracion;
   },
   getEntidad(entidadId) {
-    return Api().get(`api/adm/entidades/${entidadId}`, this.headersConfig());
+    return Api().get(`api/entidades/${entidadId}`, this.headersConfig());
   },
   getLstEntidad() {
-    return Api().get(`api/adm/entidades`, this.headersConfig());
+    return Api().get(`api/entidades`, this.headersConfig());
   },
   postEntidad(entidadObj) {
-    console.log(JSON.stringify(entidadObj))
-    return Api().post(`api/adm/entidades`, entidadObj, this.headersConfig());
+    return Api().post(`api/entidades`, entidadObj, this.headersConfig());
   },
   putEntidadTransaccion(entidadId, transaccion) {
-    return Api().put(`api/adm/entidades/${entidadId}/${transaccion}`, {}, this.headersConfig());
+    return Api().put(`api/entidades/${entidadId}/${transaccion}`, {}, this.headersConfig());
   },
   putLstEntidadTransaccion(entidadIdLst, transaccion) {
-    return Api().put(`api/adm/entidades/listas/${transaccion}`, entidadIdLst, this.headersConfig());
+    return Api().put(`api/entidades/listas/${transaccion}`, entidadIdLst, this.headersConfig());
   },
   
-
+  //Recaudadores
+  postEntidadRecaudador(recaudadorIdList, entidadId){
+    return Api().post(`api/entidadesrecaudadores/entidades/${entidadId}`, recaudadorIdList, this.headersConfig());
+  }, 
+  //Flie
+  postLogo(file, entidadId) {
+    return Api().post(`api/entidades/upload/${entidadId}`, {file}, this.headersConfig());
+  },
   
   
 };

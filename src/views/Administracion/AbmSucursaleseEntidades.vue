@@ -1,9 +1,12 @@
+
+
 <template>
   <div>
     <a-card v-if="!displayForm" style="width: 100%">
       <a-page-header
         style="border: 1px solid rgb(224,206,206)"
-        title="Administración de Registro de Recaudadores"
+        title="Administración de Registro de Sucursales por Entidad"
+        @back="$router.back()"
       />
     </a-card>
     <a-card v-if="!displayForm" style="width: 100%">
@@ -18,12 +21,12 @@
       </template>
     </a-card>
     <a-card v-if="!displayForm" style="width: 100%">
-      <!--LISTADO DE RECAUDADORES-->
+      <!--LISTADO DE SUCURSALES-->
       <a-table
         :row-selection="rowSelection"
         :columns="columns"
-        :data-source="lstRecaudadores"
-        rowKey="recaudadorId"
+        :data-source="lstSucursalesEntidades"
+        rowKey="sucursalEntidadId"
         :pagination="pagination"
         :scroll="{ x: 1500 }"
       >      
@@ -46,58 +49,39 @@
             </a-tag>
           </div>
         </template>
-        <template slot="opciones" slot-scope="text, record" v-if="record.estado == 'ACTIVO' || record.estado == 'CREADO'">
-            <a href="javascript:;" @click="mostrarSucursal(record.recaudadorId)">Sucursales</a>
-            <br/>
-            <a href="javascript:;" @click="openModal(record.recaudadorId)">Entidades</a>
-        </template>
       </a-table>
     </a-card>
     <a-card v-if="displayForm">
       <a-page-header
         style="border: 1px solid rgb(224,206,206)"
-        title="Administración de Recaudadoras"
+        title="Administración de Sucursales por Entidad"
         :sub-title="subTitle"
         @back="() => volverListado()"
       />
       <br/>
-      <!--LISTADO DE RECAUDADORES-->
+      <!--LISTADO DE SUCURSALES-->
       <a-form-model
         ref="ruleForm"
-        :model="recaudadorObj"
+        :model="sucursalEntidadObj"
         :rules="rules"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
         size="small"
       >
-        <a-form-model-item ref="nombre" label="Nombre Recaudador" prop="nombre">
+        <a-form-model-item ref="nombreSucursal" label="Nombre Sucursal" prop="nombreSucursal">
           <a-input
-            v-model="recaudadorObj.nombre"
+            v-model="sucursalEntidadObj.nombreSucursal"
             @blur="
               () => {
-                $refs.nombre.onFieldBlur();
+                $refs.nombreSucursal.onFieldBlur();
               }
             "
             :maxLength="250"
           />
         </a-form-model-item>
-        <a-form-model-item label="Tipo Recaudador" prop="tipoRecaudadorId">
-          <a-select
-            v-model="recaudadorObj.tipoRecaudadorId"
-            placeholder="Seleccione Tipo Recaudador"
-          >
-            <a-select-option
-              v-for="(item, i) in lstTipoRecaudadores"
-              :key="i"
-              :value="item.dominioId"
-            >
-              {{ item.descripcion }}
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
         <a-form-model-item ref="direccion" label="Dirección" prop="direccion">
           <a-input
-            v-model="recaudadorObj.direccion"
+            v-model="sucursalEntidadObj.direccion"
             @blur="
               () => {
                 $refs.direccion.onFieldBlur();
@@ -108,7 +92,7 @@
         </a-form-model-item>
         <a-form-model-item ref="telefono" label="Teléfono" prop="telefono">
           <a-input
-            v-model="recaudadorObj.telefono"
+            v-model="sucursalEntidadObj.telefono"
             @blur="
               () => {
                 $refs.telefono.onFieldBlur();
@@ -117,74 +101,23 @@
             :maxLength="10"
           />
         </a-form-model-item>
-        <a-form-model-item label="Entidades Habilitadas" v-if="recaudadorObj.recaudadorId == null">
-          <a-select
-            mode="multiple"
-            v-model="recaudadorObj.entidadIdLst"
-            style="width: 100%"
-            placeholder="Seleccione las Recaudadoras"
-          >
-            <a-select-option v-for="(item) in lstEntidades"
-              :key="item.entidadId">
-              {{item.nombre}}
-            </a-select-option>
-          </a-select>
-           <a-button type="primary" @click="abrirEntidad"> Nueva Empresa 
-          </a-button>
-        </a-form-model-item>
       </a-form-model>
       <template slot="actions" class="ant-card-actions">
          <a-button type="link" @click="onSubmit"> Registrar </a-button>
           <a-button type="link" @click="resetForm"> Limpiar </a-button>
       </template>
     </a-card>
-
-    <!--mODAL-->
-    <a-modal
-      v-model="displayModal"
-      title="Entidades Asociadas"
-      ok-text="Registrar"
-      cancel-text="Cancelar"
-      @ok="closeModal()"
-      width="60%"
-      :centered="true"
-      :closable="false"
-      :maskClosable="false"
-    >
-     <a-select
-            mode="multiple"
-            v-model="recaudadorObj.entidadIdLst"
-            style="width: 100%"
-            placeholder="Seleccione las Recaudadoras"
-          >
-            <a-select-option v-for="(item) in lstEntidades"
-              :key="item.entidadId">
-              {{item.nombre}}
-            </a-select-option>
-          </a-select>
-           <a-button type="primary" @click="abrirEntidad"> Nueva Empresa 
-          </a-button>
-    </a-modal>
-
-
   </div>
 </template>
 <script>
 import Dominios from "../../service/Administraciones/Dominio.service";
-import Recaudadores from "../../service/Administraciones/Recaudador.service";
-
-import Entidades from "../../service/Administraciones/Entidad.service";
-
+import SucursalesEntidades from "../../service/Administraciones/SucursalEntidad.service";
 
 const columns = [
   {
     title: "Nombre",
-    dataIndex: "nombre",
+    dataIndex: "nombreSucursal",
     fixed: "left",
-  },
-  {
-    title: "Tipo Recaudador",
-    dataIndex: "tipoRecaudadorDescripcion",
   },
   {
     title: "Dirección",
@@ -200,20 +133,15 @@ const columns = [
     fixed: "right",
     scopedSlots: { customRender: "estado" },
   },
-  {
-    title: "Opciones",
-    dataIndex: "",
-    scopedSlots: { customRender: "opciones" },
-    fixed: "right",
-  },
 ];
 
 export default {
   data() {
     return {
-      /*******LISTADO DE RECAUDADORES********* */
+      /*******LISTADO DE SUCURSALES********* */
       /*Datos*/
-      lstRecaudadores: [],
+      entidadId: null,
+      lstSucursalesEntidades: [],
       /*Tabla*/
       columns,
       selectedRowKeys: [],
@@ -230,18 +158,18 @@ export default {
       ],
       /**Otros */
       current: null,
-      displayModal: false,
+      displayModal: true,
 
-      /*******FORMULARIO RECAUDADORES********* */
+      /*******FORMULARIO SUCRUSALES********* */
       /*Datos*/
-      recaudadorObj: {},
+      sucursalEntidadObj: {},
       /*Formulario*/
       subTitle: '',
       displayForm: false,
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
       rules: {
-        nombre: [
+        nombreSucursal: [
           {
             required: true,
             message: "Debe registrar el nombre",
@@ -251,13 +179,6 @@ export default {
             min: 2,
             message: "Mínimante el nombre debe tener 2 caracteres",
             trigger: "blur",
-          },
-        ],
-        tipoRecaudadorId: [
-          {
-            required: true,
-            message: "Debe seleccionar un Tipo de Recaudador",
-            trigger: "change",
           },
         ],
         direccion: [
@@ -287,12 +208,6 @@ export default {
         ],
       },
 
-      /*Dominios*/
-      lstTipoRecaudadores: [],
-
-      /**Entidades */
-      lstEntidades: [],
-
     };
   },
   computed: {
@@ -312,25 +227,23 @@ export default {
     },
   },
   mounted() {
-    this.cargarRecaudadores();
-    this.cargarTipoRecaudadora();
-
-    this.cargarEntidades();
+    this.entidadId = this.$route.params.entidadId;
+    this.cargarSucursalEntidadesPorEntidad(this.entidadId);
   },
 
   methods: {
-    /*****LISTADO DE RECAUDADORES*** */
+    /*****LISTADO DE SUCURSALES*** */
     /**Menú */
     seleccionarOpcion(opcion) {
       switch (opcion) {
         case 'CREAR': //CREAR
-          this.recaudadorObj = {};
+          this.sucursalEntidadObj = {};
           this.displayForm = true;
           this.subTitle = "Formulario Registro Nuevo";
           break;  
         case 'MODIFICAR': //Modiicar
           if(this.selectedRowKeys.length === 1) {
-            this.cargarRecaudador(this.selectedRowKeys);
+            this.cargarSucursalEntidad(this.selectedRowKeys);
             this.displayForm = true;
             this.subTitle = "Formulario Modificación de Registro";
           } else {
@@ -347,7 +260,7 @@ export default {
               cancelText: "Cancelar",
               onOk: () => {
                 console.log('ok')
-                this.actualizaListaRecaudadoresTransaccion(this.selectedRowKeys, "ELIMINAR");
+                this.actualizaListaSucursalEntidadTransaccion(this.selectedRowKeys, "ELIMINAR");
               },
               onCancel() {  
                 console.log('Cancel');
@@ -368,7 +281,7 @@ export default {
               cancelText: "Cancelar",
               onOk: () => {
                 console.log('ok')
-                this.actualizaListaRecaudadoresTransaccion(this.selectedRowKeys, "ACTIVAR");
+                this.actualizaListaSucursalEntidadTransaccion(this.selectedRowKeys, "ACTIVAR");
               },
               onCancel() {  
                 console.log('Cancel');
@@ -390,7 +303,7 @@ export default {
               cancelText: "Cancelar",
               onOk: () => {
                 console.log('ok')
-                this.actualizaListaRecaudadoresTransaccion(this.selectedRowKeys, "DESACTIVAR");
+                this.actualizaListaSucursalEntidadTransaccion(this.selectedRowKeys, "DESACTIVAR");
               },
               onCancel() {  
                 console.log('Cancel');
@@ -404,21 +317,21 @@ export default {
       }
     },
     /**Opeaciones */
-    cargarRecaudadores() {
+    cargarSucursalEntidadesPorEntidad(entidadId) {
       this.$Progress.start();
-      Recaudadores.getLstRecaudadores().then((r) => {
+      SucursalesEntidades.getLstSucursalEntidadByEntidadId(entidadId).then((r) => {
+        console.log('cargar')
         console.log(r)
         if(r.status === 204 ) {
-          this.lstRecaudadores = [],
-          this.$notification.warning("No se ha encontrado ninguna Recaudador registrada");
+          this.lstSucursalesEntidades = [],
+          this.$notification.warning("No se ha encontrado ninguna Sucursal registrada para Entidad.");
           this.$Progress.finish();
           return;
         }
         console.log('aqui')
-        this.lstRecaudadores = r.data.result;
+        this.lstSucursalesEntidades = r.data.result;
         this.$Progress.finish();
       }).catch((error) => {
-          this.lstRecaudadores = [],
           console.log(error);
           this.$notification.error(
             error.response.data.message,
@@ -427,10 +340,10 @@ export default {
           this.$Progress.fail();
         });
     },
-    actualizaRecaudadorTransaccion(recaudadorId, transaccion) { //Solo se usara el listado
+    /*actualizaSucursalTransaccion(sucursalId, transaccion) { //Solo se usara el listado
       this.$Progress.start();
-      Recaudadores.putRecaudadorTransaccion(recaudadorId, transaccion).then((r) => {
-        this.cargarRecaudadores();
+      SucursalesEntidades.putSucursalTransaccion(sucursalId, transaccion).then((r) => {
+        this.cargarSucursalEntidadesPorEntidad(this.entidadId);
         this.$notification.success(r.data.message);
         this.$Progress.finish();
       }).catch((error) => {
@@ -439,12 +352,12 @@ export default {
         this.$Progress.fail();
       });
     },
-
-    actualizaListaRecaudadoresTransaccion(recaudadorIdLst, transaccion) {
+*/
+    actualizaListaSucursalEntidadTransaccion(sucursalIdLst, transaccion) {
       
-      Recaudadores.putLstRecaudadorTransaccion(recaudadorIdLst, transaccion).then((r) => {
+      SucursalesEntidades.putLstSucursalEntidadTransaccion(sucursalIdLst, transaccion).then((r) => {
         this.$Progress.start();
-        this.cargarRecaudadores();
+        this.cargarSucursalEntidadesPorEntidad(this.entidadId);
         this.$notification.success(r.data.message);
         this.$Progress.finish();
       }).catch((error) => {
@@ -453,52 +366,29 @@ export default {
         this.$Progress.fail();
       });
     },
-    /**Visualizaciones */
-    mostrarSucursal(recaudadorId) {
-      this.$router.push({
-        name: "AbmSucursales",
-        params: { recaudadorId: recaudadorId },
-      });
-    },
-
-
+   
     /****FORMULARIO**** */
     /*Control de campos*/
     volverListado() {
       this.displayForm = !this.displayForm;
-      this.recaudadorObj = {};
+      this.sucursalEntidadObj = {};
       this.selectedRowKeys = [];
     },
     
-    /*Lista de Dominio*/
-    cargarTipoRecaudadora() {
-      Dominios.getListDominos("tipo_recaudador_id").then((r) => {
-        if(r.status === 204) {
-          this.lstTipoRecaudadores = [];
-          this.$notification.warning("La parametrización de dominios no esta completa.");
-          return;
-        }
-
-        this.lstTipoRecaudadores = r.data.result;
-      }).catch((error) => {
-          console.log(error);
-          this.lstTipoRecaudadores = [];
-          this.$notification.error(error.response.data.message, error.response.data.code);
-        });
-    },
     /*Operaciones*/
-    cargarRecaudador(recaudadorId) {
-      Recaudadores.getRecaudador(recaudadorId).then((r) => {
-        this.recaudadorObj = r.data.result;
+    cargarSucursalEntidad(sucursalId) {
+      SucursalesEntidades.getSucursalEntidad(sucursalId).then((r) => {
+        this.sucursalEntidadObj = r.data.result;
       });
     },
-    guardarRecaudador() {
+    guardarSucursalEntidad() {
       this.$Progress.start();
-      Recaudadores.postRecaudador(this.recaudadorObj)
+      this.sucursalEntidadObj.entidadId = this.entidadId;
+      SucursalesEntidades.postSucursalEntidad(this.sucursalEntidadObj)
         .then((r) => {
           console.log(r);
           this.displayForm = false;
-          this.cargarRecaudadores();
+          this.cargarSucursalEntidadesPorEntidad(this.entidadId);
           this.$notification.success(r.data.message);
           this.$Progress.finish();
         })
@@ -513,7 +403,7 @@ export default {
     onSubmit() {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
-          this.guardarRecaudador(this.recaudadorObj);
+          this.guardarSucursalEntidad(this.sucursalEntidadObj);
         } else {
           console.log("error submit!!");
           this.$notification.warning("Debe resolver las validaciones del formulario.");
@@ -525,81 +415,12 @@ export default {
       this.$refs.ruleForm.resetFields();
     },
 
-     /**Entidaes */
-      cargarEntidades() {
 
-      this.$Progress.start();
-      Entidades.getLstEntidad().then((r) => {
-        if(r.status === 204 ) {
-          this.lstEntidades = [],
-          this.$notification.warning("No se ha encontrado ninguna Empresa registrada");
-          this.$Progress.finish();
-          return;
-        }
+    /**Recaudadoras */
+    guardarRecaudadoras() {
 
-        this.lstEntidades = r.data.result;
-        console.log('cargando entidades')
-        console.log(this.lstEntidades);
-        this.$Progress.finish();
-      }).catch((error) => {
-        this.lstEntidades = [],
-        console.log(error);
-        this.$notification.error(
-          error.response.data.message,
-          error.response.data.code
-        );
-        this.$Progress.fail();
-      });
-    }, 
+    },
     
-   /**Modal */
-    openModal(recaudadorId){
-        this.cargarRecaudador(recaudadorId);
-        this.displayModal = true;
-    },
-    closeModal() {
-      this.guardarEntidades();
-      this.displayModal = false;
-    },
-    abrirEntidad() {
-      this.$confirm({
-              title: "¿Está seguro de ingresar a Registro de Empresas?",
-              content: "Considere que los datos se perderán.",
-              okText: "Aceptar",
-              cancelText: "Cancelar",
-              onOk: () => {
-                console.log('ok');
-                this.$router.push({
-                  name: "AbmEntidades",
-                });
-              },
-              onCancel() {  
-                console.log('Cancel');
-              },
-              class: 'test',
-            });
-    },
-
-    guardarEntidades(){
-      this.$Progress.start();
-      Recaudadores.postEntidadRecaudador(this.recaudadorObj.entidadIdLst, this.recaudadorObj.recaudadorId).then((r) => {
-        this.$notification.success(r.data.message);
-        this.$Progress.finish();
-      }).catch((error) => {
-          this.lstRecaudadores = [],
-          console.log(error);
-          this.$notification.error(
-            error.response.data.message,
-            error.response.data.code
-          );
-          this.$Progress.fail();
-        });
-    },
-
-    
-
-
-
   },
 };
 </script>

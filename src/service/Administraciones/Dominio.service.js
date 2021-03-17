@@ -13,7 +13,7 @@ export default {
     return configuracion;
   },
   getListDominos(dominio) {
-    return Api().get(`api/adm/dominios/${dominio}`, this.headersConfig());
+    return Api().get(`api/dominios/${dominio}`, this.headersConfig());
   },
   
 };

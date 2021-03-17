@@ -9,9 +9,10 @@ import ReporteDeudasEntidades from "../views/Entidades/ReporteDeudasEntidades";
 import SearchEntidades from '../views/Recaudaciones/SearchEntidades.vue';
 import Debts from '../views/Recaudaciones/Debts.vue';
 import AbmEntidades from '../views/Administracion/AbmEntidades.vue';
-import AbmSucursales from '../views/Administracion/AbmSucursales.vue';
+import AbmSucursalesEntidades from '../views/Administracion/AbmSucursaleseEntidades.vue';
 import AbmRecaudadores from '../views/Administracion/AbmRecaudadores.vue';
 import decode from 'jwt-decode';
+import AbmSucursales from '../views/Administracion/AbmSucursales.vue';
 
 Vue.use(VueRouter);
 
@@ -75,7 +76,7 @@ const routes = [
         }
       },
       {
-        path: "/entidades",
+        path: "/AbmEntidades",
         name: "AbmEntidades",
         component: AbmEntidades,
         meta: {
@@ -83,21 +84,30 @@ const routes = [
         }
       },
       {
-        path: "/sucursales/:entidadId",
-        name: "AbmSucursales",
-        component: AbmSucursales,
+        path: "/sucursalesentidades/:entidadId",
+        name: "AbmSucursalesEntidades",
+        component: AbmSucursalesEntidades,
         meta: {
           libre: false
         }
       },
       {
-        path: "/recaudadores",
+        path: "/AbmRecaudadores",
         name: "AbmRecaudadores",
         component: AbmRecaudadores,
         meta: {
           libre: false
         }
       },
+      {
+        path: "/sucursales/:recaudadorId",
+        name: "AbmSucursales",
+        component: AbmSucursales,
+        meta: {
+          libre: false
+        }
+      },
+      
     ]
   },
   {

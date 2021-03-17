@@ -23,6 +23,12 @@ Vue.prototype.$http = axios;
 import util from './lib/util';
 Vue.use(util);
 
+import VueProgressBar from 'vue-progressbar';
+Vue.use(VueProgressBar, {
+  color: 'rgb(224,206,206)',
+  failedColor: 'red',
+  height: '2px'
+})
 
 new Vue({
   router,

@@ -1,141 +1,157 @@
 <template>
   <div>
-    <a-page-header
-      style="border: 1px solid rgb(235, 237, 240)"
-      title="Administrar Registro de Sucursales por Entidades"
-      :sub-title="subTitle"
-      @back="() => (displayForm = !displayForm)"
-    />
-    <a-row type="flex" justify="space-around" align="middle">
-      <a-col :span="20">
-        <a-card style="width: 100%">
-          <a-page-header
-            style="border: 1px solid rgb(235, 237, 240)"
-            title="Administrar Registro de Sucursales"
-            :sub-title="subTitle"
-            @back="() => (displayForm = !displayForm)"
-          />
-          <br />
-          <!--LISTADO DE ENTIDADES-->
-          <div v-if="!displayForm">
-            <!-- <a-popconfirm
-              title="¿Esta seguro de realizar la operación?"
-              ok-text="Si"
-              cancel-text="No"
-              @confirm="confirmOpcion(current)"
-              @cancel="cancelOpcion"
-            >-->
-            <a-menu v-model="current" mode="horizontal" align="right">
-              <a-menu-item
-                v-for="(item, i) in lstOpciones"
-                :key="i"
-                @click="seleccionarOpcion(i)"
-              >
-                {{ item.item }}
-              </a-menu-item>
-            </a-menu>
-            <!--</a-popconfirm>
--->
-            <br />
-            <a-alert
-              :message="message"
-              :description="descriptionMessage"
-              :type="typeMessage"
-              show-icon
-              v-if="displayAlert"
-            />
-            <br />
-            <a-table
-              :row-selection="rowSelection"
-              :columns="columns"
-              :data-source="lstSucursalesEntidades"
-              rowKey="sucursalEntidadId"
-              :pagination="pagination"
-              :scroll="{ x: 1500 }"
-            >
-            </a-table>
+    <a-card v-if="!displayForm" style="width: 100%">
+      <a-page-header
+        style="border: 1px solid rgb(224,206,206)"
+        title="Administración de Registro de Sucursales por Recaudadora"
+        @back="$router.back()"
+      />
+    </a-card>
+    <a-card v-if="!displayForm" style="width: 100%">
+      <template slot="actions" class="ant-card-actions">
+        <a-button-group >
+          <a-button  v-for="(item, i) in lstOpciones" 
+            :key="i"
+            @click="seleccionarOpcion(item.transaccion)">
+            {{ item.etiqueta }}
+          </a-button>
+        </a-button-group>
+      </template>
+    </a-card>
+    <a-card v-if="!displayForm" style="width: 100%">
+      <!--LISTADO DE SUCURSALES-->
+      <a-table
+        :row-selection="rowSelection"
+        :columns="columns"
+        :data-source="lstSucursales"
+        rowKey="sucursalId"
+        :pagination="pagination"
+        :scroll="{ x: 1500 }"
+      >      
+        <template slot="estado" slot-scope="text, record" >
+          <div v-if="record.estado == 'ACTIVO'" align="center">
+            <a-tag color="green">
+              <a-icon type="caret-up" :style="{ fontSize: '20px' }" />
+              {{record.estado}}
+            </a-tag>
           </div>
-          <!--FORMULARIO ENTIDAD-->
-          {{sucursalEntidadObj}}
-          <a-form-model
-            v-if="displayForm"
-            ref="ruleForm"
-            :v-model="sucursalEntidadObj"
-            :label-col="labelCol"
-            :wrapper-col="wrapperCol"
-            size="small"
-            layout="vertical"
+          <div v-if="record.estado == 'DESACTIVO'" align="center">
+            <a-tag color="red">
+              <a-icon type="caret-down" :style="{ fontSize: '20px' }" />
+               {{record.estado}}
+            </a-tag>
+          </div>
+          <div v-if="record.estado == 'CREADO'" align="center">
+            <a-tag color="blue">
+               {{record.estado}}
+            </a-tag>
+          </div>
+        </template>
+      </a-table>
+    </a-card>
+    <a-card v-if="displayForm">
+      <a-page-header
+        style="border: 1px solid rgb(224,206,206)"
+        title="Administración de Sucursales"
+        :sub-title="subTitle"
+        @back="() => volverListado()"
+      />
+      <br/>
+      <!--LISTADO DE SUCURSALES-->
+      <a-form-model
+        ref="ruleForm"
+        :model="sucursalObj"
+        :rules="rules"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+        size="small"
+      >
+        <a-form-model-item ref="nombre" label="Nombre Sucursal" prop="nombre">
+          <a-input
+            v-model="sucursalObj.nombre"
+            @blur="
+              () => {
+                $refs.nombre.onFieldBlur();
+              }
+            "
+            :maxLength="250"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="Departamento" prop="departamentoId">
+          <a-select
+            v-model="sucursalObj.departamentoId"
+            placeholder="Seleccione Departamento"
           >
-            <!--:rules="rules"-->
-            <a-row>
-              <a-col :xs="24" :sm="24" :md="24" :lg="24">
-                <a-form-model-item ref="nombre" label="Nombre" prop="nombre">
-                  <a-input
-                    v-model="sucursalEntidadObj.nombreSucursal"
-                    @blur="
-                      () => {
-                        $refs.nombre.onFieldBlur();
-                      }
-                    "
-                    :maxLength="200"
-                  />
-                </a-form-model-item>
-              </a-col>
-            </a-row>
-            <a-row>
-              <a-col :xs="24" :sm="24" :md="12" :lg="12">
-                <a-form-model-item
-                  ref="direccion"
-                  label="Dirección"
-                  prop="direccion"
-                >
-                  <a-input
-                    v-model="sucursalEntidadObj.direccion"
-                    @blur="
-                      () => {
-                        $refs.direccion.onFieldBlur();
-                      }
-                    "
-                  />
-                </a-form-model-item>
-              </a-col>
-              <a-col :xs="24" :sm="24" :md="12" :lg="12">
-                <a-form-model-item
-                  ref="telefono"
-                  label="Teléfono"
-                  prop="telefono"
-                >
-                  <a-input
-                    v-model="sucursalEntidadObj.telefono"
-                    @blur="
-                      () => {
-                        $refs.telefono.onFieldBlur();
-                      }
-                    "
-                  />
-                </a-form-model-item>
-              </a-col>
-            </a-row>
-
-            <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-              <a-button type="primary" @click="onSubmit"> Registrar </a-button>
-              <a-button style="margin-left: 10px" @click="resetForm">
-                Limpiar
-              </a-button>
-            </a-form-model-item>
-          </a-form-model>
-        </a-card>
-      </a-col>
-    </a-row>
+            <a-select-option
+              v-for="(item, i) in lstDepartamentos"
+              :key="i"
+              :value="item.dominioId"
+            >
+              {{ item.descripcion }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <a-form-model-item label="Localidad" prop="localidadId">
+          <a-select
+            v-model="sucursalObj.localidadId"
+            placeholder="Seleccione Localidad"
+          >
+            <a-select-option
+              v-for="(item, i) in lstLocalidades"
+              :key="i"
+              :value="item.dominioId"
+            >
+              {{ item.descripcion }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <a-form-model-item ref="direccion" label="Dirección" prop="direccion">
+          <a-input
+            v-model="sucursalObj.direccion"
+            @blur="
+              () => {
+                $refs.direccion.onFieldBlur();
+              }
+            "
+            :maxLength="250"
+          />
+        </a-form-model-item>
+        <a-form-model-item ref="telefono" label="Teléfono" prop="telefono">
+          <a-input
+            v-model="sucursalObj.telefono"
+            @blur="
+              () => {
+                $refs.telefono.onFieldBlur();
+              }
+            "
+            :maxLength="10"
+          />
+        </a-form-model-item>
+      </a-form-model>
+      <template slot="actions" class="ant-card-actions">
+         <a-button type="link" @click="onSubmit"> Registrar </a-button>
+          <a-button type="link" @click="resetForm"> Limpiar </a-button>
+      </template>
+    </a-card>
   </div>
 </template>
 <script>
+import Dominios from "../../service/Administraciones/Dominio.service";
+import Sucursales from "../../service/Administraciones/Sucursal.service";
+
 const columns = [
   {
     title: "Nombre",
-    dataIndex: "nombreSucursal",
-    width: 100,
+    dataIndex: "nombre",
     fixed: "left",
+  },
+  {
+    title: "Departamento",
+    dataIndex: "departamentoDescripcion",
+  },
+  {
+    title: "Municipio",
+    dataIndex: "munipioId",
   },
   {
     title: "Dirección",
@@ -149,76 +165,108 @@ const columns = [
     title: "Estado",
     dataIndex: "estado",
     fixed: "right",
+    scopedSlots: { customRender: "estado" },
   },
 ];
 
-import SucursalesEntidades from "../../service/Administraciones/SucursalEntidad.service";
 export default {
   data() {
     return {
-      entidadId: this.$route.params.entidadId,
-
-      subTitle: "Listado",
-
-      /*******LISTADO DE ENTIDADES********* */
-      lstSucursalesEntidades: [],
+      /*******LISTADO DE SUCURSALES********* */
+      /*Datos*/
+      recaudadorId: null,
+      lstSucursales: [],
+      /*Tabla*/
       columns,
-
-      lstOpciones: [
-        { id: 0, item: "CREAR" },
-        { id: 1, item: "MODIFICAR" },
-        { id: 2, item: "ELIMINAR" },
-        { id: 3, item: "DAR ALTA" },
-        { id: 4, item: "DAR BAJA" },
-      ],
-
       selectedRowKeys: [],
-      current: null,
       pagination: {
         pageSize: 5,
       },
-      disabledNombreComercial: true,
+      /*menu*/
+      lstOpciones: [
+        { transaccion: "CREAR", etiqueta: "CREAR", imagen: "imagen.png", orden: 1 },
+        { transaccion: "MODIFICAR", etiqueta: "MODIFICAR", imagen: "imagen.png", orden: 2 },
+        { transaccion: "ELIMINAR", etiqueta: "ELIMINAR", imagen: "imagen.png", orden: 3 },
+        { transaccion: "ACTIVAR", etiqueta: "DAR ALTA", imagen: "imagen.png", orden: 4 },
+        { transaccion: "DESACTIVAR", etiqueta: "DAR BAJA", imagen: "imagen.png", orden: 5 },
+      ],
+      /**Otros */
+      current: null,
+      displayModal: true,
 
-      //Alerts
-      displayAlert: false,
-      message: "",
-      descriptionMessage: "",
-      typeMessage: "",
-
-      /*******FORMULARIO ENTIDADES********* */
-      labelCol: {}, //{ span: 4 },
-      wrapperCol: {}, //{ span: 14 },
-
+      /*******FORMULARIO SUCRUSALES********* */
+      /*Datos*/
+      sucursalObj: {},
+      /*Formulario*/
+      subTitle: '',
       displayForm: false,
-
-      /*Dominios*/
-      lstTiposEntidades: [],
-      lstActividadesEconomicas: [],
-      lstMunicipios: [],
-
-      /*Entidad*/
-      sucursalEntidadObj: {},
-
-      /*Reglas*/
+      labelCol: { span: 6 },
+      wrapperCol: { span: 14 },
       rules: {
         nombre: [
-          { required: false, message: " Dato Requerido.", trigger: "blur" },
-          //{ min: 3, max: 5, message: 'Length should be 3 to 5', trigger: 'blur' },
+          {
+            required: true,
+            message: "Debe registrar el nombre",
+            trigger: "blur",
+          },
+          {
+            min: 2,
+            message: "Mínimante el nombre debe tener 2 caracteres",
+            trigger: "blur",
+          },
+        ],
+        departamentoId: [
+          {
+            required: true,
+            message: "Debe seleccionar un Departamento",
+            trigger: "change",
+          },
+        ],
+        localidadId: [
+          {
+            required: true,
+            message: "Debe seleccionar una Localidad",
+            trigger: "change",
+          },
         ],
         direccion: [
-          { required: true, message: "Obligatorio", trigger: "blur" },
+          {
+            required: true,
+            message: "Debe registrar la dirección",
+            trigger: "blur",
+          },
+          {
+            min: 5,
+            message: "Mínimante la dirección debe tener 5 caracteres",
+            trigger: "blur",
+          },
         ],
         telefono: [
-          { required: true, message: "Obligatorio", trigger: "blur" },
-        ],        
+          {
+            required: true,
+            message: "Debe registrar la dirección",
+            trigger: "blur",
+          },
+          {
+            min: 7,
+            max: 10,
+            message: "El teléfono debe contener al menos 7 caracteres y máximo 10",
+            trigger: "blur",
+          },
+        ],
       },
+
+      /*Dominios*/
+      lstDepartamentos: [],
+      lstLocalidades: [],
+
     };
   },
   computed: {
+    /*Tabla*/
     rowSelection() {
       return {
-        type: "radio",
-        //selectedRowKeys: this.selectedRowKeys,
+        //type: "radio",
         onChange: (selectedRowKeys, selectedRows) => {
           console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
@@ -230,125 +278,231 @@ export default {
       };
     },
   },
-  created() {
-    this.cargarSucursalesEntidades(this.entidadId);
+  mounted() {
+    this.recaudadorId = this.$route.params.recaudadorId;
+    this.cargarSucursalesPorRecaudadora(this.recaudadorId);
+    this.cargarDepartamentos();
+    this.cargarLocalidades();
   },
+
   methods: {
-    /*****LISTADO DE ENTIDADES*** */
-    cargarSucursalesEntidades(entidadId) {
-      SucursalesEntidades.getLstSucursalEntidadByEntidadId(entidadId).then((r) => {
-        console.log('cargar sucursales ')
-        console.log(r)
-        this.lstSucursalesEntidades = r.data.result;
-      });
-    },
+    /*****LISTADO DE SUCURSALES*** */
+    /**Menú */
     seleccionarOpcion(opcion) {
       switch (opcion) {
-        case 0: //CREAR
-          this.sucursalEntidadObj = {};
+        case 'CREAR': //CREAR
+          this.sucursalObj = {};
           this.displayForm = true;
           this.subTitle = "Formulario Registro Nuevo";
-          break;
-        case 1: //Modiicar
-          console.log(this.selectedRowKeys )
-          if(this.selectedRowKeys.length > 0) {
-            this.cargarSucursalEntidad(this.selectedRowKeys);
-
+          break;  
+        case 'MODIFICAR': //Modiicar
+          if(this.selectedRowKeys.length === 1) {
+            this.cargarSucursal(this.selectedRowKeys);
             this.displayForm = true;
             this.subTitle = "Formulario Modificación de Registro";
           } else {
-            this.$message.warning('Debe seleccionar un registro para MODIFICAR');
+            this.$notification.warning('Debe seleccionar un solo registro para MODIFICAR');
           }
           break;
-        case 2: //ELIMINAR
+        case 'ELIMINAR': //ELIMINAR
           if(this.selectedRowKeys.length > 0) {
-          this.actualizaSucursalEntidadTransaccion(this.selectedRowKeys, "ELIMINAR");
+            this.$confirm({
+              title: "¿Está seguro de ELIMINAR el(los) registro(s) seleccionado(s)?",
+              content: "Considere que el(los) registro(s) ya no podrá(n) ser visualizado(s).",
+              okText: "Aceptar",
+              okType: "danger",
+              cancelText: "Cancelar",
+              onOk: () => {
+                console.log('ok')
+                this.actualizaListaSucursalTransaccion(this.selectedRowKeys, "ELIMINAR");
+              },
+              onCancel() {  
+                console.log('Cancel');
+              },
+              class: 'test',
+            });
+            
           } else {
-            this.$message.warning('Debe seleccionar un registro para ELIMINAR')
+            this.$notification.warning('Debe seleccionar al menos un registro para ELIMINAR')
           }
           break;
-        case 3: //ALTA
+        case 'ACTIVAR': //ALTA
           if(this.selectedRowKeys.length > 0) {
-            this.actualizaSucursalEntidadTransaccion(this.selectedRowKeys, "ACTIVAR");
+            this.$confirm({
+              title: "¿Está seguro de DAR ALTA el(los) registro(s) seleccionado(s)?",
+              content: "Considere que el(los) registro(s) ingresará(n) en transacciones en el Sistema.",
+              okText: "Aceptar",
+              cancelText: "Cancelar",
+              onOk: () => {
+                console.log('ok')
+                this.actualizaListaSucursalTransaccion(this.selectedRowKeys, "ACTIVAR");
+              },
+              onCancel() {  
+                console.log('Cancel');
+              },
+              class: 'test',
+            });
+            
           } else {
-            this.$message.warning('Debe seleccionar un registro para DAR DE ALTA')
+            this.$notification.warning('Debe seleccionar al menos un registro para DAR ALTA')
           }
           break;
-        case 4: //BAJAR
+        case 'DESACTIVAR': //BAJAR
           if(this.selectedRowKeys.length > 0) {
-            this.actualizaSucursalEntidadTransaccion(this.selectedRowKeys, "DESACTIVAR");
+            this.$confirm({
+              title: "¿Está seguro de DAR BAJA el(los) registro(s) seleccionado(s)?",
+              content: "Considere que el registro ya no podrá realizar transacciones en el Sistema.",
+              okText: "Aceptar",
+              okType: "danger",
+              cancelText: "Cancelar",
+              onOk: () => {
+                console.log('ok')
+                this.actualizaListaSucursalTransaccion(this.selectedRowKeys, "DESACTIVAR");
+              },
+              onCancel() {  
+                console.log('Cancel');
+              },
+              class: 'test',
+            });
           } else {
-            this.$message.warning('Debe seleccionar un registro para DAR DE BAJA')
+            this.$notification.warning('Debe seleccionar al menos un registro para DAR BAJA')
           }
           break;
       }
     },
-
-    actualizaSucursalEntidadTransaccion(entidadId, transaccion) {
-      SucursalesEntidades.putSucursalEntidadTransaccion(entidadId, transaccion).then((r) => {
-        this.cargarSucursalesEntidades(this.entidadId);
+    /**Opeaciones */
+    cargarSucursalesPorRecaudadora(recaudadorId) {
+      this.$Progress.start();
+      Sucursales.getLstSucursales(recaudadorId).then((r) => {
+        console.log('eñiminado')
+        console.log(r)
+        if(r.status === 204 ) {
+           this.lstSucursales = [],
+          this.$notification.warning("No se ha encontrado ninguna Sucursal registrada para Recaudadoras.");
+          this.$Progress.finish();
+          return;
+        }
+        console.log('aqui')
+        this.lstSucursales = r.data.result;
+        this.$Progress.finish();
+      }).catch((error) => {
+          console.log(error);
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
+          this.$Progress.fail();
+        });
+    },
+    /*actualizaSucursalTransaccion(sucursalId, transaccion) { //Solo se usara el listado
+      this.$Progress.start();
+      Sucursales.putSucursalTransaccion(sucursalId, transaccion).then((r) => {
+        this.cargarSucursalesPorRecaudadora(this.recaudadorId);
+        this.$notification.success(r.data.message);
+        this.$Progress.finish();
+      }).catch((error) => {
+        console.log(error)
+        this.$notification.error(error.response.data.message, error.response.data.code);
+        this.$Progress.fail();
       });
     },
-
-    /*****FORMULARIO ENTIDAD**** */
-    cargarSucursalEntidad(sucursalEntidadId) {
-      SucursalesEntidades.getSucursalEntidad(sucursalEntidadId).then((r) => {
-        this.sucursalEntidadObj = r.data.result;
+*/
+    actualizaListaSucursalTransaccion(sucursalIdLst, transaccion) {
+      
+      Sucursales.putLstSucursalTransaccion(sucursalIdLst, transaccion).then((r) => {
+        this.$Progress.start();
+        this.cargarSucursalesPorRecaudadora(this.recaudadorId);
+        this.$notification.success(r.data.message);
+        this.$Progress.finish();
+      }).catch((error) => {
+        console.log(error)
+        this.$notification.error(error.response.data.message, error.response.data.code);
+        this.$Progress.fail();
       });
     },
-    guardarSucursalEntidad() {
-      this.sucursalEntidadObj.entidadId = this.entidadId;
-      SucursalesEntidades.postSucursalEntidad(this.sucursalEntidadObj)
+   
+    /****FORMULARIO**** */
+    /*Control de campos*/
+    volverListado() {
+      this.displayForm = !this.displayForm;
+      this.sucursalObj = {};
+      this.selectedRowKeys = [];
+    },
+    
+    /*Lista de Dominio*/
+    cargarDepartamentos() {
+      Dominios.getListDominos("departamento_id").then((r) => {
+        if(r.status === 204) {
+          this.lstDepartamentos = [];
+          this.$notification.warning("La parametrización de dominios no esta completa.");
+          return;
+        }
+
+        this.lstDepartamentos = r.data.result;
+      }).catch((error) => {
+          console.log(error);
+          this.lstDepartamentos = [];
+          this.$notification.error(error.response.data.message, error.response.data.code);
+        });
+    },
+    cargarLocalidades() {
+      Dominios.getListDominos("municipio_id").then((r) => {
+        if(r.status === 204) {
+          this.lstLocalidades = [];
+          this.$notification.warning("La parametrización de dominios no esta completa.");
+          return;
+        }
+
+        this.lstLocalidades = r.data.result;
+      }).catch((error) => {
+          console.log(error);
+          this.lstLocalidades = [];
+          this.$notification.error(error.response.data.message, error.response.data.code);
+        });
+    },
+    /*Operaciones*/
+    cargarSucursal(sucursalId) {
+      Sucursales.getSucursal(sucursalId).then((r) => {
+        this.sucursalObj = r.data.result;
+      });
+    },
+    guardarSucursal() {
+      this.$Progress.start();
+      this.sucursalObj.recaudadorId = this.recaudadorId;
+      Sucursales.postSucursal(this.sucursalObj)
         .then((r) => {
           console.log(r);
-
-          this.$message.success(r.data.message);
-          //this.loadMessageSuccess(r.data.message);
+          this.displayForm = false;
+          this.cargarSucursalesPorRecaudadora(this.recaudadorId);
+          this.$notification.success(r.data.message);
+          this.$Progress.finish();
         })
         .catch((error) => {
           console.log(error);
-          this.$message.error(
-            error.response.data.message +
-              "\n. Código de error: " +
-              error.response.data.code
-          );
-          //this.loadMessageWarning(error.response.data.message);
+          this.$notification.error(error.response.data.message, error.response.data.code);
+          this.$Progress.fail();
         });
-      this.displayForm = false;
-      this.cargarSucursalesEntidades(this.entidadId);
+      
     },
-
-    loadMessageSuccess() {
-      (this.displayAlert = true), (this.message = "Éxito");
-      this.descriptionMessage = r.data.message;
-      this.typeMessage = "success";
-    },
-    loadMessageWarning() {
-      (this.displayAlert = true), (this.message = "Advertencia");
-      this.descriptionMessage = r.data.message;
-      this.typeMessage = "warning";
-    },
-
+    /*Acciones de Formulario*/
     onSubmit() {
-      console.log("****Guardar*****");
-      this.guardarSucursalEntidad(this.sucursalEntidadObj);
-
-      /*this.$refs.ruleForm.validate((valid) => {
+      this.$refs.ruleForm.validate((valid) => {
         if (valid) {
-          this.guardarSucursalEntidad(this.sucursalEntidadObj);
-
-          this.displayForm = false;
-          this.cargarEntidades();
+          this.guardarSucursal(this.sucursalObj);
         } else {
           console.log("error submit!!");
+          this.$notification.warning("Debe resolver las validaciones del formulario.");
           return false;
         }
-      });*/
+      });
     },
     resetForm() {
       this.$refs.ruleForm.resetFields();
     },
+
+    
   },
 };
 </script>
-
+<style scoped>
+</style>

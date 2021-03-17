@@ -92,7 +92,7 @@ export default {
     };
   },
 
-  created() {
+  mounted() {
     this.cargarTiposEntidades();
     this.cargarTodasEntidades();
   },
@@ -102,6 +102,7 @@ export default {
     cargarTodasEntidades() {
       PaymentDebts.cargarTodasEntidades()
         .then((r) => {
+          console.log('todas')
           if(r.status === 204) {
             this.lstEntidades = [];
             this.lstEntidadesFilter = this.lstEntidades;
@@ -117,6 +118,7 @@ export default {
           this.lstEntidades = [];
           this.lstEntidadesFilter = this.lstEntidades;
           this.$notification.error(error.response.data.message,error.response.data.code);
+
         });
     },
     cargarTiposEntidades() {
@@ -134,6 +136,7 @@ export default {
       this.search = "";
       PaymentDebts.cargarEntidades(tipo)
         .then((r) => {
+          //el control status==204 se visializara en cargado de entidades, para evitar duplicidad
           this.lstEntidadesFilter = r.data.result;
           this.displayEntidades = true;
         })

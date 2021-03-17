@@ -11,6 +11,7 @@
         />
       </template>
     </notifications>
+    <vue-progress-bar></vue-progress-bar>
   </div>
 </template>
 <script>
