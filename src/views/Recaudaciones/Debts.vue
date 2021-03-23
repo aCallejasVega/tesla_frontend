@@ -684,6 +684,12 @@ export default {
         this.displayModal = false;
         return;
       }
+
+      if (!this.verificarMontoPrepago(this.clienteDto.servicioDeudaDtoList)) {
+        this.$notification.warning("Para el caso de prepagos debe llenar el monto correspondiente, por favor verifique.");
+        this.displayModal = false;
+        return;
+      }
       //this.cobrarDeudas();
       this.displayModal = true;
     },
@@ -691,13 +697,6 @@ export default {
       this.$notificarion.warning("Ha cancelado el Cobro, puede proceder a modificar.");
     },
     cobrarDeudas(e) {
-      if (!this.verificarMontoPrepago(this.clienteDto.servicioDeudaDtoList)) {
-        //this.displayModal = false;
-        this.$notification.warning("Para el caso de prepagos debe llenar el monto correspondiente, por favor verifique.");
-        this.displayModal = false;
-        return;
-      }
-
       this.$Progress.start();
       PaymentDebts.cobrarDeudas(this.clienteDto, 5) //Debe ser Ctte = 5
         .then((r) => {

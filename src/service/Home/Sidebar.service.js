@@ -17,4 +17,15 @@ export default {
     return Api().get("api/Menu/", this.headersConfig());
   },
 
+  getOpciones(tabla) {
+    return Api().get(`api/Menu/getOperaciones/${tabla}`, this.headersConfig());
+  },
+
+  getOpcionesByEstado(tabla, estadoInicial) {
+    if(estadoInicial != null)
+      return Api().get(`api/Menu/operaciones/${tabla}/${estadoInicial}`, this.headersConfig());
+    else 
+      return Api().get(`api/Menu/operaciones/${tabla}`, this.headersConfig());
+  },
+
 };

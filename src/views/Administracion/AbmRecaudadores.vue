@@ -2,16 +2,18 @@
   <div>
     <a-card v-if="!displayForm" style="width: 100%">
       <a-page-header
-        style="border: 1px solid rgb(224,206,206)"
+        style="border: 1px solid rgb(224, 206, 206)"
         title="Administración de Registro de Recaudadores"
       />
     </a-card>
     <a-card v-if="!displayForm" style="width: 100%">
       <template slot="actions" class="ant-card-actions">
-        <a-button-group >
-          <a-button  v-for="(item, i) in lstOpciones" 
+        <a-button-group>
+          <a-button
+            v-for="(item, i) in lstOpciones"
             :key="i"
-            @click="seleccionarOpcion(item.transaccion)">
+            @click="seleccionarOpcion(item.transaccion)"
+          >
             {{ item.etiqueta }}
           </a-button>
         </a-button-group>
@@ -19,49 +21,78 @@
     </a-card>
     <a-card v-if="!displayForm" style="width: 100%">
       <!--LISTADO DE RECAUDADORES-->
+       <a-row type="flex" justify="end">
+         <a-col :span="12">
+           <b>{{filter}}</b>
+         </a-col>
+        <a-col :span="12" >
+          <a-input-search
+            v-model="search"
+            placeholder="Buscar por nombre..."
+            @search="filterTable"
+            enter-button=" Buscar "
+            :maxLength="50"
+            size="small"
+          />
+        </a-col>
+      </a-row>
+      <br/>
       <a-table
         :row-selection="rowSelection"
         :columns="columns"
-        :data-source="lstRecaudadores"
+        :data-source="lstFilter"
         rowKey="recaudadorId"
         :pagination="pagination"
         :scroll="{ x: 1500 }"
-      >      
-        <template slot="estado" slot-scope="text, record" >
+      >
+        <template slot="estado" slot-scope="text, record">
           <div v-if="record.estado == 'ACTIVO'" align="center">
             <a-tag color="green">
               <a-icon type="caret-up" :style="{ fontSize: '20px' }" />
-              {{record.estado}}
+              {{ record.estado }}
             </a-tag>
           </div>
           <div v-if="record.estado == 'DESACTIVO'" align="center">
             <a-tag color="red">
               <a-icon type="caret-down" :style="{ fontSize: '20px' }" />
-               {{record.estado}}
+              {{ record.estado }}
             </a-tag>
           </div>
           <div v-if="record.estado == 'CREADO'" align="center">
             <a-tag color="blue">
-               {{record.estado}}
+              {{ record.estado }}
             </a-tag>
           </div>
         </template>
-        <template slot="opciones" slot-scope="text, record" v-if="record.estado == 'ACTIVO' || record.estado == 'CREADO'">
-            <a href="javascript:;" @click="mostrarSucursal(record.recaudadorId)">Sucursales</a>
-            <br/>
-            <a href="javascript:;" @click="openModal(record.recaudadorId)">Entidades</a>
+        <template
+          slot="opciones"
+          slot-scope="text, record"
+          v-if="record.estado == 'ACTIVO' || record.estado == 'CREADO'"
+        >
+          <a href="javascript:;" @click="mostrarSucursal(record.recaudadorId, record.nombre)"
+            >Sucursales</a
+          >
+          <br />
+          <a href="javascript:;" @click="openModal(record.recaudadorId)"
+            >Entidades</a
+          >
+          <br/>
+           <a href="javascript:;" @click="openModalComision(record.recaudadorId)">
+            Comisión </a
+          ><br />
         </template>
       </a-table>
     </a-card>
     <a-card v-if="displayForm">
       <a-page-header
-        style="border: 1px solid rgb(224,206,206)"
+        style="border: 1px solid rgb(224, 206, 206)"
         title="Administración de Recaudadoras"
         :sub-title="subTitle"
         @back="() => volverListado()"
       />
-      <br/>
+      <br />
       <!--LISTADO DE RECAUDADORES-->
+      {{selectedRowKeys}}
       <a-form-model
         ref="ruleForm"
         :model="recaudadorObj"
@@ -70,6 +101,7 @@
         :wrapper-col="wrapperCol"
         size="small"
       >
+        <a-divider orientation="left">Información General</a-divider>
         <a-form-model-item ref="nombre" label="Nombre Recaudador" prop="nombre">
           <a-input
             v-model="recaudadorObj.nombre"
@@ -117,25 +149,19 @@
             :maxLength="10"
           />
         </a-form-model-item>
-        <a-form-model-item label="Entidades Habilitadas" v-if="recaudadorObj.recaudadorId == null">
-          <a-select
-            mode="multiple"
-            v-model="recaudadorObj.entidadIdLst"
-            style="width: 100%"
-            placeholder="Seleccione las Recaudadoras"
-          >
-            <a-select-option v-for="(item) in lstEntidades"
-              :key="item.entidadId">
-              {{item.nombre}}
-            </a-select-option>
-          </a-select>
-           <a-button type="primary" @click="abrirEntidad"> Nueva Empresa 
-          </a-button>
+        <a-divider orientation="left"
+          >Empresas donde serán habilitadas</a-divider
+        >
+        <a-form-model-item
+          label="Empresas"
+          v-if="recaudadorObj.recaudadorId == null"
+        >
+          <EntidadLst :recaudadorObj="recaudadorObj" />  
         </a-form-model-item>
       </a-form-model>
       <template slot="actions" class="ant-card-actions">
-         <a-button type="link" @click="onSubmit"> Registrar </a-button>
-          <a-button type="link" @click="resetForm"> Limpiar </a-button>
+        <a-button type="link" @click="onSubmit"> Registrar </a-button>
+        <a-button type="link" @click="resetForm"> Limpiar </a-button>
       </template>
     </a-card>
 
@@ -151,30 +177,35 @@
       :closable="false"
       :maskClosable="false"
     >
-     <a-select
-            mode="multiple"
-            v-model="recaudadorObj.entidadIdLst"
-            style="width: 100%"
-            placeholder="Seleccione las Recaudadoras"
-          >
-            <a-select-option v-for="(item) in lstEntidades"
-              :key="item.entidadId">
-              {{item.nombre}}
-            </a-select-option>
-          </a-select>
-           <a-button type="primary" @click="abrirEntidad"> Nueva Empresa 
-          </a-button>
+
+      <EntidadLst :recaudadorObj="recaudadorObj" />  
+      
+
     </a-modal>
 
-
+     <!--MODAL COMISION---------------------------------------------------->
+    <a-modal
+      v-model="displayModalComision"
+      title="Comisión Por Recaudadora"
+      ok-text="OK"
+      cancel-text="Cancelar"
+      @ok="closeModalComision()"
+      @cancel="loading = false"
+      width="800px"
+      :centered="true"
+      :destroyOnClose="true"
+      :footer="null"
+    >
+      <RecaudadoresComisiones :recaudadorId="recaudadorId" />
+    </a-modal> 
   </div>
 </template>
 <script>
 import Dominios from "../../service/Administraciones/Dominio.service";
 import Recaudadores from "../../service/Administraciones/Recaudador.service";
-
-import Entidades from "../../service/Administraciones/Entidad.service";
-
+import EntidadLst from "../../components/Administracion/EntidadesLst.vue";
+import RecaudadoresComisiones from "../../components/Administracion/RecaudadoresComisiones.vue";
+import Sidebar from "../../service/Home/Sidebar.service";
 
 const columns = [
   {
@@ -209,11 +240,16 @@ const columns = [
 ];
 
 export default {
+  components: {
+    EntidadLst,
+    RecaudadoresComisiones,
+  },
   data() {
     return {
       /*******LISTADO DE RECAUDADORES********* */
       /*Datos*/
       lstRecaudadores: [],
+      recaudadorId: null,
       /*Tabla*/
       columns,
       selectedRowKeys: [],
@@ -221,13 +257,7 @@ export default {
         pageSize: 5,
       },
       /*menu*/
-      lstOpciones: [
-        { transaccion: "CREAR", etiqueta: "CREAR", imagen: "imagen.png", orden: 1 },
-        { transaccion: "MODIFICAR", etiqueta: "MODIFICAR", imagen: "imagen.png", orden: 2 },
-        { transaccion: "ELIMINAR", etiqueta: "ELIMINAR", imagen: "imagen.png", orden: 3 },
-        { transaccion: "ACTIVAR", etiqueta: "DAR ALTA", imagen: "imagen.png", orden: 4 },
-        { transaccion: "DESACTIVAR", etiqueta: "DAR BAJA", imagen: "imagen.png", orden: 5 },
-      ],
+      lstOpciones: [],
       /**Otros */
       current: null,
       displayModal: false,
@@ -236,7 +266,7 @@ export default {
       /*Datos*/
       recaudadorObj: {},
       /*Formulario*/
-      subTitle: '',
+      subTitle: "",
       displayForm: false,
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
@@ -281,7 +311,8 @@ export default {
           {
             min: 7,
             max: 10,
-            message: "El teléfono debe contener al menos 7 caracteres y máximo 10",
+            message:
+              "El teléfono debe contener al menos 7 caracteres y máximo 10",
             trigger: "blur",
           },
         ],
@@ -290,16 +321,20 @@ export default {
       /*Dominios*/
       lstTipoRecaudadores: [],
 
-      /**Entidades */
-      lstEntidades: [],
+      /**Modal Comision */
+      displayModalComision: false,
 
+      /**Filter */
+      search: '',
+      lstFilter: [],
+      filter: 'Registros: 0/0',
     };
   },
   computed: {
     /*Tabla*/
     rowSelection() {
       return {
-        //type: "radio",
+        selectedRowKeys: this.selectedRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
           console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
@@ -307,6 +342,18 @@ export default {
             selectedRows
           );
           this.selectedRowKeys = selectedRowKeys;
+
+          //Opciones
+          const mismoEstado = [...new Set(selectedRows.map(i => i.estado))];
+          if(mismoEstado.length > 1) {
+            this.$notification.warning("Debe seleccionar registros del mismo ESTADO para realizar operaciones múltiples.");
+             this.cargarOpcionesByEstado("INICIAL");
+          } else {
+            if(selectedRows.length > 0) 
+              this.cargarOpcionesByEstado(selectedRows[0].estado)
+            else
+              this.cargarOpcionesByEstado(null);
+          }
         },
       };
     },
@@ -315,90 +362,120 @@ export default {
     this.cargarRecaudadores();
     this.cargarTipoRecaudadora();
 
-    this.cargarEntidades();
+    this.cargarOpcionesByEstado(null);
   },
 
   methods: {
     /*****LISTADO DE RECAUDADORES*** */
     /**Menú */
+    cargarOpcionesByEstado(estadoInicial) {
+      Sidebar.getOpcionesByEstado("RECAUDADORES", estadoInicial).then((r) => {
+        console.log(r);
+        this.lstOpciones = r.data.data;
+        console.log(JSON.stringify(this.lstOpciones));
+      });
+    },
     seleccionarOpcion(opcion) {
       switch (opcion) {
-        case 'CREAR': //CREAR
+        case "CREAR": //CREAR
           this.recaudadorObj = {};
           this.displayForm = true;
           this.subTitle = "Formulario Registro Nuevo";
-          break;  
-        case 'MODIFICAR': //Modiicar
-          if(this.selectedRowKeys.length === 1) {
+          break;
+        case "MODIFICAR": //Modiicar
+          if (this.selectedRowKeys.length === 1) {
             this.cargarRecaudador(this.selectedRowKeys);
             this.displayForm = true;
             this.subTitle = "Formulario Modificación de Registro";
+
           } else {
-            this.$notification.warning('Debe seleccionar un solo registro para MODIFICAR');
+            this.$notification.warning(
+              "Debe seleccionar un solo registro para MODIFICAR"
+            );
           }
           break;
-        case 'ELIMINAR': //ELIMINAR
-          if(this.selectedRowKeys.length > 0) {
+        case "ELIMINAR": //ELIMINAR
+          if (this.selectedRowKeys.length > 0) {
             this.$confirm({
-              title: "¿Está seguro de ELIMINAR el(los) registro(s) seleccionado(s)?",
-              content: "Considere que el(los) registro(s) ya no podrá(n) ser visualizado(s).",
+              title:
+                "¿Está seguro de ELIMINAR el(los) registro(s) seleccionado(s)?",
+              content:
+                "Considere que el(los) registro(s) ya no podrá(n) ser visualizado(s).",
               okText: "Aceptar",
               okType: "danger",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log('ok')
-                this.actualizaListaRecaudadoresTransaccion(this.selectedRowKeys, "ELIMINAR");
-              },
-              onCancel() {  
-                console.log('Cancel');
-              },
-              class: 'test',
-            });
+                console.log("ok");
+                this.actualizaListaRecaudadoresTransaccion(
+                  this.selectedRowKeys,
+                  "ELIMINAR"
+                );
             
+              },
+              onCancel() {
+                console.log("Cancel");
+              },
+              class: "test",
+            });
           } else {
-            this.$notification.warning('Debe seleccionar al menos un registro para ELIMINAR')
+            this.$notification.warning(
+              "Debe seleccionar al menos un registro para ELIMINAR"
+            );
           }
           break;
-        case 'ACTIVAR': //ALTA
-          if(this.selectedRowKeys.length > 0) {
+        case "ACTIVAR": //ALTA
+          if (this.selectedRowKeys.length > 0) {
             this.$confirm({
-              title: "¿Está seguro de DAR ALTA el(los) registro(s) seleccionado(s)?",
-              content: "Considere que el(los) registro(s) ingresará(n) en transacciones en el Sistema.",
+              title:
+                "¿Está seguro de DAR ALTA el(los) registro(s) seleccionado(s)?",
+              content:
+                "Considere que el(los) registro(s) ingresará(n) en transacciones en el Sistema.",
               okText: "Aceptar",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log('ok')
-                this.actualizaListaRecaudadoresTransaccion(this.selectedRowKeys, "ACTIVAR");
+                console.log("ok");
+                this.actualizaListaRecaudadoresTransaccion(
+                  this.selectedRowKeys,
+                  "ACTIVAR"
+                );
               },
-              onCancel() {  
-                console.log('Cancel');
+              onCancel() {
+                console.log("Cancel");
               },
-              class: 'test',
+              class: "test",
             });
-            
           } else {
-            this.$notification.warning('Debe seleccionar al menos un registro para DAR ALTA')
+            this.$notification.warning(
+              "Debe seleccionar al menos un registro para DAR ALTA"
+            );
           }
           break;
-        case 'DESACTIVAR': //BAJAR
-          if(this.selectedRowKeys.length > 0) {
+        case "DESACTIVAR": //BAJAR
+          if (this.selectedRowKeys.length > 0) {
             this.$confirm({
-              title: "¿Está seguro de DAR BAJA el(los) registro(s) seleccionado(s)?",
-              content: "Considere que el registro ya no podrá realizar transacciones en el Sistema.",
+              title:
+                "¿Está seguro de DAR BAJA el(los) registro(s) seleccionado(s)?",
+              content:
+                "Considere que el registro ya no podrá realizar transacciones en el Sistema.",
               okText: "Aceptar",
               okType: "danger",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log('ok')
-                this.actualizaListaRecaudadoresTransaccion(this.selectedRowKeys, "DESACTIVAR");
+                console.log("ok");
+                this.actualizaListaRecaudadoresTransaccion(
+                  this.selectedRowKeys,
+                  "DESACTIVAR"
+                );
               },
-              onCancel() {  
-                console.log('Cancel');
+              onCancel() {
+                console.log("Cancel");
               },
-              class: 'test',
+              class: "test",
             });
           } else {
-            this.$notification.warning('Debe seleccionar al menos un registro para DAR BAJA')
+            this.$notification.warning(
+              "Debe seleccionar al menos un registro para DAR BAJA"
+            );
           }
           break;
       }
@@ -406,19 +483,46 @@ export default {
     /**Opeaciones */
     cargarRecaudadores() {
       this.$Progress.start();
-      Recaudadores.getLstRecaudadores().then((r) => {
-        console.log(r)
-        if(r.status === 204 ) {
-          this.lstRecaudadores = [],
-          this.$notification.warning("No se ha encontrado ninguna Recaudador registrada");
+      Recaudadores.getLstRecaudadores()
+        .then((r) => {
+          console.log(r);
+          if (r.status === 204) {
+            this.lstRecaudadores = [];
+            this.lstFilter = [];
+            this.$notification.warning(
+              "No se ha encontrado ninguna Recaudador registrada"
+            );
+            this.$Progress.finish();
+            return;
+          }
+          console.log("aqui");
+          this.lstRecaudadores = r.data.result;
+          this.lstFilter = this.lstRecaudadores;
+          this.countRows();
           this.$Progress.finish();
-          return;
-        }
-        console.log('aqui')
-        this.lstRecaudadores = r.data.result;
-        this.$Progress.finish();
-      }).catch((error) => {
-          this.lstRecaudadores = [],
+        })
+        .catch((error) => {
+          this.lstRecaudadores = [];
+          this.lstFilter = [];
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
+          this.$Progress.fail();
+        });
+    },
+    actualizaRecaudadorTransaccion(recaudadorId, transaccion) {
+      //Solo se usara el listado
+      this.$Progress.start();
+      Recaudadores.putRecaudadorTransaccion(recaudadorId, transaccion)
+        .then((r) => {
+          this.cargarRecaudadores();
+
+
+          this.$notification.success(r.data.message);
+          this.$Progress.finish();
+        })
+        .catch((error) => {
           console.log(error);
           this.$notification.error(
             error.response.data.message,
@@ -427,40 +531,34 @@ export default {
           this.$Progress.fail();
         });
     },
-    actualizaRecaudadorTransaccion(recaudadorId, transaccion) { //Solo se usara el listado
-      this.$Progress.start();
-      Recaudadores.putRecaudadorTransaccion(recaudadorId, transaccion).then((r) => {
-        this.cargarRecaudadores();
-        this.$notification.success(r.data.message);
-        this.$Progress.finish();
-      }).catch((error) => {
-        console.log(error)
-        this.$notification.error(error.response.data.message, error.response.data.code);
-        this.$Progress.fail();
-      });
-    },
 
     actualizaListaRecaudadoresTransaccion(recaudadorIdLst, transaccion) {
-      
-      Recaudadores.putLstRecaudadorTransaccion(recaudadorIdLst, transaccion).then((r) => {
-        this.$Progress.start();
-        this.cargarRecaudadores();
-        this.$notification.success(r.data.message);
-        this.$Progress.finish();
-      }).catch((error) => {
-        console.log(error)
-        this.$notification.error(error.response.data.message, error.response.data.code);
-        this.$Progress.fail();
-      });
+      Recaudadores.putLstRecaudadorTransaccion(recaudadorIdLst, transaccion)
+        .then((r) => {
+          this.$Progress.start();
+          this.cargarRecaudadores();
+          
+          this.selectedRowKeys = [];
+
+          this.$notification.success(r.data.message);
+          this.$Progress.finish();
+        })
+        .catch((error) => {
+          console.log(error);
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
+          this.$Progress.fail();
+        });
     },
     /**Visualizaciones */
-    mostrarSucursal(recaudadorId) {
+    mostrarSucursal(recaudadorId, nombre) {
       this.$router.push({
         name: "AbmSucursales",
-        params: { recaudadorId: recaudadorId },
+        params: { recaudadorId: recaudadorId, nombre: nombre },
       });
     },
-
 
     /****FORMULARIO**** */
     /*Control de campos*/
@@ -469,21 +567,28 @@ export default {
       this.recaudadorObj = {};
       this.selectedRowKeys = [];
     },
-    
+
     /*Lista de Dominio*/
     cargarTipoRecaudadora() {
-      Dominios.getListDominos("tipo_recaudador_id").then((r) => {
-        if(r.status === 204) {
-          this.lstTipoRecaudadores = [];
-          this.$notification.warning("La parametrización de dominios no esta completa.");
-          return;
-        }
+      Dominios.getListDominos("tipo_recaudador_id")
+        .then((r) => {
+          if (r.status === 204) {
+            this.lstTipoRecaudadores = [];
+            this.$notification.warning(
+              "La parametrización de dominios no esta completa."
+            );
+            return;
+          }
 
-        this.lstTipoRecaudadores = r.data.result;
-      }).catch((error) => {
+          this.lstTipoRecaudadores = r.data.result;
+        })
+        .catch((error) => {
           console.log(error);
           this.lstTipoRecaudadores = [];
-          this.$notification.error(error.response.data.message, error.response.data.code);
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
         });
     },
     /*Operaciones*/
@@ -504,10 +609,12 @@ export default {
         })
         .catch((error) => {
           console.log(error);
-          this.$notification.error(error.response.data.message, error.response.data.code);
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
           this.$Progress.fail();
         });
-      
     },
     /*Acciones de Formulario*/
     onSubmit() {
@@ -516,46 +623,23 @@ export default {
           this.guardarRecaudador(this.recaudadorObj);
         } else {
           console.log("error submit!!");
-          this.$notification.warning("Debe resolver las validaciones del formulario.");
+          this.$notification.warning(
+            "Debe resolver las validaciones del formulario."
+          );
           return false;
         }
       });
     },
     resetForm() {
+      this.recaudadorObj = {};
       this.$refs.ruleForm.resetFields();
     },
 
-     /**Entidaes */
-      cargarEntidades() {
 
-      this.$Progress.start();
-      Entidades.getLstEntidad().then((r) => {
-        if(r.status === 204 ) {
-          this.lstEntidades = [],
-          this.$notification.warning("No se ha encontrado ninguna Empresa registrada");
-          this.$Progress.finish();
-          return;
-        }
-
-        this.lstEntidades = r.data.result;
-        console.log('cargando entidades')
-        console.log(this.lstEntidades);
-        this.$Progress.finish();
-      }).catch((error) => {
-        this.lstEntidades = [],
-        console.log(error);
-        this.$notification.error(
-          error.response.data.message,
-          error.response.data.code
-        );
-        this.$Progress.fail();
-      });
-    }, 
-    
-   /**Modal */
-    openModal(recaudadorId){
-        this.cargarRecaudador(recaudadorId);
-        this.displayModal = true;
+    /**Modal */
+    openModal(recaudadorId) {
+      this.cargarRecaudador(recaudadorId);
+      this.displayModal = true;
     },
     closeModal() {
       this.guardarEntidades();
@@ -563,31 +647,35 @@ export default {
     },
     abrirEntidad() {
       this.$confirm({
-              title: "¿Está seguro de ingresar a Registro de Empresas?",
-              content: "Considere que los datos se perderán.",
-              okText: "Aceptar",
-              cancelText: "Cancelar",
-              onOk: () => {
-                console.log('ok');
-                this.$router.push({
-                  name: "AbmEntidades",
-                });
-              },
-              onCancel() {  
-                console.log('Cancel');
-              },
-              class: 'test',
-            });
+        title: "¿Está seguro de ingresar a Registro de Empresas?",
+        content: "Considere que los datos se perderán.",
+        okText: "Aceptar",
+        cancelText: "Cancelar",
+        onOk: () => {
+          console.log("ok");
+          this.$router.push({
+            name: "AbmEntidades",
+          });
+        },
+        onCancel() {
+          console.log("Cancel");
+        },
+        class: "test",
+      });
     },
 
-    guardarEntidades(){
+    guardarEntidades() {
       this.$Progress.start();
-      Recaudadores.postEntidadRecaudador(this.recaudadorObj.entidadIdLst, this.recaudadorObj.recaudadorId).then((r) => {
-        this.$notification.success(r.data.message);
-        this.$Progress.finish();
-      }).catch((error) => {
-          this.lstRecaudadores = [],
-          console.log(error);
+      Recaudadores.postEntidadRecaudador(
+        this.recaudadorObj.entidadIdLst,
+        this.recaudadorObj.recaudadorId
+      )
+        .then((r) => {
+          this.$notification.success(r.data.message);
+          this.$Progress.finish();
+        })
+        .catch((error) => {
+          (this.lstRecaudadores = []), console.log(error);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -596,10 +684,33 @@ export default {
         });
     },
 
-    
 
+    /**RECAUDADORES COMISIONES***************************************** */  
+    /**Modal Comision */
+    openModalComision(recaudadorId) {
+      this.recaudadorId = recaudadorId;
+      this.displayModalComision = true;
+    },
+    closeModalComision() {
+      this.recaudadorId = null;
+      this.displayModalComision = false;
+    },
 
-
+    /**Filtrado */
+    filterTable() {
+      this.lstFilter = this.lstRecaudadores.filter((s) => {
+        console.log(this.search)
+        if(this.search != null || this.search != '') {
+          return s.nombre.toLowerCase().includes(this.search.toLowerCase()); 
+        }  
+      });
+      this.countRows();
+    },
+    countRows() {
+      let rowFilter = this.lstFilter.length;
+      let rowTotal = this.lstRecaudadores.length;
+      this.filter = "Registros: " + rowFilter + "/" + rowTotal;
+    }
   },
 };
 </script>

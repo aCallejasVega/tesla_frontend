@@ -21,16 +21,38 @@
     </a-card>
     <a-card v-if="!displayForm" style="width: 100%">
       <!--LISTADO DE ENTIDADES------------------------------------------>
+       <a-row type="flex" justify="end">
+         <a-col :span="12">
+          <b>{{filter}}</b>
+         </a-col>
+        <a-col :span="12" >
+          <a-input-search
+            v-model="search"
+            placeholder="Buscar por nombre..."
+            @search="filterTable"
+            enter-button=" Buscar "
+            :maxLength="50"
+            size="small"
+          />
+        </a-col>
+      </a-row>
+      <br/>
       <a-table
         :row-selection="rowSelection"
         :columns="columns"
-        :data-source="lstEntidades"
+        :data-source="lstFilter"
         rowKey="entidadId"
         :pagination="pagination"
-        :scroll="{ x: 1500 }"
+        :scroll="{ x: 2000 }"
       >
         <template slot="comprobante" slot-scope="text, record">
           <a-checkbox :checked="record.comprobanteEnUno"> </a-checkbox>
+        </template>
+         <template slot="esCobradora" slot-scope="text, record">
+          <a-checkbox :checked="record.esCobradora"> </a-checkbox>
+        </template>
+         <template slot="esPagadora" slot-scope="text, record">
+          <a-checkbox :checked="record.esPagadora"> </a-checkbox>
         </template>
         <template slot="logo" slot-scope="text, record">
          <img
@@ -67,11 +89,7 @@
           slot-scope="text, record"
           v-if="record.estado == 'ACTIVO' || record.estado == 'CREADO'"
         >
-        {{record.entidadId}}
-          <a href="javascript:;" @click="openModalComision(record.entidadId)">
-            Comisión </a
-          ><br />
-          <a href="javascript:;" @click="mostrarSucursal(record.entidadId)">
+          <a href="javascript:;" @click="mostrarSucursal(record.entidadId, record.nombre)">
             Sucursales
           </a>
           <br />
@@ -90,6 +108,10 @@
           >
             Recaudadoras
           </a>
+          <br/>
+           <a href="javascript:;" @click="openModalComision(record.entidadId)">
+            Comisión </a
+          ><br />
         </template>
       </a-table>
     </a-card>
@@ -170,35 +192,7 @@
             :maxLength="10"
           />
         </a-form-model-item>
-        <!--
-        <a-form-model-item ref="pathLogo" label="Logo" prop="pathLogo">
-          <a-input v-model="entidadObj.pathLogo" />
-          <img :src="entidadObj.pathLogo" alt="" width="128px" height="128px" />
-        </a-form-model-item>
-        <a-form-model-item ref="pathLogo" label="Logo" prop="pathLogo">
-          
        
-<a-upload 
-    name="file"
-    list-type="picture-card"
-    class="avatar-uploader"
-    :show-upload-list="false"
-    :action="this.url"
-    :before-upload="beforeUpload"
-    @change="handleChange"
-    :headers="{ Authorization: 'Bearer ' + this.token }"
-    withCredentials
-  >
-    <img v-if="imageUrl" :src="imageUrl" alt="" width="128px" height="128px" />
-    <div v-else>
-      <a-icon :type="loading ? 'loading' : 'plus'" />
-      <div class="ant-upload-text">
-        Upload
-      </div>
-    </div>
-  </a-upload>
-  {{entidadObj.pathLogo}}
-        </a-form-model-item>-->
         <a-divider orientation="left">Información Tributaria</a-divider>
         <a-form-model-item
           label="Actividad Económica"
@@ -242,32 +236,37 @@
             :maxLength="13"
           />
         </a-form-model-item>
-        <a-form-model-item label="Comprobante en Uno" prop="comprobanteEnUno">
+         <a-form-model-item label="Tipo Facturación" prop="tipoFacturacionId">
+          <a-select
+            v-model="entidadObj.tipoFacturacionId"
+            placeholder="Seleccione Tipo de Facturación"
+          >
+            <a-select-option
+              v-for="(item, i) in lstTipoFacturaciones"
+              :key="i"
+              :value="item.dominioId"
+            >
+              {{ item.descripcion }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <a-form-model-item label="¿Comprobante en Uno?" prop="comprobanteEnUno">
           <a-switch v-model="entidadObj.comprobanteEnUno" />
         </a-form-model-item>
         <a-divider orientation="left" v-if="entidadObj.entidadId == null"
-          >Información Relacional</a-divider
+          >Parametrización</a-divider
         >
+         <a-form-model-item label="¿Realiza Cobros?" prop="comprobanteEnUno">
+          <a-switch v-model="entidadObj.esCobradora" />
+        </a-form-model-item>
+         <a-form-model-item label="¿Realiza Pagos?" prop="comprobanteEnUno">
+          <a-switch v-model="entidadObj.esPagadora" />
+        </a-form-model-item>
         <a-form-model-item
           label="Recaudadoras Habilitadas"
           v-if="entidadObj.entidadId == null"
         >
-          <a-select
-            mode="multiple"
-            v-model="entidadObj.recaudadorIdLst"
-            style="width: 100%"
-            placeholder="Seleccione las Recaudadoras"
-          >
-            <a-select-option
-              v-for="item in lstRecaudadores"
-              :key="item.recaudadorId"
-            >
-              {{ item.nombre }}
-            </a-select-option>
-          </a-select>
-          <a-button type="primary" @click="abrirRecaudador">
-            Nuevo Recaudador
-          </a-button>
+          <RecaudadorLst :entidadObj = entidadObj /> 
         </a-form-model-item>
       </a-form-model>
       <template slot="actions" class="ant-card-actions">
@@ -288,22 +287,7 @@
       :closable="false"
       :maskClosable="false"
     >
-      <a-select
-        mode="multiple"
-        v-model="entidadObj.recaudadorIdLst"
-        style="width: 100%"
-        placeholder="Seleccione las Recaudadoras"
-      >
-        <a-select-option
-          v-for="item in lstRecaudadores"
-          :key="item.recaudadorId"
-        >
-          {{ item.nombre }}
-        </a-select-option>
-      </a-select>
-      <a-button type="primary" @click="abrirRecaudador">
-        Nuevo Recaudador
-      </a-button>
+      <RecaudadorLst :entidadObj = entidadObj />
     </a-modal>
 
     <!--MODAL LOGO------------------------------------------------------->
@@ -344,9 +328,10 @@
 <script>
 import Dominios from "../../service/Administraciones/Dominio.service";
 import Entidades from "../../service/Administraciones/Entidad.service";
-import Recaudadores from "../../service/Administraciones/Recaudador.service";
-import EntidadComisiones from "../../components/Administracion/Comisiones.vue";
+import EntidadComisiones from "../../components/Administracion/EntidadesComisiones.vue";
 import LogoUpload from "../../components/Administracion/LogoUpload.vue";
+import RecaudadorLst from "../../components/Administracion/RecaudadorLst.vue"
+import Sidebar from "../../service/Home/Sidebar.service";
 
 /**Listado de Entidades */
 const columns = [
@@ -374,19 +359,38 @@ const columns = [
   {
     title: "Actividad Económica",
     dataIndex: "actividadEconomicaDescripcion",
+    //width: "200px"
   },
   {
     title: "Municipio",
     dataIndex: "municipioDescripcion",
+    //width: "200px"
   },
   {
     title: "Nit",
     dataIndex: "nit",
+    //width: "150px"
+  },
+  {
+    title: "Tipo Facturación",
+    dataIndex: "tipoFacturacionDescripcion",
+    //width: "150px"
   },
   {
     title: "Comprobante en uno",
     dataIndex: "comprobanteEnUno",
     scopedSlots: { customRender: "comprobante" },
+    //width: "120px"
+  },
+  {
+    title: "Realiza Cobros",
+    dataIndex: "esCobradora",
+    scopedSlots: { customRender: "esCobradora" },
+  },
+  {
+    title: "Realiza Pagos",
+    dataIndex: "esPagadora",
+    scopedSlots: { customRender: "esPagadora" },
   },
   {
     title: "Logo",
@@ -411,9 +415,11 @@ export default {
   components: {
     EntidadComisiones,
     LogoUpload,
+    RecaudadorLst,
   },
   data() {
     return {
+      c: null,
       /*******LISTADO DE ENTIDADES********* */
       /*Datos*/
       lstEntidades: [],
@@ -425,38 +431,7 @@ export default {
         pageSize: 5,
       },
       /*menu*/
-      lstOpciones: [
-        {
-          transaccion: "CREAR",
-          etiqueta: "CREAR",
-          imagen: "imagen.png",
-          orden: 1,
-        },
-        {
-          transaccion: "MODIFICAR",
-          etiqueta: "MODIFICAR",
-          imagen: "imagen.png",
-          orden: 2,
-        },
-        {
-          transaccion: "ELIMINAR",
-          etiqueta: "ELIMINAR",
-          imagen: "imagen.png",
-          orden: 3,
-        },
-        {
-          transaccion: "ACTIVAR",
-          etiqueta: "DAR ALTA",
-          imagen: "imagen.png",
-          orden: 4,
-        },
-        {
-          transaccion: "DESACTIVAR",
-          etiqueta: "DAR BAJA",
-          imagen: "imagen.png",
-          orden: 5,
-        },
-      ],
+      lstOpciones:[],
       /**Otros */
       current: null,
       displayModal: false,
@@ -544,16 +519,20 @@ export default {
             trigger: "blur",
           },
         ],
+        tipoFacturacionId: [
+          {
+            required: true,
+            message: "Debe seleccionar un Tipo de Facturación",
+            trigger: "change",
+          },
+        ],
       },
 
       /*Dominios*/
       lstTiposEntidades: [],
       lstActividadesEconomicas: [],
       lstMunicipios: [],
-
-      /**Recaudadora */
-      lstRecaudadores: [],
-      selectRecaudadores: [],
+      lstTipoFacturaciones: [],
 
       /**Modal Comision */
       displayModalComision: false,
@@ -561,12 +540,18 @@ export default {
       /**Modal Logo */
       displayModalLogo: false,
       titleModalLogo: '',
+
+      /**Filter */
+      search: '',
+      lstFilter: [],
+      filter: 'Registros: 0/0',
     }
   },
   computed: {
     /**Listado Entidades*/
     rowSelection() {
       return {
+        selectedRowKeys: this.selectedRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
           console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
@@ -574,6 +559,18 @@ export default {
             selectedRows
           );
           this.selectedRowKeys = selectedRowKeys;
+            
+          //Opciones
+          const mismoEstado = [...new Set(selectedRows.map(i => i.estado))];
+          if(mismoEstado.length > 1) {
+            this.$notification.warning("Debe seleccionar registros del mismo ESTADO para realizar operaciones múltiples.");
+            this.cargarOpcionesByEstado("INICIAL");
+          } else {
+            if(selectedRows.length > 0) 
+              this.cargarOpcionesByEstado(selectedRows[0].estado)
+            else
+              this.cargarOpcionesByEstado(null);
+          }
         },
       };
     },
@@ -583,11 +580,19 @@ export default {
     this.cargarTipoEntidades();
     this.cargarActividadesEconomicas();
     this.cargarMunicipios();
+    this.cargarTipoFacturaciones();
 
-    this.cargarRecaudadores();
+    this.cargarOpcionesByEstado(null);
   },
   methods: {
     /**Menú */
+    cargarOpcionesByEstado(estadoInicial) {
+      Sidebar.getOpcionesByEstado("ENTIDADES", estadoInicial).then((r) => {
+        console.log(r);
+        this.lstOpciones = r.data.data;
+        console.log(JSON.stringify(this.lstOpciones));
+      });
+    },
     seleccionarOpcion(opcion) {
       switch (opcion) {
         case "CREAR": //CREAR
@@ -600,6 +605,7 @@ export default {
             this.cargarEntidad(this.selectedRowKeys);
             this.displayForm = true;
             this.subTitle = "Formulario Modificación de Registro";
+
           } else {
             this.$notification.warning(
               "Debe seleccionar un solo registro para MODIFICAR"
@@ -622,7 +628,7 @@ export default {
                   this.selectedRowKeys,
                   "ELIMINAR"
                 );
-                this.selectedRowKeys = [];
+                
               },
               onCancel() {
                 console.log("Cancel");
@@ -701,25 +707,30 @@ export default {
       Entidades.getLstEntidad()
         .then((r) => {
           if (r.status === 204) {
-            (this.lstEntidades = []),
-              this.$notification.warning(
-                "No se ha encontrado ninguna Empresa registrada"
-              );
+            this.lstEntidades = [];
+            this.lstFilter = [];
+            this.$notification.warning(
+              "No se ha encontrado ninguna Empresa registrada"
+            );
             this.$Progress.finish();
             return;
           }
-
           this.lstEntidades = r.data.result;
+          this.lstFilter = this.lstEntidades;
+          this.countRows();
           this.$Progress.finish();
         })
         .catch((error) => {
-          (this.lstEntidades = []), console.log(error);
+          this.lstEntidades = [];
+          this.lstFilter = [];
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
           );
           this.$Progress.fail();
         });
+
+        this.countRows();
     },
     cargarEntidad(entidadId) {
       Entidades.getEntidad(entidadId).then((r) => {
@@ -731,6 +742,9 @@ export default {
         .then((r) => {
           this.$Progress.start();
           this.cargarEntidades();
+
+          this.selectedRowKeys = [];
+
           this.$notification.success(r.data.message);
           this.$Progress.finish();
         })
@@ -745,10 +759,10 @@ export default {
     },
     
     /**Visualizaciones */
-    mostrarSucursal(entidadId) {
+    mostrarSucursal(entidadId, nombre) {
       this.$router.push({
         name: "AbmSucursalesEntidades",
-        params: { entidadId: entidadId },
+        params: { entidadId: entidadId , nombre: nombre},
       });
     },
 
@@ -762,6 +776,9 @@ export default {
     habilitarNombreComercial(dominioId) {
       this.disabledNombreComercial = dominioId != 3; //Ctte
       this.entidadObj.nombreComercial = null;
+    },
+    verificarTipoTransaccion(entidadObj) {
+      return entidadObj.esCobradora || entidadObj.esPagadora;
     },
     /*Lista de Dominio*/
     cargarTipoEntidades() {
@@ -827,17 +844,46 @@ export default {
           );
         });
     },
+    cargarTipoFacturaciones() {
+      Dominios.getListDominos("tipo_facturacion_id")
+        .then((r) => {
+          if (r.status === 204) {
+            this.lstTipoFacturaciones = [];
+            this.$notification.warning(
+              "La parametrización de dominios no esta completa."
+            );
+            return;
+          }
+          this.lstTipoFacturaciones = r.data.result;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.lstTipoFacturaciones = [];
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
+        });
+    },
     /*Operaciones*/
     guardarEntidad() {
+      if(!this.verificarTipoTransaccion(this.entidadObj)) {
+        this.$notification.warning("Debe registrar si Realiza Cobros y/o Realiza Pagos");
+        return;
+      }
       this.$Progress.start();
       Entidades.postEntidad(this.entidadObj)
         .then((r) => {
+          console.log('si')
+          console.log(r);
           this.displayForm = false;
           this.cargarEntidades();
           this.$notification.success(r.data.message);
           this.$Progress.finish();
         })
         .catch((error) => {
+           console.log('no')
+          console.log(error.response.data);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -860,35 +906,13 @@ export default {
       });
     },
     resetForm() {
+      this.entidadObj = {};
       this.$refs.ruleForm.resetFields();
     },
 
     /**RECUADADORAS POR ENTIDAD******************************** */
     /**Operaciones */
-    cargarRecaudadores() {
-      this.$Progress.start();
-      Recaudadores.getLstRecaudadores()
-        .then((r) => {
-          if (r.status === 204) {
-            (this.lstRecaudadores = []),
-              this.$notification.warning(
-                "No se ha encontrado ninguna Recaudador a la que pueda habilitar."
-              );
-            this.$Progress.finish();
-            return;
-          }
-          this.lstRecaudadores = r.data.result;
-          this.$Progress.finish();
-        })
-        .catch((error) => {
-          (this.lstRecaudadores = []), console.log(error);
-          this.$notification.error(
-            error.response.data.message,
-            error.response.data.code
-          );
-          this.$Progress.fail();
-        });
-    },
+   
     guardarRecaudadoras() {
       this.$Progress.start();
       Entidades.postEntidadRecaudador(
@@ -917,24 +941,7 @@ export default {
       this.guardarRecaudadoras();
       this.displayModal = false;
     },
-    abrirRecaudador() {
-      this.$confirm({
-        title: "¿Está seguro de ingresar a Registro de Recaudadores?",
-        content: "Considere que los datos se perderán.",
-        okText: "Aceptar",
-        cancelText: "Cancelar",
-        onOk: () => {
-          console.log("ok");
-          this.$router.push({
-            name: "AbmRecaudadores",
-          });
-        },
-        onCancel() {
-          console.log("Cancel");
-        },
-        class: "test",
-      });
-    },
+    
     
     /**LOGO******************************************************* */
     /**Modal Logo */
@@ -960,6 +967,22 @@ export default {
       this.entidadId = null;
       this.displayModalComision = false;
     },
+
+     /**Filtrado */
+    filterTable() {
+      this.lstFilter = this.lstEntidades.filter((s) => {
+        console.log(this.search)
+        if(this.search != null || this.search != '') {
+          return s.nombre.toLowerCase().includes(this.search.toLowerCase()); 
+        } 
+      });
+      this.countRows();
+    },
+    countRows() {
+      let rowFilter = this.lstFilter.length;
+      let rowTotal = this.lstEntidades.length;
+      this.filter = "Registros: " + rowFilter + "/" + rowTotal;
+    }
    
   },
 };

@@ -59,7 +59,7 @@
                 @mouseover="changeUnlock"
                 @mouseleave="changeLock"
               >
-                <a-icon :type="iconConfig" :style="{ fontSize: '25px' }" />
+                <a-icon :type="iconConfig" :style="{ fontSize: '15px' }" />
               </a-button>
             </a-popover>
           </a-col>

@@ -42,7 +42,7 @@
             >
               <a-card hoverable>
                 <a-card-meta :title="item.descripcion">
-                  <a-avatar slot="avatar" :src="item.abreviatura" />
+                  <a-avatar slot="avatar" :src="item.abreviatura" size="large"/>
                 </a-card-meta>
               </a-card>
             </a-col>
@@ -66,7 +66,7 @@
               @click="seleccionar(item)"
             >
               <img :src="item.pathLogo" />
-              <div class="info">
+              <div>
                 <h1>{{ item.nombre }}</h1>
               </div>
             </a-col>

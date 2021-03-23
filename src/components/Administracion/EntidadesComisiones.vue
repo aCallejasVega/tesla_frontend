@@ -57,7 +57,6 @@
       type="info"
       show-icon
     />
-    {{entidadId}}
     <a-card style="width: 100%">
       <template slot="actions" class="ant-card-actions">
         <a-button-group>
@@ -75,7 +74,6 @@
       :row-selection="rowSelectionComision"
     >
       <template slot="comision" slot-scope="text, record">
-        {{ record.entidadComisionId }}
         <money v-model="record.comision" v-bind="money" disabled="true"></money>
       </template>
       <template slot="estadoComision" slot-scope="text, record">
