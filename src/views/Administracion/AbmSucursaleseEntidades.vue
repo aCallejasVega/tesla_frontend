@@ -5,14 +5,14 @@
     <a-card v-if="!displayForm" style="width: 100%">
       <a-page-header
         style="border: 1px solid rgb(224,206,206)"
-        title="Administración de Registro de Sucursales por Entidad"
+        :title="title"
         @back="$router.back()"
       />
     </a-card>
     <a-card v-if="!displayForm" style="width: 100%">
       <template slot="actions" class="ant-card-actions">
         <a-button-group >
-          <a-button  v-for="(item, i) in lstOpciones" 
+          <a-button v-for="(item, i) in lstOpciones"
             :key="i"
             @click="seleccionarOpcion(item.transaccion)">
             {{ item.etiqueta }}
@@ -22,10 +22,26 @@
     </a-card>
     <a-card v-if="!displayForm" style="width: 100%">
       <!--LISTADO DE SUCURSALES-->
+      <a-row type="flex" justify="end">
+         <a-col :span="12">
+          <b>{{filter}}</b>
+         </a-col>
+        <a-col :span="12" >
+          <a-input-search
+            v-model="search"
+            placeholder="Buscar por nombre..."
+            @search="filterTable"
+            enter-button=" Buscar "
+            :maxLength="50"
+            size="small"
+          />
+        </a-col>
+      </a-row>
+      <br/>
       <a-table
         :row-selection="rowSelection"
         :columns="columns"
-        :data-source="lstSucursalesEntidades"
+        :data-source="lstFilter"
         rowKey="sucursalEntidadId"
         :pagination="pagination"
         :scroll="{ x: 1500 }"
@@ -54,7 +70,7 @@
     <a-card v-if="displayForm">
       <a-page-header
         style="border: 1px solid rgb(224,206,206)"
-        title="Administración de Sucursales por Entidad"
+        :title="title"
         :sub-title="subTitle"
         @back="() => volverListado()"
       />
@@ -110,8 +126,8 @@
   </div>
 </template>
 <script>
-import Dominios from "../../service/Administraciones/Dominio.service";
 import SucursalesEntidades from "../../service/Administraciones/SucursalEntidad.service";
+import Sidebar from "../../service/Home/Sidebar.service";
 
 const columns = [
   {
@@ -142,6 +158,7 @@ export default {
       /*Datos*/
       entidadId: null,
       lstSucursalesEntidades: [],
+      title: this.$route.params.nombre + ": Administración Sucursales",
       /*Tabla*/
       columns,
       selectedRowKeys: [],
@@ -149,13 +166,7 @@ export default {
         pageSize: 5,
       },
       /*menu*/
-      lstOpciones: [
-        { transaccion: "CREAR", etiqueta: "CREAR", imagen: "imagen.png", orden: 1 },
-        { transaccion: "MODIFICAR", etiqueta: "MODIFICAR", imagen: "imagen.png", orden: 2 },
-        { transaccion: "ELIMINAR", etiqueta: "ELIMINAR", imagen: "imagen.png", orden: 3 },
-        { transaccion: "ACTIVAR", etiqueta: "DAR ALTA", imagen: "imagen.png", orden: 4 },
-        { transaccion: "DESACTIVAR", etiqueta: "DAR BAJA", imagen: "imagen.png", orden: 5 },
-      ],
+      lstOpciones: [],
       /**Otros */
       current: null,
       displayModal: true,
@@ -172,7 +183,7 @@ export default {
         nombreSucursal: [
           {
             required: true,
-            message: "Debe registrar el nombre",
+            message: "Debe registrar el nombre.",
             trigger: "blur",
           },
           {
@@ -196,7 +207,7 @@ export default {
         telefono: [
           {
             required: true,
-            message: "Debe registrar la dirección",
+            message: "Debe registrar el teléfono.",
             trigger: "blur",
           },
           {
@@ -207,6 +218,10 @@ export default {
           },
         ],
       },
+       /**Filter */
+      search: '',
+      lstFilter: [],
+      filter: 'Registros: 0/0',
 
     };
   },
@@ -215,6 +230,7 @@ export default {
     rowSelection() {
       return {
         //type: "radio",
+        selectedRowKeys: this.selectedRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
           console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
@@ -222,6 +238,17 @@ export default {
             selectedRows
           );
           this.selectedRowKeys = selectedRowKeys;
+           //Opciones
+          const mismoEstado = [...new Set(selectedRows.map(i => i.estado))];
+          if(mismoEstado.length > 1) {
+            this.$notification.warning("Debe seleccionar registros del mismo ESTADO para realizar operaciones múltiples.");
+            this.cargarOpcionesByEstado("INICIAL");
+          } else {
+            if(selectedRows.length > 0) 
+              this.cargarOpcionesByEstado(selectedRows[0].estado)
+            else
+              this.cargarOpcionesByEstado(null);
+          }
         },
       };
     },
@@ -229,11 +256,20 @@ export default {
   mounted() {
     this.entidadId = this.$route.params.entidadId;
     this.cargarSucursalEntidadesPorEntidad(this.entidadId);
+
+     this.cargarOpcionesByEstado(null);
   },
 
   methods: {
     /*****LISTADO DE SUCURSALES*** */
     /**Menú */
+    cargarOpcionesByEstado(estadoInicial) {
+      Sidebar.getOpcionesByEstado("SUCURSALES_ENTIDADES", estadoInicial).then((r) => {
+        console.log(r);
+        this.lstOpciones = r.data.data;
+        console.log(JSON.stringify(this.lstOpciones));
+      });
+    },
     seleccionarOpcion(opcion) {
       switch (opcion) {
         case 'CREAR': //CREAR
@@ -315,6 +351,8 @@ export default {
           }
           break;
       }
+      
+
     },
     /**Opeaciones */
     cargarSucursalEntidadesPorEntidad(entidadId) {
@@ -323,41 +361,33 @@ export default {
         console.log('cargar')
         console.log(r)
         if(r.status === 204 ) {
-          this.lstSucursalesEntidades = [],
+          this.lstSucursalesEntidades = [];
+          this.lstFilter = [];
           this.$notification.warning("No se ha encontrado ninguna Sucursal registrada para Entidad.");
           this.$Progress.finish();
           return;
         }
-        console.log('aqui')
         this.lstSucursalesEntidades = r.data.result;
+        this.lstFilter = this.lstSucursalesEntidades;
+        this.countRows();
         this.$Progress.finish();
       }).catch((error) => {
-          console.log(error);
-          this.$notification.error(
-            error.response.data.message,
-            error.response.data.code
-          );
-          this.$Progress.fail();
-        });
-    },
-    /*actualizaSucursalTransaccion(sucursalId, transaccion) { //Solo se usara el listado
-      this.$Progress.start();
-      SucursalesEntidades.putSucursalTransaccion(sucursalId, transaccion).then((r) => {
-        this.cargarSucursalEntidadesPorEntidad(this.entidadId);
-        this.$notification.success(r.data.message);
-        this.$Progress.finish();
-      }).catch((error) => {
-        console.log(error)
-        this.$notification.error(error.response.data.message, error.response.data.code);
+        this.lstSucursalesEntidades = [];
+        this.lstFilter = [];
+        this.$notification.error(
+          error.response.data.message,
+          error.response.data.code
+        );
         this.$Progress.fail();
       });
     },
-*/
     actualizaListaSucursalEntidadTransaccion(sucursalIdLst, transaccion) {
-      
       SucursalesEntidades.putLstSucursalEntidadTransaccion(sucursalIdLst, transaccion).then((r) => {
         this.$Progress.start();
         this.cargarSucursalEntidadesPorEntidad(this.entidadId);
+        
+        this.selectedRowKeys = [];
+        
         this.$notification.success(r.data.message);
         this.$Progress.finish();
       }).catch((error) => {
@@ -416,10 +446,20 @@ export default {
     },
 
 
-    /**Recaudadoras */
-    guardarRecaudadoras() {
-
+    /**Filtrado */
+    filterTable() {
+      this.lstFilter = this.lstSucursalesEntidades.filter((s) => {
+        if(this.search != null || this.search != '') {
+          return s.nombreSucursal.toLowerCase().includes(this.search.toLowerCase());  
+        } 
+      });
+      this.countRows();
     },
+    countRows() {
+      let rowFilter = this.lstFilter.length;
+      let rowTotal = this.lstSucursalesEntidades.length;
+      this.filter = "Registros: " + rowFilter + "/" + rowTotal;
+    }
     
   },
 };

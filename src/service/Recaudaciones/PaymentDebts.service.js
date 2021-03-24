@@ -27,7 +27,7 @@ export default {
   cargarServicioDeudas(entidadId,codigoCliente) {
     return Api().get(`api/entidades/${entidadId}/clientes/${codigoCliente}/deudas`, this.headersConfig());
   },
-  cobrarDeudas(cliente, metodoPagoId) {
-    return Api().post(`api/cobros/${metodoPagoId}`, cliente, this.headersConfig());
+  cobrarDeudas(cliente, metodoCobroId) {
+    return Api().post(`api/cobros/${metodoCobroId}`, cliente, this.headersConfig());
   },
 };

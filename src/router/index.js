@@ -121,7 +121,7 @@ const routes = [
         }
       },
       {
-        path: "/sucursalesentidades/:entidadId",
+        path: "/AbmSucursalesEntidades/:entidadId/:nombre",
         name: "AbmSucursalesEntidades",
         component: AbmSucursalesEntidades,
         meta: {
@@ -137,7 +137,7 @@ const routes = [
         }
       },
       {
-        path: "/sucursales/:recaudadorId",
+        path: "/AbmSucursales/:recaudadorId/:nombre",
         name: "AbmSucursales",
         component: AbmSucursales,
         meta: {

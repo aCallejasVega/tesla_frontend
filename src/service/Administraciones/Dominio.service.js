@@ -15,5 +15,8 @@ export default {
   getListDominos(dominio) {
     return Api().get(`api/dominios/${dominio}`, this.headersConfig());
   },
+  getListDominosByAgrupador(agrupadorId) {
+    return Api().get(`api/dominios/agrupadores/${agrupadorId}`, this.headersConfig());
+  },
   
 };

@@ -3,14 +3,14 @@
     <a-card v-if="!displayForm" style="width: 100%">
       <a-page-header
         style="border: 1px solid rgb(224,206,206)"
-        title="Administración de Registro de Sucursales por Recaudadora"
+        :title=title
         @back="$router.back()"
       />
     </a-card>
     <a-card v-if="!displayForm" style="width: 100%">
       <template slot="actions" class="ant-card-actions">
         <a-button-group >
-          <a-button  v-for="(item, i) in lstOpciones" 
+          <a-button :icon="item.imagen"  v-for="(item, i) in lstOpciones" 
             :key="i"
             @click="seleccionarOpcion(item.transaccion)">
             {{ item.etiqueta }}
@@ -20,10 +20,31 @@
     </a-card>
     <a-card v-if="!displayForm" style="width: 100%">
       <!--LISTADO DE SUCURSALES-->
+      <!--
+      {{selectedRowKeys}}<br/>
+      lista:{{lstSucursales}}<br/>
+      filter:{{lstFilter}}
+      -->
+      <a-row type="flex" justify="end">
+        <a-col :span="12">
+          <b>{{filter}}</b>
+         </a-col>
+        <a-col :span="12" >
+          <a-input-search
+            v-model="search"
+            placeholder="Buscar por nombre..."
+            @search="filterTable"
+            enter-button=" Buscar "
+            :maxLength="50"
+            size="small"
+          />
+        </a-col>
+      </a-row>
+      <br/>
       <a-table
         :row-selection="rowSelection"
         :columns="columns"
-        :data-source="lstSucursales"
+        :data-source="lstFilter "
         rowKey="sucursalId"
         :pagination="pagination"
         :scroll="{ x: 1500 }"
@@ -52,7 +73,7 @@
     <a-card v-if="displayForm">
       <a-page-header
         style="border: 1px solid rgb(224,206,206)"
-        title="Administración de Sucursales"
+        :title=title
         :sub-title="subTitle"
         @back="() => volverListado()"
       />
@@ -81,11 +102,12 @@
           <a-select
             v-model="sucursalObj.departamentoId"
             placeholder="Seleccione Departamento"
+             @change="cargarLocalidades(sucursalObj.departamentoId)"
           >
             <a-select-option
               v-for="(item, i) in lstDepartamentos"
               :key="i"
-              :value="item.dominioId"
+              :value="item.dominioId" 
             >
               {{ item.descripcion }}
             </a-select-option>
@@ -138,6 +160,7 @@
 <script>
 import Dominios from "../../service/Administraciones/Dominio.service";
 import Sucursales from "../../service/Administraciones/Sucursal.service";
+import Sidebar from "../../service/Home/Sidebar.service";
 
 const columns = [
   {
@@ -150,8 +173,8 @@ const columns = [
     dataIndex: "departamentoDescripcion",
   },
   {
-    title: "Municipio",
-    dataIndex: "munipioId",
+    title: "Localidad",
+    dataIndex: "localidadDescripcion",
   },
   {
     title: "Dirección",
@@ -176,6 +199,7 @@ export default {
       /*Datos*/
       recaudadorId: null,
       lstSucursales: [],
+      title: this.$route.params.nombre + ": Administración Sucursales",
       /*Tabla*/
       columns,
       selectedRowKeys: [],
@@ -183,13 +207,7 @@ export default {
         pageSize: 5,
       },
       /*menu*/
-      lstOpciones: [
-        { transaccion: "CREAR", etiqueta: "CREAR", imagen: "imagen.png", orden: 1 },
-        { transaccion: "MODIFICAR", etiqueta: "MODIFICAR", imagen: "imagen.png", orden: 2 },
-        { transaccion: "ELIMINAR", etiqueta: "ELIMINAR", imagen: "imagen.png", orden: 3 },
-        { transaccion: "ACTIVAR", etiqueta: "DAR ALTA", imagen: "imagen.png", orden: 4 },
-        { transaccion: "DESACTIVAR", etiqueta: "DAR BAJA", imagen: "imagen.png", orden: 5 },
-      ],
+      lstOpciones: [],
       /**Otros */
       current: null,
       displayModal: true,
@@ -244,7 +262,7 @@ export default {
         telefono: [
           {
             required: true,
-            message: "Debe registrar la dirección",
+            message: "Debe registrar el teléfono",
             trigger: "blur",
           },
           {
@@ -260,6 +278,10 @@ export default {
       lstDepartamentos: [],
       lstLocalidades: [],
 
+      /**Filter */
+      search: '',
+      lstFilter: [],
+      filter: 'Registros: 0/0',
     };
   },
   computed: {
@@ -267,6 +289,7 @@ export default {
     rowSelection() {
       return {
         //type: "radio",
+        selectedRowKeys: this.selectedRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
           console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
@@ -274,6 +297,18 @@ export default {
             selectedRows
           );
           this.selectedRowKeys = selectedRowKeys;
+
+          //Opciones
+          const mismoEstado = [...new Set(selectedRows.map(i => i.estado))];
+          if(mismoEstado.length > 1) {
+            this.$notification.warning("Debe seleccionar registros del mismo ESTADO para realizar operaciones múltiples.");
+             this.cargarOpcionesByEstado("INICIAL");
+          } else {
+            if(selectedRows.length > 0) 
+              this.cargarOpcionesByEstado(selectedRows[0].estado)
+            else
+              this.cargarOpcionesByEstado(null);
+          }
         },
       };
     },
@@ -282,12 +317,20 @@ export default {
     this.recaudadorId = this.$route.params.recaudadorId;
     this.cargarSucursalesPorRecaudadora(this.recaudadorId);
     this.cargarDepartamentos();
-    this.cargarLocalidades();
-  },
 
+    this.cargarOpcionesByEstado(null);
+    
+  },
   methods: {
     /*****LISTADO DE SUCURSALES*** */
     /**Menú */
+    cargarOpcionesByEstado(estadoInicial) {
+      Sidebar.getOpcionesByEstado("SUCURSALES", estadoInicial).then((r) => {
+        console.log(r);
+        this.lstOpciones = r.data.data;
+        console.log(JSON.stringify(this.lstOpciones));
+      });
+    },
     seleccionarOpcion(opcion) {
       switch (opcion) {
         case 'CREAR': //CREAR
@@ -300,6 +343,8 @@ export default {
             this.cargarSucursal(this.selectedRowKeys);
             this.displayForm = true;
             this.subTitle = "Formulario Modificación de Registro";
+
+            //this.selectedRowKeys = [];
           } else {
             this.$notification.warning('Debe seleccionar un solo registro para MODIFICAR');
           }
@@ -315,6 +360,7 @@ export default {
               onOk: () => {
                 console.log('ok')
                 this.actualizaListaSucursalTransaccion(this.selectedRowKeys, "ELIMINAR");
+                //this.selectedRowKeys = [];
               },
               onCancel() {  
                 console.log('Cancel');
@@ -377,41 +423,38 @@ export default {
         console.log('eñiminado')
         console.log(r)
         if(r.status === 204 ) {
-           this.lstSucursales = [],
+          this.lstSucursales = [],
+          this.lstFilter = [];
           this.$notification.warning("No se ha encontrado ninguna Sucursal registrada para Recaudadoras.");
           this.$Progress.finish();
           return;
         }
-        console.log('aqui')
         this.lstSucursales = r.data.result;
+        this.lstFilter = this.lstSucursales;
+        this.countRows();
+       
+       //Para opciones
+        this.selectedRowKeys = [];
+        this.cargarOpcionesByEstado(null);
+
         this.$Progress.finish();
       }).catch((error) => {
-          console.log(error);
-          this.$notification.error(
-            error.response.data.message,
-            error.response.data.code
-          );
-          this.$Progress.fail();
-        });
-    },
-    /*actualizaSucursalTransaccion(sucursalId, transaccion) { //Solo se usara el listado
-      this.$Progress.start();
-      Sucursales.putSucursalTransaccion(sucursalId, transaccion).then((r) => {
-        this.cargarSucursalesPorRecaudadora(this.recaudadorId);
-        this.$notification.success(r.data.message);
-        this.$Progress.finish();
-      }).catch((error) => {
-        console.log(error)
-        this.$notification.error(error.response.data.message, error.response.data.code);
+        this.lstSucursales = [],
+        this.lstFilter = [];
+        this.$notification.error(
+          error.response.data.message,
+          error.response.data.code
+        );
         this.$Progress.fail();
       });
     },
-*/
     actualizaListaSucursalTransaccion(sucursalIdLst, transaccion) {
-      
       Sucursales.putLstSucursalTransaccion(sucursalIdLst, transaccion).then((r) => {
         this.$Progress.start();
         this.cargarSucursalesPorRecaudadora(this.recaudadorId);
+
+        this.selectedRowKeys = [];
+
         this.$notification.success(r.data.message);
         this.$Progress.finish();
       }).catch((error) => {
@@ -445,8 +488,8 @@ export default {
           this.$notification.error(error.response.data.message, error.response.data.code);
         });
     },
-    cargarLocalidades() {
-      Dominios.getListDominos("municipio_id").then((r) => {
+    cargarLocalidades(agrupadorId) {
+      Dominios.getListDominosByAgrupador(agrupadorId).then((r) => {
         if(r.status === 204) {
           this.lstLocalidades = [];
           this.$notification.warning("La parametrización de dominios no esta completa.");
@@ -500,7 +543,21 @@ export default {
       this.$refs.ruleForm.resetFields();
     },
 
-    
+    /**Filtrado */
+    filterTable() {
+      this.lstFilter = this.lstSucursales.filter((s) => {
+        if(this.search != null || this.search != '') {
+          return s.nombre.toLowerCase().includes(this.search.toLowerCase());   
+        }
+      });
+      this.countRows();
+    },
+    countRows() {
+      let rowFilter = this.lstFilter.length;
+      let rowTotal = this.lstSucursales.length;
+      this.filter = "Registros: " + rowFilter + "/" + rowTotal;
+    }
+
   },
 };
 </script>
