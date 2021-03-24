@@ -17,6 +17,7 @@ import EntidadReportesDeudasCobradas from '../views/Entidades/Reportes/EntidadRe
 import RecaudacionReportesDeudasCobradas from '../views/Recaudaciones/Reportes/RecaudacionReportesDeudasCobradas.vue';
 import AbmSucursales from '../views/Administracion/AbmSucursales.vue';
 
+import AdminReportesDeudasCobradas from "../views/Administracion/Reportes/AdminReportesDeudasCobradas.vue";
 
 Vue.use(VueRouter);
 
@@ -95,7 +96,14 @@ const routes = [
           libre: false
         },
       },
-      
+      {
+        path: "/AdminReportesDeudasCobradas",
+        name: "AdminReportesDeudasCobradas",
+        component: AdminReportesDeudasCobradas,
+        meta: {
+          libre: false
+        },
+      },
       {
         path: "/debts/:entidadId",
         name: "Debts",

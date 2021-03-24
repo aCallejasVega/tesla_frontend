@@ -14,7 +14,10 @@ export default {
   },
  
   getMenu() {
-    return Api().get("api/Menu/", this.headersConfig());
+    return Api().get("api/Menu/menu", this.headersConfig());
+  },
+  getSubMenu() {
+    return Api().get("api/Menu/subMenu", this.headersConfig());
   },
 
 };

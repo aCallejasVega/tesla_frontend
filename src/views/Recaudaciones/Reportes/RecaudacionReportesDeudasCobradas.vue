@@ -41,9 +41,9 @@
       </a-form>
       <a-form>
         <a-row :gutter="1">
-          <a-col :span="5"></a-col>
+          <a-col :span="4"></a-col>
           <a-col :span="7">
-            <a-form-item
+            <!--a-form-item
               label="Empresas :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
@@ -58,14 +58,32 @@
                 <a-select-option
                   v-for="item in entidadesList"
                   v-bind:value="item.entidadId"
-                  v-bind:key="item.recaudadorId"
+                  v-bind:key="item.entidadId"
                   >{{ item.nombre }}</a-select-option
                 >
               </a-select>
-            </a-form-item>
+            </a-form-item-->
+            <div
+              :style="{ borderBottom: '1px solid #A718B8', color: '#A718B8' }"
+            >
+              <a-checkbox
+                :indeterminate="indeterminateEntidad"
+                :checked="checkAllEntidad"
+                @change="onCheckAllChangeEntidad"
+              >
+                TODAS LAS EMPRESAS/ENTIDADES
+              </a-checkbox>
+            </div>
+            <br />
+            <a-checkbox-group
+              v-model="checkedListEntidad"
+              :options="entidadesList"
+              @change="onChangeEntidad"
+            />
           </a-col>
+          <a-col :span="2"></a-col>
           <a-col :span="7">
-            <a-form-item
+            <!--a-form-item
               label="Estado :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
@@ -82,13 +100,29 @@
                   {{ item.estado }}
                 </a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-item-->
+
+            <div
+              :style="{ borderBottom: '1px solid #A718B8', color: '#A718B8' }"
+            >
+              <a-checkbox
+                :indeterminate="indeterminateEstado"
+                :checked="checkAllEstado"
+                @change="onCheckAllChangeEstado"
+              >
+                TODOS LOS ESTADOS
+              </a-checkbox>
+            </div>
+            <br />
+            <a-checkbox-group
+              v-model="checkedListEstado"
+              :options="estadoList"
+              @change="onChangeEstado"
+            />
           </a-col>
-          <a-col :span="5"></a-col>
+          <a-col :span="4"></a-col>
         </a-row>
       </a-form>
-
-
 
       <template slot="actions" class="ant-card-actions">
         <a-button type="link" icon="undo" @click="limpiar()">
@@ -172,12 +206,19 @@
   </div>
 </template>
 <script>
-import ReportesRecaudacion from "../../../service/Recaudaciones/ReportesRecaudacion.service"
+import ReportesRecaudacion from "../../../service/Recaudaciones/ReportesRecaudacion.service";
 import locale from "ant-design-vue/es/date-picker/locale/es_ES";
 import moment from "moment";
 import "moment/locale/es";
 
 const columns = [
+  {
+    title: "Empresa",
+    dataIndex: "nombreComercial",
+    key: "nombreComercial",
+    width: "10%",
+    scopedSlots: { customRender: "nombreComercial" },
+  },
   {
     title: "Servicio",
     dataIndex: "servicio",
@@ -244,8 +285,8 @@ export default {
       formBusqueda: {
         fechaInicio: null,
         fechaFin: null,
-        entidadId: "All",
-        estado: "All",
+        entidadArray: [],
+        estadoArray: [],
         export: "pdf",
       },
       columns,
@@ -260,6 +301,18 @@ export default {
       link: null,
       viewCargando: false,
       disableEstado: false,
+
+      mensajeReporte:
+        "NO SE PUDO CARGAR EL REPORTE, VERIFIQUE LOS PARÁMETROS SELECCIONADOS EN EL ÁREA DE BÚSQUEDA. ",
+      mensajeVisible: false,
+
+      checkedListEntidad: [],
+      indeterminateEntidad: false,
+      checkAllEntidad: false,
+
+      checkedListEstado: [],
+      indeterminateEstado: false,
+      checkAllEstado: false,
     };
   },
   created() {
@@ -275,14 +328,25 @@ export default {
   },
   methods: {
     findDeudasByParameterForReport(page) {
-      this.formBusqueda.paginacion = page;     
+      this.formBusqueda.paginacion = page;
+      this.formBusqueda.entidadArray = this.checkedListEntidad;
+      this.formBusqueda.estadoArray = this.checkedListEstado;
+      console.log("---------------------------------");
+      console.log(JSON.stringify(this.formBusqueda));
+      console.log("---------------------------------");
       ReportesRecaudacion.findDeudasByParameterForReport(this.formBusqueda)
         .then((response) => {
           this.data = response.data.data.content;
           this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
+          console.log("---------------------------------");
+          console.log(JSON.stringify(this.data));
+          console.log("---------------------------------");
         })
         .catch((error) => {
+          console.log("---------------------------------");
+          console.log("Error");
+          console.log("---------------------------------");
           this.data = [];
         });
     },
@@ -296,10 +360,10 @@ export default {
         });
     },
     getEntidadesByRecaudadora() {
+      this.entidadesList = [];
       ReportesRecaudacion.getEntidadesByRecaudadora()
         .then((response) => {
           this.entidadesList = response.data.data;
-          console.log(JSON.stringify(this.entidadesList));
         })
         .catch((error) => {
           this.entidadesList = [];
@@ -308,7 +372,8 @@ export default {
     openModalGenerarReporte() {
       this.link = null;
       this.viewCargando = true;
-
+      this.formBusqueda.entidadArray = this.checkedListEntidad;
+      this.formBusqueda.estadoArray = this.checkedListEstado;
       ReportesRecaudacion.openModalGenerarReporte(this.formBusqueda)
         .then((response) => {
           if (this.formBusqueda.export == "pdf") {
@@ -346,7 +411,6 @@ export default {
       this.viewCargando = false;
     },
     onChangeRecaudadora() {
-      
       if (this.formBusqueda.recaudadorId != "All") {
         this.formBusqueda.estado = "COBRADO";
         this.disableEstado = false;
@@ -354,14 +418,58 @@ export default {
         this.disableEstado = false;
       }
     },
-    limpiar(){
-      this.formBusqueda.fechaInicio=null;
-      this.formBusqueda.fechaFin=null;
-      this.formBusqueda.entidadId="All";
-      this.formBusqueda.estado="All";
-      this.formBusqueda.export="pdf";
-      
-    }
+    limpiar() {
+      this.formBusqueda.fechaInicio = null;
+      this.formBusqueda.fechaFin = null;
+      this.formBusqueda.entidadId = "All";
+      this.formBusqueda.estado = "All";
+      this.formBusqueda.export = "pdf";
+    },
+    onChangeEntidad(checkedListEntidad) {
+      this.indeterminateEntidad =
+        !!checkedListEntidad.length &&
+        checkedListEntidad.length < this.entidadesList.length;
+      this.checkAllEntidad =
+        checkedListEntidad.length === this.entidadesList.length;
+    },
+    onCheckAllChangeEntidad(e) {
+      if (!this.checkAllEntidad) {
+        this.indeterminateEntidad = false;
+        this.checkAllEntidad = true;
+        let i = 0;
+        let v = [];
+        this.entidadesList.forEach((element) => {
+          v[i] = element.value;
+          i++;
+        });
+        this.checkedListEntidad = v;
+      } else {
+        this.checkedListEntidad = [];
+        this.checkAllEntidad = false;
+      }
+    },
+    onChangeEstado(checkedListEstado) {
+      this.indeterminateEstado =
+        !!checkedListEstado.length &&
+        checkedListEstado.length < this.estadoList.length;
+      this.checkAllEstado = checkedListEstado.length === this.estadoList.length;
+    },
+    onCheckAllChangeEstado(e) {
+      if (!this.checkAllEstado) {
+        this.indeterminateEstado = false;
+        this.checkAllEstado = true;
+        let i = 0;
+        let v = [];
+        this.estadoList.forEach((element) => {
+          v[i] = element.value;
+          i++;
+        });
+        this.checkedListEstado = v;
+      } else {
+        this.checkedListEstado = [];
+        this.checkAllEstado = false;
+      }
+    },
   },
 };
 </script>

@@ -249,12 +249,7 @@ const columns = [
     width: "10%",
     scopedSlots: { customRender: "estado" },
   },
-  {
-    title: "Reporte",
-    dataIndex: "reporte",
-    width: "10%",
-    scopedSlots: { customRender: "reporte" },
-  },
+  
 ];
 export default {
   data() {

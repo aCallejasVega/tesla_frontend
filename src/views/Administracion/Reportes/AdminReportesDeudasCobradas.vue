@@ -2,11 +2,10 @@
   <div>
     <a-card style="width: 100%">
       <a-page-header
-        style="border: 5px solid #D668AE ; color:#A718B8"
-        title="REPORTE GENERAL."
-        
+        style="border: 5px solid rgb(235, 237, 240)"
+        title="LISTA DE DEUDAS."
       />
-      <a-divider orientation="left" style="color:#A718B8" >BUSQUEDA</a-divider>
+      <a-divider orientation="left">Busqueda</a-divider>
 
       <a-form>
         <a-row :gutter="1">
@@ -43,9 +42,32 @@
       <a-form>
         <a-row :gutter="1">
           <a-col :span="2"></a-col>
-          <a-col :span="9">
-            <!--a-form-item
-              label="Recaudadora :"
+
+          <a-col :span="6">
+            <a-form-item
+              label="Empresas :"
+              :label-col="{ span: 8 }"
+              :wrapper-col="{ span: 16 }"
+            >
+              <a-select
+                v-model="formBusqueda.entidadId"
+                @change="onChangeRecaudadora()"
+              >
+                <a-select-option value="All">
+                  TODAS LAS EMPRESAS :
+                </a-select-option>
+                <a-select-option
+                  v-for="item in entidadesList"
+                  v-bind:value="item.entidadId"
+                  v-bind:key="item.entidadId"
+                  >{{ item.nombre }}</a-select-option
+                >
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="7">
+            <a-form-item
+              label="Recaudadoras :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
             >
@@ -54,35 +76,19 @@
                 @change="onChangeRecaudadora()"
               >
                 <a-select-option value="All">
-                  TODAS LAS RECAUDADORAS
+                  TODAS LAS RECAUDADORES :
                 </a-select-option>
                 <a-select-option
-                  v-for="item in recaudadoresList"
+                  v-for="item in recaudadorasList"
                   v-bind:value="item.recaudadorId"
                   v-bind:key="item.recaudadorId"
                   >{{ item.nombre }}</a-select-option
                 >
               </a-select>
-            </a-form-item-->
-            <div :style="{ borderBottom: '1px solid #A718B8' }">
-              <a-checkbox
-                :indeterminateRecaudacion="indeterminateRecaudacion"
-                :checked="checkAllRecaudacion"
-                @change="onCheckAllChangeRecaudacion"
-              >
-                TODAS LAS RECAUDADORAS
-              </a-checkbox>
-            </div>
-            <br />
-            <a-checkbox-group
-              v-model="checkedListRecaudacion"
-              :options="recaudadoresList"
-              @change="onChangeRecaudacion"
-            />
+            </a-form-item>
           </a-col>
-          <a-col :span="2"> </a-col>
-          <a-col :span="9">
-            <!--a-form-item
+          <a-col :span="6">
+            <a-form-item
               label="Estado :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
@@ -93,32 +99,15 @@
                 </a-select-option>
                 <a-select-option
                   v-for="item in estadoList"
-                  v-bind:value="item.estadoId"
-                  v-bind:key="item.estadoId"
+                  v-bind:value="item.value"
+                  v-bind:key="item.value"
                 >
-                  {{ item.estado }}
+                  {{ item.label }}
                 </a-select-option>
               </a-select>
-            </a-form-item-->
-            <div
-              :style="{ borderBottom: '1px solid #A718B8', color: '#A718B8' }"
-            >
-              <a-checkbox
-                :indeterminate="indeterminateEstado"
-                :checked="checkAllEstado"
-                @change="onCheckAllChangeEstado"
-              >
-                TODOS LOS ESTADOS
-              </a-checkbox>
-            </div>
-            <br />
-            <a-checkbox-group
-              v-model="checkedListEstado"
-              :options="estadoList"
-              @change="onChangeEstado"
-            />
+            </a-form-item>
           </a-col>
-          <a-col :span="2"></a-col>
+          <a-col :span="3"></a-col>
         </a-row>
       </a-form>
 
@@ -143,28 +132,13 @@
       </template>
     </a-card>
     <a-card style="width: 100%">
-      <a-divider orientation="left" style="color:#A718B8">DATOS DE LAS DEUDAS</a-divider>
+      <a-divider orientation="left">DATOS DE LAS DEUDAS</a-divider>
       <a-table
         :columns="columns"
         :data-source="data"
         :pagination="pagination"
         align="center"
-      >
-        <template slot="estado" slot-scope="text, record">
-          <div v-if="record.estado == 'COBRADAS'">
-            <a-tag color="green">
-              <a-icon type="check" :style="{ fontSize: '15px' }" />
-              {{ record.estado }}
-            </a-tag>
-          </div>
-          <div v-if="record.estado == 'POR PAGAR'">
-            <a-tag color="blue">
-              <a-icon type="exclamation-circle" :style="{ fontSize: '15px' }" />
-              {{ record.estado }}
-            </a-tag>
-          </div>
-        </template>
-      </a-table>
+      ></a-table>
     </a-card>
 
     <a-modal
@@ -195,11 +169,10 @@
     <a-modal
       v-model="visibleModalReporte"
       title="Reporte Generado"
-      width="800px"
-     
+      width="900px"
+      height="400px"
       :dialog-style="{ top: '20px' }"
       @ok="visibleModalReporte = false"
-     
     >
       <a-row type="flex" justify="center">
         <a-spin
@@ -208,14 +181,7 @@
           v-if="viewCargando"
         >
         </a-spin>
-        <a-alert
-          message="ADVERTENCIA"
-          :description="mensajeReporte"
-          type="warning"
-          show-icon
-          v-if="mensajeVisible"
-        />
-        <iframe width="800px" height="350px" :src="this.link" >
+        <iframe width="100%" height="400px" :src="this.link" frameborder="0">
         </iframe>
       </a-row>
 
@@ -228,12 +194,19 @@
   </div>
 </template>
 <script>
-import ReportesEntidad from "../../../service/Entidades/ReportesEntidad.service";
+import ReportesAdmin from "../../../service/Administraciones/ReportesAdmin.service";
 import locale from "ant-design-vue/es/date-picker/locale/es_ES";
 import moment from "moment";
 import "moment/locale/es";
 
 const columns = [
+  {
+    title: "Empresa",
+    dataIndex: "nombreComercial",
+    key: "nombreComercial",
+    width: "10%",
+    scopedSlots: { customRender: "nombreComercial" },
+  },
   {
     title: "Servicio",
     dataIndex: "servicio",
@@ -261,12 +234,12 @@ const columns = [
     align: "center",
   },
 
-  {
+  /*{
     title: "Nombre Recaudadora",
     dataIndex: "nombreRecaudadora",
     key: "nombreRecaudadora",
     width: "20%",
-  },
+  },*/
   {
     title: "Fecha Cobro",
     dataIndex: "fechaCreacion",
@@ -300,8 +273,9 @@ export default {
       formBusqueda: {
         fechaInicio: null,
         fechaFin: null,
-        recaudadorArray: [],
-        estadoArray: [],
+        entidadId: "All",
+        recaudadorId: "All",
+        estado: "All",
         export: "pdf",
       },
       columns,
@@ -309,29 +283,21 @@ export default {
       pagination: {},
       page: 1,
       total: 0,
-      recaudadoresList: [],
+      recaudadorasList: [],
+      entidadesList: [],
       estadoList: [],
       visibleModalTipoReporte: false,
       visibleModalReporte: false,
       link: null,
       viewCargando: false,
       disableEstado: false,
-      mensajeReporte:
-        "NO SE PUDO CARGAR EL REPORTE, VERIFIQUE LOS PARÁMETROS SELECCIONADOS EN EL ÁREA DE BÚSQUEDA. ",
-      mensajeVisible: false,
-      checkedListRecaudacion: [],
-      indeterminateRecaudacion: false,
-      checkAllRecaudacion: false,
-
-      checkedListEstado: [],
-      indeterminateEstado: false,
-      checkAllEstado: false,
     };
   },
   created() {
     this.findDeudasByParameterForReport(1);
     this.getEstadoHistoricos();
-    this.getRecaudadores();
+    this.getRecaudadora();
+    this.getEntidades();
     this.pagination = {
       total: this.total,
       onChange: (page) => {
@@ -342,9 +308,10 @@ export default {
   methods: {
     findDeudasByParameterForReport(page) {
       this.formBusqueda.paginacion = page;
-      this.formBusqueda.recaudadorArray = this.checkedListRecaudacion;
-      this.formBusqueda.estadoArray = this.checkedListEstado;
-      ReportesEntidad.findDeudasByParameterForReport(this.formBusqueda)
+      console.log("-----------------------");
+      console.log(JSON.stringify(this.formBusqueda));
+      console.log("-----------------------");
+      ReportesAdmin.findDeudasByParameterForReport(this.formBusqueda)
         .then((response) => {
           this.data = response.data.data.content;
           this.pagination.pageSize = response.data.data.numberOfElements;
@@ -355,7 +322,7 @@ export default {
         });
     },
     getEstadoHistoricos() {
-      ReportesEntidad.getEstadoHistoricos()
+      ReportesAdmin.getEstadoHistoricos()
         .then((response) => {
           this.estadoList = response.data.data;
         })
@@ -363,37 +330,37 @@ export default {
           this.estadoList = [];
         });
     },
-    getRecaudadores() {
-      ReportesEntidad.getRecaudadoresByEntidad()
+    getEntidades() {
+      ReportesAdmin.getEntidades()
         .then((response) => {
-          this.recaudadoresList = response.data.data;
+          this.entidadesList = response.data.data;
         })
         .catch((error) => {
-          this.recaudadoresList = [];
+          this.entidadesList = [];
+        });
+    },
+    getRecaudadora() {
+      ReportesAdmin.getRecaudadora()
+        .then((response) => {
+          this.recaudadorasList = response.data.data;
+        })
+        .catch((error) => {
+          this.recaudadorasList = [];
         });
     },
     openModalGenerarReporte() {
-      this.mensajeVisible = false;
       this.link = null;
       this.viewCargando = true;
-      this.formBusqueda.recaudadorArray = this.checkedListRecaudacion;
-      this.formBusqueda.estadoArray = this.checkedListEstado;
-      ReportesEntidad.openModalGenerarReporte(this.formBusqueda)
-        .then((response) => { 
-          this.viewCargando=false;
-          if (response.status == 200) {
-            if (this.formBusqueda.export == "pdf") {
-              this.viewFileDownload(response);
-            } else {
-              this.forceFileDownload(response, "reporte");
-            }
+
+      ReportesAdmin.openModalGenerarReporte(this.formBusqueda)
+        .then((response) => {
+          if (this.formBusqueda.export == "pdf") {
+            this.viewFileDownload(response);
           } else {
-            this.mensajeVisible = true;
+            this.forceFileDownload(response, "reporte");
           }
         })
         .catch((error) => {
-          this.viewCargando=false;
-          this.mensajeVisible = true;
           this.link = null;
         });
 
@@ -432,55 +399,9 @@ export default {
     limpiar() {
       this.formBusqueda.fechaInicio = null;
       this.formBusqueda.fechaFin = null;
-      this.formBusqueda.recaudadorId = "All";
+      this.formBusqueda.entidadId = "All";
       this.formBusqueda.estado = "All";
       this.formBusqueda.export = "pdf";
-    },
-    onChangeRecaudacion(checkedListRecaudacion) {
-      this.indeterminateRecaudacion =
-        !!checkedListRecaudacion.length &&
-        checkedListRecaudacion.length < this.recaudadoresList.length;
-      this.checkAllRecaudacion =
-        checkedListRecaudacion.length === this.recaudadoresList.length;
-    },
-    onCheckAllChangeRecaudacion(e) {
-      if (!this.checkAllRecaudacion) {
-        this.indeterminateRecaudacion = false;
-        this.checkAllRecaudacion = true;
-        let i = 0;
-        let v = [];
-        this.recaudadoresList.forEach((element) => {
-          v[i] = element.value;
-          i++;
-        });
-        this.checkedListRecaudacion = v;
-      } else {
-        this.checkedListRecaudacion = [];
-        this.checkAllRecaudacion = false;
-      }
-    },
-
-    onChangeEstado(checkedListEstado) {
-      this.indeterminateEstado =
-        !!checkedListEstado.length &&
-        checkedListEstado.length < this.estadoList.length;
-      this.checkAllEstado = checkedListEstado.length === this.estadoList.length;
-    },
-    onCheckAllChangeEstado(e) {
-      if (!this.checkAllEstado) {
-        this.indeterminateEstado = false;
-        this.checkAllEstado = true;
-        let i = 0;
-        let v = [];
-        this.estadoList.forEach((element) => {
-          v[i] = element.value;
-          i++;
-        });
-        this.checkedListEstado = v;
-      } else {
-        this.checkedListEstado = [];
-        this.checkAllEstado = false;
-      }
     },
   },
 };

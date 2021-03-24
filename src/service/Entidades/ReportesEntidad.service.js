@@ -13,7 +13,7 @@ export default {
         };
         return configuracion;
     },
-    linealChart(formBusqueda) {
+    /*linealChart(formBusqueda) {
         if (formBusqueda.fechaInicio == "Invalid date" || formBusqueda.fechaInicio == "null" || formBusqueda.fechaInicio == null) {
             formBusqueda.fechaInicio = moment("01/01/2021", "DD/MM/YYYY");
         } else {
@@ -73,7 +73,7 @@ export default {
 
         return Api().post(`api/ReportEntidad/columnChart`, formBusqueda, this.headersConfig());
     },
-
+*/
 
     findDeudasByParameterForReport(formBusqueda) {
 
@@ -99,6 +99,67 @@ export default {
             }
       });
     },
+
+    /*
+     Archivos Historicos Deudas
+    */ 
+    findArchivos(paginacion, fechaInicio, fechaFin, estado) {
+
+        if (fechaInicio == "Invalid date" || fechaInicio == "null" || fechaInicio == null) {
+          fechaInicio = moment("01/01/2021", "DD/MM/YYYY");
+        } else {
+          fechaInicio = moment(fechaInicio, "DD/MM/YYYY");
+        }
+        if (fechaFin == "Invalid date" || fechaFin == "null" || fechaFin == null) {
+          fechaFin = moment("01/01/2100", "DD/MM/YYYY");
+        } else {
+          fechaFin = moment(fechaFin, "DD/MM/YYYY");
+        }
+        if (estado == "") {
+          estado = "null";
+        }
+    
+        return Api().get(
+          `api/ReportEntidad/findArchivos/${paginacion}/${fechaInicio}/${fechaFin}/${estado}`,
+          this.headersConfig()
+        );
+      },
+    
+     
+    
+      findDominioByDominio() {
+        return Api().get(
+          `api/dominios/findByDominio/tipo_reporte_id`,
+          this.headersConfig()
+        );
+    
+      },
+      getEstadoHistoricos() {
+        return Api().get(
+          `api/historicoDeuda/findEstadoHistorico`,
+          this.headersConfig()
+        );
+      },
+    
+    
+      getRecaudadoresByEntidad() {
+        return Api().get(`api/recaudadores/findRecaudadoresByEntidadId`, this.headersConfig());
+    
+      },
+
+      openReportesPorArchivo(formBusqueda) {
+
+
+        let urlReporte = `http://localhost:9080/api/ReportEntidad/findDeudasByArchivoIdAndEstado/${formBusqueda.archivoId}/${formBusqueda.export}`;
+        return Api().get(urlReporte, {
+            responseType: 'arraybuffer',
+            headers: {
+              'Accept': 'application/pdf',
+              Authorization: `Bearer `+localStorage.getItem("token")
+            }
+      });
+    },
+
 
 
 };
