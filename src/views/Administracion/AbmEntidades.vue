@@ -321,7 +321,6 @@
       :footer="null"
     >
       <EntidadComisiones :entidadId="entidadId" />
-    
     </a-modal> 
   </div>
 </template>
