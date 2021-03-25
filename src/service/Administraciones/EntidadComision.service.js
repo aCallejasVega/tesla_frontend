@@ -13,13 +13,13 @@ export default {
     return configuracion;
   },
   getEntidadComision(entidadComisionId) {
-    return Api().get(`api/comisiones/${entidadComisionId}`, this.headersConfig());
+    return Api().get(`api/comisionesentidades/${entidadComisionId}`, this.headersConfig());
   },
   getlstEntidadesComisionesByEntidadId(entidadId) {
-    return Api().get(`api/comisiones/entidades/${entidadId}`, this.headersConfig());
+    return Api().get(`api/comisionesentidades/entidades/${entidadId}`, this.headersConfig());
   },
   postEntidadComision(entidadComisionObj) {
-    return Api().post(`api/comisiones`, entidadComisionObj, this.headersConfig());
+    return Api().post(`api/comisionesentidades`, entidadComisionObj, this.headersConfig());
   },
    
   
