@@ -182,7 +182,7 @@
                     </a-button>
                   </div>
                 </td>
-                <td align="right"><b>Sub Total (Bs)</b></td>
+                <td align="right"><div style="background-color:#ded8da"><b>Sub Total (Bs)</b></div></td>
                 <td align="right">
                   <money
                     v-model="record.subTotal"
@@ -569,7 +569,6 @@ export default {
     cargarClientes(dato) {
       PaymentDebts.cargarClientes(this.entidadId, dato)
         .then((r) => {
-          console.log(r);
           if (r.status === 204) {
             this.lstClientes = [];
             this.$notification.warning(
@@ -700,7 +699,6 @@ export default {
       this.$Progress.start();
       PaymentDebts.cobrarDeudas(this.clienteDto, 5) //Debe ser Ctte = 5
         .then((r) => {
-          console.log(r);
           this.$notification.success(r.data.message);
           //debe actualizar las deudas
           this.cargarServicioDeudas();

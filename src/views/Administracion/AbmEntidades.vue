@@ -236,7 +236,7 @@
             :maxLength="13"
           />
         </a-form-model-item>
-         <a-form-model-item label="Tipo Facturación" prop="tipoFacturacionId">
+         <a-form-model-item label="Modalidad Facturación" prop="tipoFacturacionId">
           <a-select
             v-model="entidadObj.tipoFacturacionId"
             placeholder="Seleccione Tipo de Facturación"
@@ -514,14 +514,14 @@ export default {
             min: 10,
             max: 13,
             message:
-              "El teléfono debe contener al menos 10 caracteres y máximo 13",
+              "El NIT debe contener al menos 10 caracteres y máximo 13",
             trigger: "blur",
           },
         ],
         tipoFacturacionId: [
           {
             required: true,
-            message: "Debe seleccionar un Tipo de Facturación",
+            message: "Debe seleccionar una Modalidad de Facturación",
             trigger: "change",
           },
         ],
@@ -587,7 +587,6 @@ export default {
     /**Menú */
     cargarOpcionesByEstado(estadoInicial) {
       Sidebar.getOpcionesByEstado("ENTIDADES", estadoInicial).then((r) => {
-        console.log(r);
         this.lstOpciones = r.data.data;
         console.log(JSON.stringify(this.lstOpciones));
       });
@@ -748,7 +747,6 @@ export default {
           this.$Progress.finish();
         })
         .catch((error) => {
-          console.log(error);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code

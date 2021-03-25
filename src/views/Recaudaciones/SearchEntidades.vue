@@ -3,12 +3,7 @@
     <a-card style="width: 100%">
       <a-page-header
         style="border: 1px solid rgb(224, 206, 206)"
-        title="Búsqueda de Empresas"
-      />
-      <a-alert
-        message="Empresa: En adelante agrupa a Universidades, Colegios y otros."
-        type="info"
-        show-icon
+        title="Búsqueda General"
       />
       <br />
       <a-row>
@@ -103,6 +98,7 @@ export default {
       PaymentDebts.cargarTodasEntidades()
         .then((r) => {
           console.log('todas')
+          console.log(r)
           if(r.status === 204) {
             this.lstEntidades = [];
             this.lstEntidadesFilter = this.lstEntidades;
@@ -124,6 +120,7 @@ export default {
     cargarTiposEntidades() {
       PaymentDebts.cargarTiposEntidades()
         .then((r) => {
+          console.log(r)
           //el control status==204 se visializara en cargado de entidades, para evitar duplicidad 
           this.lstTipoEntidades = r.data.result;
         })
