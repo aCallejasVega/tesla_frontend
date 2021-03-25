@@ -28,6 +28,13 @@ export default {
     return Api().get(`api/entidades/${entidadId}/clientes/${codigoCliente}/deudas`, this.headersConfig());
   },
   cobrarDeudas(cliente, metodoCobroId) {
-    return Api().post(`api/cobros/${metodoCobroId}`, cliente, this.headersConfig());
+
+    return Api().post(`api/cobros/${metodoCobroId}`, cliente, {
+            responseType: 'arraybuffer',
+            headers: {
+              'Accept': 'application/pdf',
+              Authorization: `Bearer `+localStorage.getItem("token")
+            }
+      });
   },
 };

@@ -384,6 +384,32 @@
 
       </a-modal>
     </a-card>
+
+    <a-modal
+      v-model="visibleModalReporte"
+      title="Reporte Generado"
+      width="900px"
+      height="400px"
+      :dialog-style="{ top: '20px' }"
+      @ok="visibleModalReporte = false"
+    >
+      <a-row type="flex" justify="center">
+        <a-spin
+          size="large"
+          tip="El reporte se esta cargando...."
+          v-if="viewCargando"
+        >
+        </a-spin>
+        <iframe width="100%" height="400px" :src="this.link" frameborder="0">
+        </iframe>
+      </a-row>
+
+      <template slot="footer">
+        <a-button key="back" @click="visibleModalReporte = false">
+          Cerrar
+        </a-button>
+      </template>
+    </a-modal>
   </div>
 </template>
 
@@ -451,6 +477,10 @@ export default {
       /**Visualizacion */
       displayEdition: false,
       displayModal: false,
+      //REPORTE
+      visibleModalReporte: false,
+      link: null,
+      viewCargando: false,
     };
   },
   created() {
@@ -671,8 +701,7 @@ export default {
       return true;
     },
     confirmCobro() {
-      console.log(this.clienteDto.nombreCliente);
-      console.log(this.clienteDto.nroDocumento);
+     
       if(this.clienteDto.nombreCliente === null || this.clienteDto.nroDocumento === null) {
         this.$notification.warning("Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO.");  
         this.displayModal = false;
@@ -691,6 +720,7 @@ export default {
         return;
       }
       //this.cobrarDeudas();
+     
       this.displayModal = true;
     },
     cancelCobro(e) {
@@ -700,25 +730,35 @@ export default {
       this.$Progress.start();
       PaymentDebts.cobrarDeudas(this.clienteDto, 5) //Debe ser Ctte = 5
         .then((r) => {
-          console.log(r);
-          this.$notification.success(r.data.message);
+         this.viewFileDownload(r);
+          //this.$notification.success(r.data.message);
           //debe actualizar las deudas
           this.cargarServicioDeudas();
           this.inicializar();
           this.displayModal = false;
-
+          console.log("entro al then");
+          
+          this.visibleModalReporte=true;
           this.$Progress.finish();
         })
         .catch((error) => {
+          console.log("entro a error");
           console.log(error);
           this.displayModal = false;
-          this.$notification.error(
+          /*this.$notification.error(
             error.response.data.message,
             error.response.data.code
-          );
+          );*/
           this.$Progress.fail();
         });
         
+    },
+    viewFileDownload(response) {
+      var file = new Blob([response.data], {
+        type: "application/pdf" ,
+      });
+      this.link = URL.createObjectURL(file);
+      this.viewCargando = false;
     },
     /*******************************************
      * Otros
