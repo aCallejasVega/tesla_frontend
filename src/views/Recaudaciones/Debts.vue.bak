@@ -14,8 +14,8 @@
             <a-input-search
               v-model="search"
               placeholder="Datos Cliente: Código, CI/NIT o Nombre "
-              @keyup="buscar(false)"
-              @search="buscar(true)"
+              @keyup="buscar"
+              @search="buscar"
               enter-button=" Buscar "
               :maxLength="15"
               size="small"
@@ -596,16 +596,14 @@ export default {
     /*********************************************** 
     BUSQUEDA DE CLIENTE
     ************************************************/
-    cargarClientes(dato, mostrarMensajeVacio) {
+    cargarClientes(dato) {
       PaymentDebts.cargarClientes(this.entidadId, dato)
         .then((r) => {
           if (r.status === 204) {
             this.lstClientes = [];
-            if(mostrarMensajeVacio) {
-              this.$notification.warning(
-                "No existen cliente con parámetro de búsqueda: " + dato + "."
-              );
-            }
+            this.$notification.warning(
+              "No existen cliente con parámetro de búsqueda: " + dato + "."
+            );
             return;
           }
 
@@ -616,9 +614,9 @@ export default {
           this.$notification.error(error.response.data.message,error.response.data.code);
         });
     },
-    buscar(mostrarMensajeVacio) {
+    buscar() {
       if (this.search.length > 0) {
-        this.cargarClientes(this.search, mostrarMensajeVacio);
+        this.cargarClientes(this.search);
       } else {
         this.lstClientes = [];
       }
@@ -746,7 +744,7 @@ export default {
         })
         .catch((error) => {
           console.log("entro a error");
-          console.log(error.response.data.message);
+          console.log(error);
           this.displayModal = false;
           /*this.$notification.error(
             error.response.data.message,

@@ -1,5 +1,6 @@
 <template>
   <div>
+   
     <a-card v-if="!displayForm" style="width: 100%">
       <a-page-header
         style="border: 1px solid rgb(224, 206, 206)"
@@ -55,9 +56,9 @@
           <a-checkbox :checked="record.esPagadora"> </a-checkbox>
         </template>
         <template slot="logo" slot-scope="text, record">
-         <img
-            :src="record.pathLogo"
-            :alt="record.pathLogo"
+         <img v-if="record.imagen64 != null"
+            :src="record.imagen64"
+            :alt="record.nombre"
             width="64px"
             height="64px"
           />
@@ -418,7 +419,6 @@ export default {
   },
   data() {
     return {
-      c: null,
       /*******LISTADO DE ENTIDADES********* */
       /*Datos*/
       lstEntidades: [],
@@ -588,7 +588,6 @@ export default {
     cargarOpcionesByEstado(estadoInicial) {
       Sidebar.getOpcionesByEstado("ENTIDADES", estadoInicial).then((r) => {
         this.lstOpciones = r.data.data;
-        console.log(JSON.stringify(this.lstOpciones));
       });
     },
     seleccionarOpcion(opcion) {
@@ -953,7 +952,18 @@ export default {
       this.displayModalLogo = false;
       this.cargarEntidades();
     },
-
+     /**Logo */
+    cargarLogo(entidadId) {
+      Entidades.getLogo(entidadId).then((r) => {
+        let logo = r.data;
+        
+        if(logo != null)
+          logo = "data:image/png;base64," + r.data;
+        console.log(logo);
+        return logo;
+      });
+    },
+   
     /**ENTIDADES COMISIONES***************************************** */  
     /**Modal Comision */
     openModalComision(entidadId) {

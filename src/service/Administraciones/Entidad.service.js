@@ -34,8 +34,11 @@ export default {
   }, 
   //Flie
   postLogo(file, entidadId) {
-    return Api().post(`api/entidades/upload/${entidadId}`, {file}, this.headersConfig());
+    return Api().post(`api/entidades/upload/logo/${entidadId}`, {file}, this.headersConfig());
   },
   
+  getLogo(entidadId) {
+    return Api().get(`api/entidades/download/logo/${entidadId}`, this.headersConfig());
+  }
   
 };

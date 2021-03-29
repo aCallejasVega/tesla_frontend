@@ -710,7 +710,9 @@ export default {
       let rowFilter = this.lstFilter.length;
       let rowTotal = this.lstRecaudadores.length;
       this.filter = "Registros: " + rowFilter + "/" + rowTotal;
-    }
+    },
+
+   
   },
 };
 </script>
