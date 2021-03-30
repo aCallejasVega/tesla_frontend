@@ -5,10 +5,10 @@
         <div
           class="login100-form-title"
           v-bind:style="{
-            'background-image': 'url(' + require('../../assets/images/bg-01.jpg') + ')',
+            'background-image': 'url(' + require('../../assets/images/logo.png') + ')',
           }"
         >
-          <span class="login100-form-title-1">Bienvenido</span>
+       
         </div>
 
         <form class="login100-form">
@@ -42,24 +42,9 @@
             <span class="focus-input100"></span>
           </div>
 
-          <div class="flex-sb-m w-full p-b-30">
-            <div class="contact100-form-checkbox">
-              <input
-                class="input-checkbox100"
-                id="ckb1"
-                type="checkbox"
-                name="remember-me"
-              />
-              <label class="label-checkbox100" for="ckb1"> Remember me </label>
-            </div>
-
-            <div>
-              <a href="#" class="txt1"> Forgot Password? </a>
-            </div>
-          </div>
 
           <div class="container-login100-form-btn">
-            <a-button type="primary" @click="login"> Login </a-button>
+            <a-button type="primary" @click="login" style="width:50%"> Login </a-button>
           </div>
         </form>
       </div>
@@ -91,13 +76,13 @@ export default {
       loginServices
         .login(this.usuario)
         .then((response) => {
-          console.log(JSON.stringify(response.data));
+       
           return response.data;
         })
         .then((data) => {
           this.$store.dispatch("guardarToken", data.access_token);
           this.$router.push({
-            name: "home",
+            name: "index",
           });
         })
         .catch((error) => {

@@ -30,5 +30,8 @@ export default {
     else 
       return Api().get(`api/Menu/operaciones/${tabla}`, this.headersConfig());
   },
+  getDatosLogin(){
+    return Api().get(`api/Menu/getDatosLogin`, this.headersConfig());
+  }
 
 };

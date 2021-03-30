@@ -1,20 +1,18 @@
 <template>
   <div>
-    <a-card style="width: 100%">
-      <a-page-header
-        style="border: 5px solid rgb(235, 237, 240)"
-        title="LISTA DE DEUDAS."
-      />
-      <a-divider orientation="left">Busqueda</a-divider>
+    <a-card style="width: 100%;">
+      <a-page-header title="REPORTE GENERAL DE DEUDAS" class="a-page-header"  />
+      <a-divider orientation="left" style=" margin: 6px">PARAMETROS DE BUSQUEDA</a-divider>
 
       <a-form>
-        <a-row :gutter="1">
-          <a-col :span="5"></a-col>
-          <a-col :span="7">
+        <a-row>
+          <a-col :span="2"></a-col>
+          <a-col :span="10">
             <a-form-item
               label="Fecha Inicio :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
+             class="a-item-form"
             >
               <a-date-picker
                 format="DD/MM/YYYY "
@@ -23,11 +21,12 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="7">
+          <a-col :span="10">
             <a-form-item
               label="Fecha Fin :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
+              class="a-item-form"
             >
               <a-date-picker
                 format="DD/MM/YYYY"
@@ -36,121 +35,77 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="5"></a-col>
         </a-row>
       </a-form>
       <a-form>
         <a-row :gutter="1">
-          <a-col :span="4"></a-col>
-          <a-col :span="7">
-            <!--a-form-item
+          <a-col :span="2"></a-col>
+          <a-col :span="10">
+            <a-form-item
               label="Empresas :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
+              class="a-item-form"
             >
-              <a-select
-                v-model="formBusqueda.entidadId"
-                @change="onChangeRecaudadora()"
-              >
-                <a-select-option value="All">
-                  TODAS LAS EMPRESAS
-                </a-select-option>
+              <a-select v-model="checkedListEntidad" mode="tags" size="default">
                 <a-select-option
                   v-for="item in entidadesList"
-                  v-bind:value="item.entidadId"
-                  v-bind:key="item.entidadId"
-                  >{{ item.nombre }}</a-select-option
+                  v-bind:value="item.value"
+                  v-bind:key="item.value"
+                  >{{ item.label }}</a-select-option
                 >
               </a-select>
-            </a-form-item-->
-            <div
-              :style="{ borderBottom: '1px solid #A718B8', color: '#A718B8' }"
-            >
-              <a-checkbox
-                :indeterminate="indeterminateEntidad"
-                :checked="checkAllEntidad"
-                @change="onCheckAllChangeEntidad"
-              >
-                TODAS LAS EMPRESAS/ENTIDADES
-              </a-checkbox>
-            </div>
-            <br />
-            <a-checkbox-group
-              v-model="checkedListEntidad"
-              :options="entidadesList"
-              @change="onChangeEntidad"
-            />
+            </a-form-item>
           </a-col>
-          <a-col :span="2"></a-col>
-          <a-col :span="7">
-            <!--a-form-item
+
+          <a-col :span="10">
+            <a-form-item
               label="Estado :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
+              class="a-item-form"
             >
-              <a-select v-model="formBusqueda.estado" :disabled="disableEstado">
-                <a-select-option value="All">
-                  TODOS LOS ESTADOS
-                </a-select-option>
+              <a-select v-model="checkedListEstado" mode="tags" size="default">
                 <a-select-option
                   v-for="item in estadoList"
-                  v-bind:value="item.estadoId"
-                  v-bind:key="item.estadoId"
+                  v-bind:value="item.value"
+                  v-bind:key="item.value"
                 >
-                  {{ item.estado }}
+                  {{ item.label }}
                 </a-select-option>
               </a-select>
-            </a-form-item-->
-
-            <div
-              :style="{ borderBottom: '1px solid #A718B8', color: '#A718B8' }"
-            >
-              <a-checkbox
-                :indeterminate="indeterminateEstado"
-                :checked="checkAllEstado"
-                @change="onCheckAllChangeEstado"
-              >
-                TODOS LOS ESTADOS
-              </a-checkbox>
-            </div>
-            <br />
-            <a-checkbox-group
-              v-model="checkedListEstado"
-              :options="estadoList"
-              @change="onChangeEstado"
-            />
+            </a-form-item>
           </a-col>
           <a-col :span="4"></a-col>
         </a-row>
       </a-form>
 
       <template slot="actions" class="ant-card-actions">
-        <a-button type="link" icon="undo" @click="limpiar()">
-          Limpiar
+        <a-button type="link" @click="limpiar()">
+          <span :style="{ fontSize: '20px' }">
+            <a-icon type="undo" /> Limpiar
+          </span>
         </a-button>
-        <a-button
-          type="link"
-          icon="search"
-          @click="findDeudasByParameterForReport(1)"
-        >
-          Buscar
+        <a-button type="link" @click="findDeudasByParameterForReport(1)">
+          <span :style="{ fontSize: '20px' }">
+            <a-icon type="search" /> Buscar
+          </span>
         </a-button>
-        <a-button
-          type="link"
-          icon="printer"
-          @click="visibleModalTipoReporte = true"
-        >
-          Generar Reporte
+        <a-button type="link" @click="visibleModalTipoReporte = true">
+          <span :style="{ fontSize: '20px' }">
+            <a-icon type="printer" /> Generar Reporte
+          </span>
         </a-button>
       </template>
     </a-card>
     <a-card style="width: 100%">
-      <a-divider orientation="left">DATOS DE LAS DEUDAS</a-divider>
+      <a-divider orientation="left" class="a-divider">DATOS DE LAS DEUDAS</a-divider>
       <a-table
         :columns="columns"
         :data-source="data"
         :pagination="pagination"
         align="center"
+        :loading="loadingTable"
       ></a-table>
     </a-card>
 
@@ -210,6 +165,7 @@ import ReportesRecaudacion from "../../../service/Recaudaciones/ReportesRecaudac
 import locale from "ant-design-vue/es/date-picker/locale/es_ES";
 import moment from "moment";
 import "moment/locale/es";
+
 
 const columns = [
   {
@@ -313,6 +269,8 @@ export default {
       checkedListEstado: [],
       indeterminateEstado: false,
       checkAllEstado: false,
+
+      loadingTable: false,
     };
   },
   created() {
@@ -328,26 +286,27 @@ export default {
   },
   methods: {
     findDeudasByParameterForReport(page) {
+      this.loadingTable = true;
+      if (this.checkedListEntidad == null || this.checkedListEntidad == "") {
+        this.onCheckAllChangeEntidad();
+      }
+      if (this.checkedListEstado == null || this.checkedListEstado == "") {
+        this.onCheckAllChangeEstado();
+      }
       this.formBusqueda.paginacion = page;
       this.formBusqueda.entidadArray = this.checkedListEntidad;
       this.formBusqueda.estadoArray = this.checkedListEstado;
-      console.log("---------------------------------");
-      console.log(JSON.stringify(this.formBusqueda));
-      console.log("---------------------------------");
+
       ReportesRecaudacion.findDeudasByParameterForReport(this.formBusqueda)
         .then((response) => {
           this.data = response.data.data.content;
           this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
-          console.log("---------------------------------");
-          console.log(JSON.stringify(this.data));
-          console.log("---------------------------------");
+          this.loadingTable = false;
         })
         .catch((error) => {
-          console.log("---------------------------------");
-          console.log("Error");
-          console.log("---------------------------------");
           this.data = [];
+          this.loadingTable = false;
         });
     },
     getEstadoHistoricos() {
@@ -370,6 +329,12 @@ export default {
         });
     },
     openModalGenerarReporte() {
+      if (this.checkedListEntidad == null || this.checkedListEntidad == "") {
+        this.onCheckAllChangeEntidad();
+      }
+      if (this.checkedListEstado == null || this.checkedListEstado == "") {
+        this.onCheckAllChangeEstado();
+      }
       this.link = null;
       this.viewCargando = true;
       this.formBusqueda.entidadArray = this.checkedListEntidad;
@@ -424,54 +389,36 @@ export default {
       this.formBusqueda.entidadId = "All";
       this.formBusqueda.estado = "All";
       this.formBusqueda.export = "pdf";
+      this.checkedListEntidad = [];
+      this.checkedListEstado = [];
+      this.data = [];
     },
-    onChangeEntidad(checkedListEntidad) {
-      this.indeterminateEntidad =
-        !!checkedListEntidad.length &&
-        checkedListEntidad.length < this.entidadesList.length;
-      this.checkAllEntidad =
-        checkedListEntidad.length === this.entidadesList.length;
-    },
+
     onCheckAllChangeEntidad(e) {
-      if (!this.checkAllEntidad) {
-        this.indeterminateEntidad = false;
-        this.checkAllEntidad = true;
-        let i = 0;
-        let v = [];
-        this.entidadesList.forEach((element) => {
-          v[i] = element.value;
-          i++;
-        });
-        this.checkedListEntidad = v;
-      } else {
-        this.checkedListEntidad = [];
-        this.checkAllEntidad = false;
-      }
+      let i = 0;
+      let v = [];
+      this.entidadesList.forEach((element) => {
+        v[i] = element.value;
+        i++;
+      });
+      this.checkedListEntidad = v;
     },
-    onChangeEstado(checkedListEstado) {
-      this.indeterminateEstado =
-        !!checkedListEstado.length &&
-        checkedListEstado.length < this.estadoList.length;
-      this.checkAllEstado = checkedListEstado.length === this.estadoList.length;
-    },
-    onCheckAllChangeEstado(e) {
-      if (!this.checkAllEstado) {
-        this.indeterminateEstado = false;
-        this.checkAllEstado = true;
-        let i = 0;
-        let v = [];
-        this.estadoList.forEach((element) => {
-          v[i] = element.value;
-          i++;
-        });
-        this.checkedListEstado = v;
-      } else {
-        this.checkedListEstado = [];
-        this.checkAllEstado = false;
-      }
+
+    onCheckAllChangeEstado() {
+      let i = 0;
+      let v = [];
+      this.estadoList.forEach((element) => {
+        v[i] = element.value;
+        i++;
+      });
+      this.checkedListEstado = v;
     },
   },
 };
 </script>
-<style>
+<style scoped>
+@import "../../../../public/plantilla.css";
+.a-item-form {
+    margin: 0px;
+}
 </style>

@@ -2,7 +2,7 @@
   <div>
     <a-card style="width: 100%">
       <a-page-header
-        style="border: 5px solid rgb(235, 237, 240)"
+        class="a-page-header"
         title="DETALLE DE ARCHIVO SELECCIONADO."
         @back="back()"
       />
@@ -96,6 +96,7 @@
 </template>
 <script>
 import HistoricoDeudas from "../../service/Entidades/HistoricoDeudas.service";
+
 const columns = [
   {
     title: "DEUDA DE LOS CLIENTES",
@@ -142,3 +143,8 @@ export default {
   },
 };
 </script>
+<style>
+
+@import "../../../public/plantilla.css";
+
+</style>

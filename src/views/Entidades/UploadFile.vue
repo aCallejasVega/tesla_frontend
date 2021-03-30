@@ -1,68 +1,82 @@
 <template>
   <div>
-    <a-row type="flex" justify="space-around" align="middle">
-      <a-col :span="20">
-        <a-card style="width: 100%">
-          <a-divider orientation="left"
-            >Cargue aquí su archivo de deudas de clientes.</a-divider
-          >
-          <a-upload-dragger
-            list-type="picture"
-            name="file"
-            accept=".csv"
-            :multiple="false"
-            :file-list="fileList"
-            :disabled="this.disableUpload"
-            method="post"
-            :action="this.url"
-            :headers="{ Authorization: 'Bearer ' + this.token }"
-            @change="handleChange"
-            withCredentials
-          >
-            <p class="ant-upload-drag-icon">
-              <a-icon type="inbox" />
-            </p>
-            <p class="ant-upload-text">
-              Haga clic o arrastre el archivo a esta área para cargar.
-            </p>
-          </a-upload-dragger>
-          <a-alert
-            :message="titutloMensaje"
-            :description="mensajeUpload"
-            :type="tipoMensaje"
-            show-icon
-            v-if="booleanMensjae"
-          />
-
-          <template slot="actions" class="ant-card-actions">
-            <a-button
-              type="link"
-              block
-              @click="showConfirmProcearArchivo"
-              :disabled="buttonProcesar"
-              icon="file-ppt"
+    <a-card style="width: 100%">
+      <a-page-header class="a-page-header" title="ENVIO DE ARCHIVOS." />
+      <a-row style="width: 100%" align="top">
+        <a-col :span="24">
+          <a-card style="width: 100%">
+            <a-divider orientation="left"  style=" margin: 6px"
+              >ENVIO DE ARCHIVOS CON DEUDAS.</a-divider
             >
-              Procesar Datos
-            </a-button>
-          </template>
-        </a-card>
-      </a-col>
-    </a-row>
+            <a-upload-dragger
+              list-type="picture"
+              name="file"
+              accept=".csv"
+              :multiple="false"
+              :file-list="fileList"
+              :disabled="this.disableUpload"
+              method="post"
+              :action="this.url"
+              :headers="{ Authorization: 'Bearer ' + this.token }"
+              @change="handleChange"
+              withCredentials
+              :showUploadList="this.showUpload"
+              :before-upload="handleClick"
+            >
+              <p class="ant-upload-drag-icon">
+                <a-icon type="inbox" />
+              </p>
+              <p class="ant-upload-text">
+                Haga clic o arrastre el archivo a esta área para cargarla.
+              </p>
+            </a-upload-dragger>
+            <a-alert
+              :message="titutloMensaje"
+              :description="mensajeUpload"
+              :type="tipoMensaje"
+              show-icon
+              v-if="booleanMensjae"
+            />
+
+            <template slot="actions" class="ant-card-actions">
+              <a-button
+                type="link"
+                block
+                @click="showConfirmProcearArchivo"
+                :disabled="buttonProcesar"
+               
+                style=""
+                
+              >
+                <span :style="{ fontSize: '19px' }"> <a-icon type="download" /> Procesar Datos </span>
+              </a-button>
+            </template>
+          </a-card>
+        </a-col>
+      </a-row>
+    </a-card>
+
     <p />
-    <a-row type="flex" justify="space-around" align="middle">
-      <a-col :span="20">
+    <a-row type="flex" justify="space-around" align="top">
+      <a-col :span="24">
         <a-card style="width: 100%">
           <a-row type="flex" justify="end">
-            <a-input-search
-              placeholder="Introduzca texto de búsqueda"
-              v-model="paramBusqueda"
-              style="width: 200px"
-              enter-button
-              @search="onSearch"
-            />
+            <a-form layout="inline">
+              <a-form-item label="Busqueda de Deudas : ">
+                <a-input-search
+                  placeholder="Introduzca texto de búsqueda"
+                  v-model="paramBusqueda"
+                  style="width: 200px"
+                  enter-button
+                  @search="onSearch"
+                />
+              </a-form-item>
+            </a-form>
           </a-row>
 
-          <a-divider orientation="left">Registro introducidos.</a-divider>
+          <a-divider orientation="left" class="a-divider"
+            >DEUDAS REGISTRADAS.</a-divider
+          >
 
           <a-table
             :columns="columns"
@@ -70,9 +84,13 @@
             bordered
             :pagination="pagination"
             :showHeader="false"
+            :loading="loadingTable"
           >
             <template slot="archivoId" slot-scope="text, record">
-              <table style="width: 100%; background-color: #f2f0ef" class="styled-header">
+              <table
+                style="width: 100%; background-color: #f2f0ef"
+                class="styled-header"
+              >
                 <tr>
                   <td class="td-align-right">Código de Cliente:</td>
                   <td class="td-align-left">{{ record.codigoCliente }}</td>
@@ -101,7 +119,9 @@
                   </td>
                 </tr>
               </table>
-              <a-divider orientation="left" style="color: #89136b">Detalle</a-divider>
+              <a-divider orientation="left" style="color: #033f79"
+                >Detalle</a-divider
+              >
               <table style="width: 100%" class="styled-table">
                 <thead>
                   <tr>
@@ -122,7 +142,9 @@
                     <td align="center" style="width: 15%">
                       {{ concepto.montoUnitario }}
                     </td>
-                    <td align="center" style="width: 15%">{{ concepto.subTotal }}</td>
+                    <td align="center" style="width: 15%">
+                      {{ concepto.subTotal }}
+                    </td>
                   </tr>
                 </tbody>
                 <tfoot>
@@ -149,14 +171,23 @@
       :maskClosable="false"
     >
       <template slot="footer">
-        <a-button key="submit" type="primary" @click="handleOk" :disabled="buttonModal">
+        <a-button
+          key="submit"
+          type="primary"
+          @click="handleOk"
+          :disabled="buttonModal"
+        >
           Aceptar
         </a-button>
       </template>
 
       <div class="div" v-if="sucess">
         <div class="spin">
-          <a-icon type="check-circle" theme="twoTone" two-tone-color="#52c41a" />
+          <a-icon
+            type="check-circle"
+            theme="twoTone"
+            two-tone-color="#52c41a"
+          />
         </div>
         <a-alert
           message="Su archivo fue procesado con éxito."
@@ -181,7 +212,11 @@
 
       <div v-if="error">
         <div class="spin">
-          <a-icon type="close-circle" theme="twoTone" two-tone-color="#F64155" />
+          <a-icon
+            type="close-circle"
+            theme="twoTone"
+            two-tone-color="#F64155"
+          />
         </div>
         <a-alert
           message="El archivo no pudo ser procesado."
@@ -190,8 +225,14 @@
           show-icon
         />
         <div class="desc">
-          <p><a-icon :style="{ color: 'red' }" type="close-circle" /> {{ mensaje }}</p>
-          <p><a-icon :style="{ color: 'red' }" type="close-circle" /> {{ detalle }}</p>
+          <p>
+            <a-icon :style="{ color: 'red' }" type="close-circle" />
+            {{ mensaje }}
+          </p>
+          <p>
+            <a-icon :style="{ color: 'red' }" type="close-circle" />
+            {{ detalle }}
+          </p>
         </div>
       </div>
     </a-modal>
@@ -236,6 +277,8 @@ export default {
       token: "",
       buttonProcesar: true,
       buttonModal: true,
+      showUpload: true,
+      loadingTable: false,
     };
   },
   created() {
@@ -252,7 +295,13 @@ export default {
     };
   },
   methods: {
+    handleClick() {
+      this.showUpload = true;
+      this.booleanMensjae = false;
+    },
     handleChange(info) {
+      const { status } = info.file;
+
       let fileList = [...info.fileList];
       // Nro. limites de archivos
       fileList = fileList.slice(-1);
@@ -263,7 +312,6 @@ export default {
         return file;
       });
       this.fileList = fileList;
-      const { status } = info.file;
 
       if (status === "done") {
         this.disableUpload = false;
@@ -273,23 +321,25 @@ export default {
         this.booleanMensjae = true;
         this.titutloMensaje = "Éxito";
         this.buttonProcesar = false;
+        this.showUpload = false;
       } else if (status === "error") {
-        console.log("No se pudo cargar el archivo");
         this.mensajeUpload = info.file.response.mensaje;
         this.tipoMensaje = "warning";
         this.titutloMensaje = "Error";
         this.booleanMensjae = true;
         this.buttonProcesar = true;
+        this.showUpload = true;
       }
     },
 
     showConfirmProcearArchivo() {
       this.$confirm({
-        title: "¿Está seguro de procesar el archivo, no podrá revertir esta acción?",
+        title:
+          "¿Está seguro de procesar el archivo, no podrá revertir esta acción?",
         content: (h) => (
           <div>
-            Al procesar los registros del archivo estos se guardarán y se eliminarán los
-            registros anteriores.
+            Al procesar los registros del archivo estos se guardarán y se
+            eliminarán los registros anteriores.
           </div>
         ),
         okText: "Aceptar",
@@ -331,18 +381,31 @@ export default {
         });
     },
     findDeudasClientesByArchivoId(archivoId, page, paramBusqueda) {
-      UploadFileService.findDeudasClientesByArchivoId(archivoId, page, paramBusqueda)
+      this.loadingTable = true;
+      UploadFileService.findDeudasClientesByArchivoId(
+        archivoId,
+        page,
+        paramBusqueda
+      )
         .then((response) => {
           this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
           this.data = response.data.data.content;
+          this.loadingTable = false;
         })
         .catch((error) => {
-          console.log(JSON.stringify(error.response));
+          this.data = [];
+          this.loadingTable = false;
         });
     },
     onSearch() {
-      this.findDeudasClientesByArchivoId(this.archivo.archivoId, 1, this.paramBusqueda);
+      this.data = [];
+      this.loadingTable = true;
+      this.findDeudasClientesByArchivoId(
+        this.archivo.archivoId,
+        1,
+        this.paramBusqueda
+      );
     },
     handleOk(e) {
       this.visible = false;
@@ -351,6 +414,7 @@ export default {
 };
 </script>
 <style>
+@import "../../../public/plantilla.css";
 th.column-money,
 td.column-money {
   text-align: right !important;
@@ -385,7 +449,7 @@ td.column-money {
 .td-align-right {
   text-align: right;
   width: 20%;
-  background-color: #89136b;
+  background-color: #033f79;
   color: #ffffff;
   font-size: 1em;
   font-family: sans-serif;
@@ -404,12 +468,12 @@ td.column-money {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 .styled-table thead tr {
-  background-color: #89136b;
+  background-color: #033f79;
   color: #ffffff;
   text-align: left;
 }
 .styled-footer {
-  background-color: #89136b;
+  background-color: #033f79;
   color: #ffffff;
   text-align: left;
 }
@@ -429,10 +493,13 @@ td.column-money {
 }
 
 .styled-table tbody tr:last-of-type {
-  border-bottom: 2px solid #89136b;
+  border-bottom: 2px solid #033f79;
 }
 .styled-table tbody tr.active-row {
   font-weight: bold;
-  color: #89136b;
+  color: #033f79;
+}
+.a-divider{
+  padding:0px;
 }
 </style>

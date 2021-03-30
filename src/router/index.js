@@ -16,7 +16,7 @@ import EntidadDeudasCobradasPorArchivo from '../views/Entidades/Reportes/Entidad
 import EntidadReportesDeudasCobradas from '../views/Entidades/Reportes/EntidadReportesDeudasCobradas.vue';
 import RecaudacionReportesDeudasCobradas from '../views/Recaudaciones/Reportes/RecaudacionReportesDeudasCobradas.vue';
 import AbmSucursales from '../views/Administracion/AbmSucursales.vue';
-
+import Index from "../views/Home/Index.vue";
 import AdminReportesDeudasCobradas from "../views/Administracion/Reportes/AdminReportesDeudasCobradas.vue";
 
 Vue.use(VueRouter);
@@ -30,6 +30,29 @@ const routes = [
       libre: false
     },
     children: [
+      {
+        path: "*",        
+        component: Index,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/index",
+        name: "index",
+        component: Index,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/UploadFile",
+        name: "UploadFile",
+        component: UploadFile,
+        meta: {
+          libre: false
+        }
+      },
       {
         path: "/UploadFile",
         name: "UploadFile",

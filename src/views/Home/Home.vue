@@ -1,15 +1,15 @@
 <template>
   <a-layout id="components-layout-demo-side" style="min-height: 100vh">
-    <Header />
     <a-layout>
       <Sidebar />
-      <a-layout-content style="margin: 0 16px">
-        <router-view></router-view>
-
-        
-      </a-layout-content>
+      <a-layout>
+        <Header />
+        <a-layout-content style="margin: 0 16px; background-color: #fcfafa">
+          <router-view> </router-view>
+        </a-layout-content>
+        <Footer />
+      </a-layout>
     </a-layout>
-    <Footer />
   </a-layout>
 </template>
 <script>

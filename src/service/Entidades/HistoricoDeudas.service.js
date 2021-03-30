@@ -57,10 +57,17 @@ export default {
       this.headersConfig()
     );
   },
-
-
   getRecaudadoresByEntidad() {
     return Api().get(`api/recaudadores/findRecaudadoresByEntidadId`, this.headersConfig());
 
-  }
+  },
+  getCsv(archivoId) {
+    return Api().get(`api/historicoDeuda/getCsv/${archivoId}`, {
+      responseType: 'arraybuffer',
+      headers: {
+        'Accept': 'text/csv',
+        Authorization: `Bearer ` + localStorage.getItem("token")
+      }
+    });
+  },
 };

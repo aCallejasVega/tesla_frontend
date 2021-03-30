@@ -2,7 +2,7 @@
   <div>
     <a-card style="width: 100%">
       <a-page-header
-        style="border: 5px solid rgb(235, 237, 240)"
+        class="a-page-header"
         title="REPORTE POR ARCHIVOS ENVIADOS."
       />
       <a-divider orientation="left">Busqueda</a-divider>
@@ -32,16 +32,16 @@
               button-style="solid"
               v-model="formBusqueda.estado"
             >
-              <a-radio-button value="All" @click="findArchivos(1)">
+              <a-radio-button value="All" >
                 Todos
               </a-radio-button>
-              <a-radio-button value="ACTIVO" @click="findArchivos(1)">
+              <a-radio-button value="ACTIVO" >
                 Activo
               </a-radio-button>
-              <a-radio-button value="DESACTIVO" @click="findArchivos(1)">
+              <a-radio-button value="DESACTIVO" >
                 Desactivado
               </a-radio-button>
-              <a-radio-button value="FALLIDO" @click="findArchivos(1)">
+              <a-radio-button value="FALLIDO" >
                 Fallidos
               </a-radio-button>
             </a-radio-group>
@@ -50,11 +50,15 @@
       </a-row>
 
       <template slot="actions" class="ant-card-actions">
-        <a-button type="link" icon="undo" @click="limpiar()">
-          Limpiar
+        <a-button type="link"  @click="limpiar()">
+          <span :style="{ fontSize: '20px' }">
+            <a-icon type="undo" /> Limpiar
+          </span>
         </a-button>
-        <a-button type="link" icon="search" @click="findArchivos(1)">
-          Buscar
+        <a-button type="link"  @click="findArchivos(1)">
+          <span :style="{ fontSize: '20px' }">
+            <a-icon type="search" /> Buscar
+          </span>
         </a-button>
       </template>
     </a-card>
@@ -66,6 +70,7 @@
         :data-source="data"
         :pagination="pagination"
         align="center"
+        :loading="loadingTable"
       >
         <template slot="estado" slot-scope="text, record">
           <div v-if="record.estado == 'ACTIVO'">
@@ -267,6 +272,7 @@ export default {
       url: null,
       recaudadoresList: [],
       link: null,
+      loadingTable:false,
     };
   },
   created() {
@@ -283,6 +289,7 @@ export default {
   },
   methods: {
     findArchivos(page) {
+      this.loadingTable=true;
       ReportesEntidad.findArchivos(
         page,
         this.formBusqueda.fechaInicio,
@@ -293,9 +300,11 @@ export default {
           this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
           this.data = response.data.data.content;
+          this.loadingTable=false;
         })
         .catch((error) => {
-          console.log("error");
+          this.data =[];
+          this.loadingTable=false;
         });
     },
     showModal(archivoId) {
@@ -408,4 +417,6 @@ export default {
   },
 };
 </script>
-<style></style>
+<style soped>
+@import "../../../../public/plantilla.css";
+</style>

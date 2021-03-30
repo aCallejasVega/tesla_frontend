@@ -284,7 +284,7 @@
             </a-col>
           </a-row>
         </div>
-        </a-row>
+    
         <a-table
           :columns="columnsA"
           :data-source="clienteDto.servicioDeudaDtoList"
@@ -579,18 +579,20 @@ export default {
   },
 
   methods: {
-  /********ENTIDADES***********/
-  cargarEntidad(entidadId) {
-    Entidades.getEntidad(entidadId).then((r) => {
-        this.entidadObj = r.data.result;
-        this.title = this.entidadObj.nombre + ": Deudas Clientes";
-      }).catch((error) => {
+    /********ENTIDADES***********/
+    cargarEntidad(entidadId) {
+      Entidades.getEntidad(entidadId)
+        .then((r) => {
+          this.entidadObj = r.data.result;
+          this.title = this.entidadObj.nombre + ": Deudas Clientes";
+        })
+        .catch((error) => {
           console.log(error);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
           );
-      });
+        });
     },
 
     /*********************************************** 
@@ -611,7 +613,10 @@ export default {
         })
         .catch((error) => {
           this.lstClientes = [];
-          this.$notification.error(error.response.data.message,error.response.data.code);
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
         });
     },
     buscar() {
@@ -630,8 +635,8 @@ export default {
     ************************************************/
     inicializar() {
       this.selectedRowKeys = [];
-      this.sumTotal = 0; 
-      this.efectivo = 0; 
+      this.sumTotal = 0;
+      this.efectivo = 0;
     },
     cargarServicioDeudas() {
       this.$Progress.start();
@@ -644,7 +649,7 @@ export default {
             this.$notification.warning(
               "No existe registro de deudas para el cliente seleccionado"
             );
-            this.lstServiciosDeudas = [];    
+            this.lstServiciosDeudas = [];
             this.loading = false;
             this.$Progress.finish();
             return;
@@ -700,37 +705,49 @@ export default {
       return true;
     },
     confirmCobro() {
-     
-      if(this.clienteDto.nombreCliente === null || this.clienteDto.nroDocumento === null) {
-        this.$notification.warning("Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO.");  
+      if (
+        this.clienteDto.nombreCliente === null ||
+        this.clienteDto.nroDocumento === null
+      ) {
+        this.$notification.warning(
+          "Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO."
+        );
         this.displayModal = false;
         return;
       }
 
-      if(this.clienteDto.nombreCliente.trim() === '' || this.clienteDto.nroDocumento.trim() === '') {
-        this.$notification.warning("Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO.");  
+      if (
+        this.clienteDto.nombreCliente.trim() === "" ||
+        this.clienteDto.nroDocumento.trim() === ""
+      ) {
+        this.$notification.warning(
+          "Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO."
+        );
         this.displayModal = false;
         return;
       }
 
       if (!this.verificarMontoPrepago(this.clienteDto.servicioDeudaDtoList)) {
-        this.$notification.warning("Para el caso de prepagos debe llenar el monto correspondiente, por favor verifique.");
+        this.$notification.warning(
+          "Para el caso de prepagos debe llenar el monto correspondiente, por favor verifique."
+        );
         this.displayModal = false;
         return;
       }
       //this.cobrarDeudas();
-     
+
       this.displayModal = true;
     },
     cancelCobro(e) {
-      this.$notificarion.warning("Ha cancelado el Cobro, puede proceder a modificar.");
+      this.$notificarion.warning(
+        "Ha cancelado el Cobro, puede proceder a modificar."
+      );
     },
     cobrarDeudas(e) {
       this.$Progress.start();
       PaymentDebts.cobrarDeudas(this.clienteDto, 5) //Debe ser Ctte = 5
         .then((r) => {
-
-         this.viewFileDownload(r);
+          this.viewFileDownload(r);
           //this.$notification.success(r.data.message);
 
           //debe actualizar las deudas
@@ -738,8 +755,8 @@ export default {
           this.inicializar();
           this.displayModal = false;
           console.log("entro al then");
-          
-          this.visibleModalReporte=true;
+
+          this.visibleModalReporte = true;
           this.$Progress.finish();
         })
         .catch((error) => {
@@ -752,11 +769,10 @@ export default {
           );*/
           this.$Progress.fail();
         });
-        
     },
     viewFileDownload(response) {
       var file = new Blob([response.data], {
-        type: "application/pdf" ,
+        type: "application/pdf",
       });
       this.link = URL.createObjectURL(file);
       this.viewCargando = false;
@@ -831,7 +847,7 @@ export default {
   color: white;
 }
 .subgrupo-tabla {
-  background: #ded8da; 
+  background: #ded8da;
   border: 1px;
 }
 </style>

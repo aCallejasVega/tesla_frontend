@@ -2,7 +2,7 @@
   <div>
     <a-card style="width: 100%">
       <a-page-header
-        style="border: 5px solid rgb(235, 237, 240)"
+        class="a-page-header"
         title="LISTA DE ARCHIVOS HISTÓRICOS ENVIADOS."
       />
       <a-divider orientation="left">Busqueda</a-divider>
@@ -32,29 +32,25 @@
               button-style="solid"
               v-model="formBusqueda.estado"
             >
-              <a-radio-button value="null" @click="findArchivos(1)">
-                Todos
-              </a-radio-button>
-              <a-radio-button value="ACTIVO" @click="findArchivos(1)">
-                Activo
-              </a-radio-button>
-              <a-radio-button value="DESACTIVO" @click="findArchivos(1)">
-                Desactivado
-              </a-radio-button>
-              <a-radio-button value="FALLIDO" @click="findArchivos(1)">
-                Fallidos
-              </a-radio-button>
+              <a-radio-button value="null"> Todos </a-radio-button>
+              <a-radio-button value="ACTIVO"> Activo </a-radio-button>
+              <a-radio-button value="DESACTIVO"> Desactivado </a-radio-button>
+              <a-radio-button value="FALLIDO"> Fallidos </a-radio-button>
             </a-radio-group>
           </a-form-item>
         </a-form>
       </a-row>
 
       <template slot="actions" class="ant-card-actions">
-        <a-button type="link" icon="undo" @click="limpiar()">
-          Limpiar
+        <a-button type="link"  @click="limpiar()">
+          <span :style="{ fontSize: '19px' }">
+            <a-icon type="undo" /> Limpiar
+          </span>
         </a-button>
-        <a-button type="link" icon="search" @click="findArchivos(1)">
-          Buscar
+        <a-button type="link" @click="findArchivos(1)">
+          <span :style="{ fontSize: '19px' }">
+            <a-icon type="search" /> Buscar
+          </span>
         </a-button>
       </template>
     </a-card>
@@ -66,9 +62,10 @@
         :data-source="data"
         :pagination="pagination"
         align="center"
+        :loading="loadingTable"
       >
         <template slot="nombre" slot-scope="text, record">
-          <a
+          <a @click="getCsv(record.archivoId, record.nombre)"
             ><a-icon type="download" :style="{ fontSize: '20px' }" /> 一
             {{ record.nombre }}</a
           >
@@ -89,7 +86,7 @@
           <div v-if="record.estado == 'FALLIDO'">
             <a-tag color="red">
               <a-icon type="exception" :style="{ fontSize: '20px' }" />
-              <a @click="showModal(record.archivoId)">FALLIDO</a>
+              <a>FALLIDO</a>
             </a-tag>
           </div>
         </template>
@@ -165,7 +162,9 @@
           </a-form-item>
           <a-form-item label="Entidad Recaudadora :">
             <a-select v-model="formBusqueda.recaudadorId">
-              <a-select-option value="0"> TODS LAS RECAUDADORAS </a-select-option>
+              <a-select-option value="0">
+                TODS LAS RECAUDADORAS
+              </a-select-option>
               <a-select-option
                 v-for="item in recaudadoresList"
                 v-bind:value="item.recaudadorId"
@@ -208,7 +207,9 @@
     >
       <iframe style="width: 100%; height: 400px" :src="urlReporte"></iframe>
       <template slot="footer">
-        <a-button key="back" @click="visibleModalReporte=false"> Cerrar </a-button>
+        <a-button key="back" @click="visibleModalReporte = false">
+          Cerrar
+        </a-button>
       </template>
     </a-modal>
   </div>
@@ -218,7 +219,6 @@ import HistoricoDeudas from "../../service/Entidades/HistoricoDeudas.service";
 import locale from "ant-design-vue/es/date-picker/locale/es_ES";
 import moment from "moment";
 import "moment/locale/es";
-
 
 const columns = [
   {
@@ -249,7 +249,6 @@ const columns = [
     width: "10%",
     scopedSlots: { customRender: "estado" },
   },
-  
 ];
 export default {
   data() {
@@ -265,11 +264,7 @@ export default {
         sm: { span: 16 },
         md: { span: 16 },
       },
-      formBusqueda: {
-        fechaInicio: null,
-        fechaFin: null,
-        estado: "ACTIVO",
-      },
+
       data: [],
       pagination: {},
       page: 1,
@@ -284,7 +279,7 @@ export default {
       estadoList: [],
       formBusqueda: {
         archivoId: null,
-        estado: null,
+        estado: "ACTIVO",
         recaudadorId: null,
         formato: null,
       },
@@ -292,13 +287,14 @@ export default {
       visibleModalReporte: false,
       url: null,
       recaudadoresList: [],
+      loadingTable: false,
     };
   },
   created() {
     this.findArchivos(1);
-    this.getTipoReporte();
+
     this.getEstadoHistoricos();
-    this.getRecaudadores();
+
     this.pagination = {
       total: this.total,
       onChange: (page) => {
@@ -308,6 +304,8 @@ export default {
   },
   methods: {
     findArchivos(page) {
+      this.loadingTable = true;
+      this.data = [];
       HistoricoDeudas.findArchivos(
         page,
         this.formBusqueda.fechaInicio,
@@ -318,10 +316,10 @@ export default {
           this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
           this.data = response.data.data.content;
-         
+          this.loadingTable = false;
         })
         .catch((error) => {
-          console.log("error");
+          this.data = [];
         });
     },
     showModal(archivoId) {
@@ -347,48 +345,36 @@ export default {
       this.visibleModalForm = true;
       this.archivoId = archivoId;
     },
-    getTipoReporte() {
-      HistoricoDeudas.findDominioByDominio()
-        .then((response) => {
-          this.tipoReporteList = response.data.data;
-          console.log(JSON.stringify(this.tipoReporteList));
-        })
-        .catch((error) => {
-          this.tipoReporteList = [];
-        });
-    },
+
     getEstadoHistoricos() {
       HistoricoDeudas.getEstadoHistoricos()
         .then((response) => {
           this.estadoList = response.data.data;
-          console.log(JSON.stringify(this.estadoList));
         })
         .catch((error) => {
           this.estadoList = [];
         });
     },
 
-    generarReporte() {
-      this.visibleModalForm = false;
-      this.visibleModalReporte = true;
-      this.formBusqueda.archivoId = this.archivoId;
-
-      this.urlReporte = `http://localhost:9080/api/ReportEntidad/findDeudasByArchivoIdAndEstado/${this.formBusqueda.archivoId}/${this.formBusqueda.recaudadorId}/${this.formBusqueda.formato}/${this.formBusqueda.estado}`;
-      console.log("-------------------------------------------");
-      console.log(JSON.stringify(this.urlReporte));
-      console.log("-------------------------------------------");
-    },
-    getRecaudadores() {
-      HistoricoDeudas.getRecaudadoresByEntidad()
+    getCsv(archivoId, nombre) {
+      HistoricoDeudas.getCsv(archivoId)
         .then((response) => {
-          this.recaudadoresList = response.data.data;
-          console.log(JSON.stringify(this.recaudadoresList));
+          this.forceFileDownload(response, nombre);
         })
-        .catch((error) => {
-          this.recaudadoresList = [];
-        });
+        .catch((error) => {});
+    },
+    forceFileDownload(response, fileName) {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${fileName}.csv`);
+      document.body.appendChild(link);
+      link.click();
     },
   },
 };
 </script>
-<style></style>
+<style>
+@import "../../../public/plantilla.css";
+
+</style>

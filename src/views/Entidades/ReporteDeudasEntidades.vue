@@ -2,7 +2,7 @@
   <div>
     <a-card style="width: 100%">
       <a-page-header
-        style="border: 5px solid rgb(235, 237, 240)"
+        class="a-page-header"
         title="REPORTE DE ENTIDAD"
         @back="back()"
       />
@@ -195,3 +195,6 @@ export default {
   },
 };
 </script>
+<style >
+@import "../../../public/plantilla.css";
+</style>
