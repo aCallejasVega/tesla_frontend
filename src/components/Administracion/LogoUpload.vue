@@ -47,7 +47,7 @@ export default {
       //urlOriginal: process.env.VUE_APP_EXACTA_TESLA + "api/entidades/upload",
       url:
         process.env.VUE_APP_EXACTA_TESLA +
-        "api/entidades/upload/" +
+        "api/entidades/upload/logo/" +
         this.entidadId,
       token: "",
       loading: false,

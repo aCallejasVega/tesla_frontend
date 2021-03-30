@@ -15,7 +15,6 @@
             @search="buscar"
             enter-button=" Buscar "
             :maxLength="50"
-            size="small"
           />
         </a-col>
       </a-row>
@@ -37,7 +36,7 @@
             >
               <a-card hoverable>
                 <a-card-meta :title="item.descripcion">
-                  <a-avatar slot="avatar" :src="item.abreviatura" size="large"/>
+                  <a-avatar slot="avatar" :src="item.imagen64" :size="44"/>
                 </a-card-meta>
               </a-card>
             </a-col>
@@ -60,7 +59,7 @@
               :key="i"
               @click="seleccionar(item)"
             >
-              <img :src="item.pathLogo" />
+              <img :src="item.imagen64" />
               <div>
                 <h1>{{ item.nombre }}</h1>
               </div>
@@ -170,6 +169,8 @@ export default {
       } else {
         this.displayEntidades = false;
       }
+
+      console.log(this.lstEntidadesFilter)
     },
   },
 };
