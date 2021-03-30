@@ -747,6 +747,10 @@ export default {
         .catch((error) => {
           console.log("entro a error");
           console.log(error.response.data.message);
+          //Se añade por el reporte implementado
+          this.cargarServicioDeudas();
+          this.inicializar();
+          //
           this.displayModal = false;
           /*this.$notification.error(
             error.response.data.message,
