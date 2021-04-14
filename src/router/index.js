@@ -18,6 +18,10 @@ import RecaudacionReportesDeudasCobradas from '../views/Recaudaciones/Reportes/R
 import AbmSucursales from '../views/Administracion/AbmSucursales.vue';
 import Index from "../views/Home/Index.vue";
 import AdminReportesDeudasCobradas from "../views/Administracion/Reportes/AdminReportesDeudasCobradas.vue";
+import UploadFileAbonos from "../views/Pagos/UploadFileAbonos";
+import PaymentsServicios from "../views/Pagos/PaymentsServicios";
+import SearchServicios from "../views/Pagos/SearchServicios";
+
 
 Vue.use(VueRouter);
 
@@ -30,29 +34,16 @@ const routes = [
       libre: false
     },
     children: [
+      
       {
-        path: "*",        
-        component: Index,
-        meta: {
-          libre: false
-        }
-      },
-      {
-        path: "/index",
+        path: "/",
         name: "index",
         component: Index,
         meta: {
           libre: false
         }
       },
-      {
-        path: "/UploadFile",
-        name: "UploadFile",
-        component: UploadFile,
-        meta: {
-          libre: false
-        }
-      },
+     
       {
         path: "/UploadFile",
         name: "UploadFile",
@@ -167,7 +158,30 @@ const routes = [
           libre: false
         }
       },
-      
+      {
+        path: "/UploadFileAbonos",
+        name: "UploadFileAbonos",
+        component: UploadFileAbonos,
+        meta: {
+          libre: false
+        }
+      },      
+      {
+        path: "/SearchServicios",
+        name: "SearchServicios",
+        component: SearchServicios,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/PaymentsServicios/:servicioProductoId",
+        name: "PaymentsServicios",
+        component: PaymentsServicios,
+        meta: {
+          libre: false
+        }
+      },
     ]
   },
   {

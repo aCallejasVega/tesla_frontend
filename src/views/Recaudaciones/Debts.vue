@@ -802,7 +802,6 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .th-amount {
   text-align: right;
@@ -826,7 +825,7 @@ export default {
   line-height: 1.5;
   background-color: #fff;
   background-image: none;
-  border: 1px solid #d9d9d9;
+  border: 1px solid rgb(237,239,247);
   border-radius: 4px;
   transition: all 0.3s;
   height: 24px;
@@ -844,16 +843,16 @@ export default {
 
 .titulo-tabla {
   width: 100%;
-  background-color: #593d56;
+  background-color: rgb(45,82,98);
   color: white;
 }
 .grupo-tabla {
   width: 100%;
-  background-color: #7e687d;
+  background-color: rgb(65,135,145);
   color: white;
 }
 .subgrupo-tabla {
-  background: #ded8da;
+  background: rgb(150,197,203); 
   border: 1px;
 }
 </style>

@@ -7,6 +7,10 @@ import axios from 'axios';
 import VueGoogleCharts from 'vue-google-charts';
 import Notifications from 'vue-notification';
 
+import VueFilterNumericFormat from '@vuejs-community/vue-filter-numeric-format';
+
+Vue.use(VueFilterNumericFormat);
+
 const moment = require('moment');
 require('moment/locale/es');
 
