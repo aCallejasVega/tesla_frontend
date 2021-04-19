@@ -48,7 +48,7 @@
 
           <a-col :span="6">
             <a-form-item
-              label="Empresas :"
+              label="Entidades :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
                class="a-item-form"
@@ -58,7 +58,7 @@
                 @change="onChangeRecaudadora()"
               >
                 <a-select-option value="All">
-                  TODAS LAS EMPRESAS :
+                  TODAS LAS ENTIDADES :
                 </a-select-option>
                 <a-select-option
                   v-for="item in entidadesList"

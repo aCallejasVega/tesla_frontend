@@ -15,7 +15,7 @@
       </a-col>
       <a-col span="6">
         <a-button type="link" @click="abrirEntidad" icon="plus">
-          Nueva Empresa
+          Nueva Entidad
         </a-button>
       </a-col>
     </a-row>
@@ -45,7 +45,7 @@ export default {
           if (r.status === 204) {
             (this.lstEntidades = []),
               this.$notification.warning(
-                "No se ha encontrado ninguna Empresa registrada"
+                "No se ha encontrado ninguna Entidad registrada"
               );
             this.$Progress.finish();
             return;
@@ -67,7 +67,7 @@ export default {
     },
     abrirEntidad() {
       this.$confirm({
-        title: "¿Está seguro de ingresar a Registro de Empresas?",
+        title: "¿Está seguro de ingresar a Registro de Entidades?",
         content: "Considere que los datos se perderán.",
         okText: "Aceptar",
         cancelText: "Cancelar",

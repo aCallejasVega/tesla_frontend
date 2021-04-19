@@ -1,33 +1,28 @@
-
+  
 
 <template>
   <div>
-    <a-card v-if="!displayForm" style="width: 100%">
-      <a-page-header
-        style="border: 1px solid rgb(224,206,206)"
-        :title="title"
-        @back="$router.back()"
-      />
-    </a-card>
-    <a-card v-if="!displayForm" style="width: 100%">
-      <template slot="actions" class="ant-card-actions">
-        <a-button-group >
-          <a-button v-for="(item, i) in lstOpciones"
-            :key="i"
-            @click="seleccionarOpcion(item.transaccion)">
-            {{ item.etiqueta }}
-          </a-button>
-        </a-button-group>
-      </template>
-    </a-card>
-    <a-card v-if="!displayForm" style="width: 100%">
-      <!--LISTADO DE SUCURSALES-->
-      <a-row type="flex" justify="end">
-         <a-col :span="12">
-          <b>{{filter}}</b>
-         </a-col>
-        <a-col :span="12" >
-          <a-input-search
+     <div v-if="!displayForm"
+        style="
+          border: 2px solid #21618c;
+          border-radius: 5px;
+          height: 100%;
+          width: 100%;
+          padding: 1%;
+          color: #21618c;
+        "
+      >
+        <a-row type="flex" justify="space-around" align="middle"
+          ><a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+            <h2><b style="color: #21618c"><a-icon type="arrow-left" @click="$router.back()"/> {{title}} </b></h2></a-col
+          >
+          <a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
+            <a-row type="flex" justify="end">
+              <a-col :xs="24" :sm="24" :md="24" :lg="4" :xl="4"
+                ><b>{{filter}}</b></a-col
+              >
+              <a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20" align="right">
+                 <a-input-search
             v-model="search"
             placeholder="Buscar por nombre..."
             @search="filterTable"
@@ -35,16 +30,34 @@
             :maxLength="50"
             size="small"
           />
-        </a-col>
-      </a-row>
-      <br/>
+              </a-col>
+            </a-row>
+          </a-col>
+        </a-row>
+      </div>
+    <a-card v-if="!displayForm" style="width: 100%">
+      <template slot="actions" class="ant-card-actions">
+        <b>{{filter}}</b>
+        <a-button-group >
+          <a-button v-for="(item, i) in lstOpciones"
+            :key="i"
+            @click="seleccionarOpcion(item.transaccion)"
+            type="primary">
+            {{ item.etiqueta }}
+          </a-button>
+        </a-button-group>
+      </template>
+    </a-card>
+    <a-card v-if="!displayForm" style="width: 100%">
+      <!--LISTADO DE SUCURSALES-->
       <a-table
         :row-selection="rowSelection"
         :columns="columns"
         :data-source="lstFilter"
         rowKey="sucursalEntidadId"
         :pagination="pagination"
-        :scroll="{ x: 1500 }"
+        :loading = "loading"
+        :scroll="{ x: 1000 }"
       >      
         <template slot="estado" slot-scope="text, record" >
           <div v-if="record.estado == 'ACTIVO'" align="center">
@@ -65,16 +78,71 @@
             </a-tag>
           </div>
         </template>
+         <template slot="datosGenerales" slot-scope="text, record">
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Nombre
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValueMain">
+              {{record.nombreSucursal}} 
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Dirección
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.direccion}} 
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Teléfono
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.telefono}} 
+            </a-col>
+          </a-row>
+         </template>
+         <template slot="informacionTributaria" slot-scope="text, record">
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Departamento
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.departamentoDescripcion}} 
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Localidad
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.localidadDescripcion}} 
+            </a-col>
+          </a-row>
+          
+        </template>
       </a-table>
     </a-card>
+    <div v-if="displayForm"
+        style="
+          border: 2px solid #21618c;
+          border-radius: 5px;
+          height: 100%;
+          width: 100%;
+          padding: 1%;
+          color: #21618c;
+        "
+      >
+        <a-row type="flex" justify="space-around" align="middle"
+          ><a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+            <h2><b style="color: #21618c"><a-icon type="arrow-left" @click="volverListado"/> {{title}}: {{subTitle}} </b></h2>
+            </a-col
+          >
+        </a-row>
+    </div>
     <a-card v-if="displayForm">
-      <a-page-header
-        style="border: 1px solid rgb(224,206,206)"
-        :title="title"
-        :sub-title="subTitle"
-        @back="() => volverListado()"
-      />
-      <br/>
       <!--LISTADO DE SUCURSALES-->
       <a-form-model
         ref="ruleForm"
@@ -119,8 +187,11 @@
         </a-form-model-item>
       </a-form-model>
       <template slot="actions" class="ant-card-actions">
-         <a-button type="link" @click="onSubmit"> Registrar </a-button>
-          <a-button type="link" @click="resetForm"> Limpiar </a-button>
+         <a-button type="link" @click="onSubmit" style="color:white; background-color:#339966;border:0px" > 
+          <a-icon type="form" />
+            Registrar 
+          </a-button>
+          <a-button type="primary" ghost @click="resetForm"><a-icon type="reload" /> Limpiar </a-button>
       </template>
     </a-card>
   </div>
@@ -131,23 +202,22 @@ import Sidebar from "../../service/Home/Sidebar.service";
 
 const columns = [
   {
-    title: "Nombre",
+    title: "Datos Generales",
     dataIndex: "nombreSucursal",
-    fixed: "left",
+    //fixed: "left",
+    scopedSlots: { customRender: "datosGenerales" },
+    width: "40%"
   },
   {
-    title: "Dirección",
-    dataIndex: "direccion",
-  },
-  {
-    title: "Teléfono",
-    dataIndex: "telefono",
+    title: "Información Tributaria",
+    scopedSlots: { customRender: "informacionTributaria" },
+    width: "40%"
   },
   {
     title: "Estado",
     dataIndex: "estado",
-    fixed: "right",
     scopedSlots: { customRender: "estado" },
+    width: "20%"
   },
 ];
 
@@ -165,6 +235,7 @@ export default {
       pagination: {
         pageSize: 5,
       },
+      loading: false,
       /*menu*/
       lstOpciones: [],
       /**Otros */
@@ -275,13 +346,13 @@ export default {
         case 'CREAR': //CREAR
           this.sucursalEntidadObj = {};
           this.displayForm = true;
-          this.subTitle = "Formulario Registro Nuevo";
+          this.subTitle = "Registro Nuevo";
           break;  
         case 'MODIFICAR': //Modiicar
           if(this.selectedRowKeys.length === 1) {
             this.cargarSucursalEntidad(this.selectedRowKeys);
             this.displayForm = true;
-            this.subTitle = "Formulario Modificación de Registro";
+            this.subTitle = "Modificación de Registro";
           } else {
             this.$notification.warning('Debe seleccionar un solo registro para MODIFICAR');
           }
@@ -356,7 +427,7 @@ export default {
     },
     /**Opeaciones */
     cargarSucursalEntidadesPorEntidad(entidadId) {
-      this.$Progress.start();
+      this.loading = true;
       SucursalesEntidades.getLstSucursalEntidadByEntidadId(entidadId).then((r) => {
         console.log('cargar')
         console.log(r)
@@ -364,13 +435,13 @@ export default {
           this.lstSucursalesEntidades = [];
           this.lstFilter = [];
           this.$notification.warning("No se ha encontrado ninguna Sucursal registrada para Entidad.");
-          this.$Progress.finish();
+          this.loading = false;
           return;
         }
         this.lstSucursalesEntidades = r.data.result;
         this.lstFilter = this.lstSucursalesEntidades;
         this.countRows();
-        this.$Progress.finish();
+        this.loading = false;
       }).catch((error) => {
         this.lstSucursalesEntidades = [];
         this.lstFilter = [];
@@ -378,7 +449,7 @@ export default {
           error.response.data.message,
           error.response.data.code
         );
-        this.$Progress.fail();
+        this.loading = false;
       });
     },
     actualizaListaSucursalEntidadTransaccion(sucursalIdLst, transaccion) {
@@ -465,4 +536,22 @@ export default {
 };
 </script>
 <style scoped>
+.labelTittle {
+    background-color:#FAFAFA; 
+    font-weight:bold; 
+    padding-right:5px;
+    height: 100%;
+  }
+  .labelValue {
+    border-width: 0.1px;
+    border-color:#FAFAFA;
+    border-style: solid;
+  }
+  .labelValueMain {
+    border-width: 0.1px;
+    border-color:#FAFAFA;
+    border-style: solid;
+    color: #839DFF;
+    background-color:#FAFAFA; 
+  }
 </style>

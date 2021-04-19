@@ -1,23 +1,39 @@
 <template>
   <div>
     <a-card style="width: 100%">
-      <a-page-header
-        style="border: 1px solid rgb(224, 206, 206)"
-        title="Búsqueda General"
-      />
-      <br />
-      <a-row>
-        <a-col>
-          <a-input-search
-            v-model="search"
-            placeholder="Empresa, Universidad, Colegio, otro..."
-            @keyup="buscar"
-            @search="buscar"
-            enter-button=" Buscar "
-            :maxLength="50"
-          />
-        </a-col>
-      </a-row>
+       <div
+        style="
+          border: 2px solid #21618c;
+          border-radius: 5px;
+          height: 100%;
+          width: 100%;
+          padding: 1%;
+          color: #21618c;
+        "
+      >
+        <a-row type="flex" justify="space-around" align="middle"
+          ><a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+            <h2><b style="color: #21618c">Búsqueda de Entidad</b></h2></a-col
+          >
+          <a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
+            <a-row type="flex" justify="end">
+              <a-col :xs="24" :sm="24" :md="24" :lg="4" :xl="4"
+                ><b>Buscar por :</b></a-col
+              >
+              <a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20">
+                <a-input-search
+                  v-model="search"
+                  placeholder="Empresa, Universidad, Colegio, otro..."
+                  @keyup="buscar"
+                  @search="buscar"
+                  enter-button=" Buscar "
+                  :maxLength="50"
+                />
+              </a-col>
+            </a-row>
+          </a-col>
+        </a-row>
+      </div>
       <!--Tipos de Entidades-->
     </a-card>
     <a-card style="width: 100%">
@@ -101,7 +117,7 @@ export default {
           if(r.status === 204) {
             this.lstEntidades = [];
             this.lstEntidadesFilter = this.lstEntidades;
-            this.$notification.warning("No existe Empresas asociadas a la Recaudadora");
+            this.$notification.warning("No existe Entidades asociadas a la Recaudadora");
             return;
           }
 

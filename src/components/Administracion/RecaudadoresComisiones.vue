@@ -1,7 +1,6 @@
 <template>
   <div v-if="displayFormComision">
     <a-card title="Formulario de Comisión">
-{{recaudadorId}} a oahsdoasho
       <a-form-model
         ref="ruleFormComision"
         :model="recaudadorComisionObj"
@@ -43,25 +42,25 @@
       </a-form-model>
       <template slot="actions" class="ant-card-actions">
         <a-tooltip placement="top" title="Registra Comisión por Recaudador">
-          <a-button @click="onSubmitComision" type="link"> Registrar </a-button>
+          <a-button @click="onSubmitComision" type="link" style="color:white; background-color:#339966;border:0px"><a-icon type="form" /> Registrar </a-button>
         </a-tooltip>
         <a-tooltip placement="top" title="Vuelve al Listado de Comisión">
-          <a-button @click="cancelarFormComisionEdicion" type="link"> Cancelar </a-button>
+          <a-button type="primary" ghost @click="cancelarFormComisionEdicion"> Cancelar </a-button>
         </a-tooltip>
       </template>
     </a-card>
   </div>
   <div v-else>
     <a-alert
-      message="Solo puede modificar registros donde la Empresa no este dado de alta."
+      message="Solo puede modificar registros donde la Entidad no este dado de alta."
       type="info"
       show-icon
     />
     <a-card style="width: 100%">
       <template slot="actions" class="ant-card-actions">
         <a-button-group>
-          <a-button @click="nuevaComision"> NUEVO </a-button>
-          <a-button @click="editarRecaudadorComision"> MODIFICAR </a-button>
+          <a-button type="primary" @click="nuevaComision"> NUEVO </a-button>
+          <a-button type="primary" @click="editarRecaudadorComision"> MODIFICAR </a-button>
         </a-button-group>
       </template>
     </a-card>

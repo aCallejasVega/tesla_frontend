@@ -42,7 +42,7 @@
           <a-col :span="2"></a-col>
           <a-col :span="10">
             <a-form-item
-              label="Empresas :"
+              label="Entidades :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
               class="a-item-form"
@@ -169,7 +169,7 @@ import "moment/locale/es";
 
 const columns = [
   {
-    title: "Empresa",
+    title: "Entidad",
     dataIndex: "nombreComercial",
     key: "nombreComercial",
     width: "10%",
