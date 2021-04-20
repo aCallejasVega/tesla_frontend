@@ -64,7 +64,7 @@
             width="64px"
             height="64px"
           />
-          <a-button type="link" @click="openModalLogo(record.entidadId, record.nombre)" icon="upload" size="small" v-if="record.estado != 'DESACTIVO'">
+          <a-button type="link" @click="openModalLogo(record.entidadId, record.nombre)" icon="upload" size="small" v-if="record.estado != 'INACTIVO'">
             Subir
           </a-button>
         </template>
@@ -75,7 +75,7 @@
               {{ record.estado }}
             </a-tag>
           </div>
-          <div v-if="record.estado == 'DESACTIVO'" align="center">
+          <div v-if="record.estado == 'INACTIVO'" align="center">
             <a-tag color="red">
               <a-icon type="caret-down" :style="{ fontSize: '20px' }" />
               {{ record.estado }}
@@ -194,18 +194,18 @@
         </template>
         <template slot="parametrizacion" slot-scope="text, record">
            <a-row type="flex">
-            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="20" class="labelTittle">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="18" class="labelTittle">
               ¿Realiza Cobros?
             </a-col>
-            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="4" class="labelValue">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="6" class="labelValue">
               {{ record.esCobrador ? 'SI' : 'NO'}}
             </a-col>
           </a-row>
            <a-row type="flex">
-            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="20" class="labelTittle">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="18" class="labelTittle">
               ¿Realiza Pagos?
             </a-col>
-            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="4" class="labelValue">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="6" class="labelValue">
                {{ record.esPagadora ? 'SI' : 'NO'}}
             </a-col>
           </a-row>
@@ -749,7 +749,7 @@ export default {
             );
           }
           break;
-        case "DESACTIVAR": //BAJAR
+        case "INACTIVAR": //BAJAR
           if (this.selectedRowKeys.length > 0) {
             this.$confirm({
               title:
@@ -763,7 +763,7 @@ export default {
                 console.log("ok");
                 this.actualizaListaEntidadesTransaccion(
                   this.selectedRowKeys,
-                  "DESACTIVAR"
+                  "INACTIVAR"
                 );
               },
               onCancel() {

@@ -66,7 +66,7 @@
               {{record.estado}}
             </a-tag>
           </div>
-          <div v-if="record.estado == 'DESACTIVO'" align="center">
+          <div v-if="record.estado == 'INACTIVO'" align="center">
             <a-tag color="red">
               <a-icon type="caret-down" :style="{ fontSize: '20px' }" />
                {{record.estado}}
@@ -400,7 +400,7 @@ export default {
             this.$notification.warning('Debe seleccionar al menos un registro para DAR ALTA')
           }
           break;
-        case 'DESACTIVAR': //BAJAR
+        case 'INACTIVAR': //BAJAR
           if(this.selectedRowKeys.length > 0) {
             this.$confirm({
               title: "¿Está seguro de DAR BAJA el(los) registro(s) seleccionado(s)?",
@@ -410,7 +410,7 @@ export default {
               cancelText: "Cancelar",
               onOk: () => {
                 console.log('ok')
-                this.actualizaListaSucursalEntidadTransaccion(this.selectedRowKeys, "DESACTIVAR");
+                this.actualizaListaSucursalEntidadTransaccion(this.selectedRowKeys, "INACTIVAR");
               },
               onCancel() {  
                 console.log('Cancel');

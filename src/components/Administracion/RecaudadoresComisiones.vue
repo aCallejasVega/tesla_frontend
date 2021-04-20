@@ -71,6 +71,7 @@
       rowKey="recaudadorComisionId"
       :pagination="pagination"
       :row-selection="rowSelectionComision"
+      :loading="loading"
     >
       <template slot="comision" slot-scope="text, record">
         <money v-model="record.comision" v-bind="money" disabled="true"></money>
@@ -82,7 +83,7 @@
             {{ record.estado }}
           </a-tag>
         </div>
-        <div v-if="record.estado == 'DESACTIVO'" align="center">
+        <div v-if="record.estado == 'INACTIVO'" align="center">
           <a-tag color="red">
             <a-icon type="caret-down" :style="{ fontSize: '20px' }" />
             {{ record.estado }}
@@ -140,6 +141,7 @@ export default {
       },
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
+      loading: false,
        //MONTOS
       money: {
         decimal: ".",
@@ -182,7 +184,7 @@ export default {
         },
         getCheckboxProps: record => ({
           props: {
-            disabled: (record.estado === 'DESACTIVO' || (record.estado === 'ACTIVO' && record.estadoRecaudador === 'ACTIVO' )),
+            disabled: (record.estado === 'INACTIVO' || (record.estado === 'ACTIVO' && record.estadoRecaudador === 'ACTIVO' )),
           },
         }),
       };
@@ -237,17 +239,25 @@ export default {
     
     /**Operaciones */
     cargarRecaudadoresComisiones(recaudadorId) {
-      console.log("aqui " + recaudadorId);
+      this.loading = true;
       RecaudadoresComisiones.getlstRecaudadoresComisionesByRecaudadorId(recaudadorId).then(
         (r) => {
           this.lstRecaudadoresComisiones = r.data.result;
+          this.loading = false;
         }
-      );
+      ).catch((error) => {
+          console.log(error);
+          this.$notification.error(error.response.data.message, error.response.data.code);
+          this.loading = false;
+        });
     },
     cargarRecaudadorComision(recaudadorComisionId) {
       RecaudadoresComisiones.getRecaudadorComision(recaudadorComisionId).then((r) => {
         this.recaudadorComisionObj = r.data.result;
-      });
+      }).catch((error) => {
+          console.log(error);
+          this.$notification.error(error.response.data.message, error.response.data.code);
+        });
     },
 
     guardarRecaudadorComision() {

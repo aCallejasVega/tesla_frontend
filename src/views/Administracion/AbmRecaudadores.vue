@@ -63,7 +63,7 @@
               {{ record.estado }}
             </a-tag>
           </div>
-          <div v-if="record.estado == 'DESACTIVO'" align="center">
+          <div v-if="record.estado == 'INACTIVO'" align="center">
             <a-tag color="red">
               <a-icon type="caret-down" :style="{ fontSize: '20px' }" />
               {{ record.estado }}
@@ -496,7 +496,7 @@ export default {
             );
           }
           break;
-        case "DESACTIVAR": //BAJAR
+        case "INACTIVAR": //BAJAR
           if (this.selectedRowKeys.length > 0) {
             this.$confirm({
               title:
@@ -510,7 +510,7 @@ export default {
                 console.log("ok");
                 this.actualizaListaRecaudadoresTransaccion(
                   this.selectedRowKeys,
-                  "DESACTIVAR"
+                  "INACTIVAR"
                 );
               },
               onCancel() {
