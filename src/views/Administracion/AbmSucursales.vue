@@ -224,6 +224,10 @@ import Dominios from "../../service/Administraciones/Dominio.service";
 import Sucursales from "../../service/Administraciones/Sucursal.service";
 import Sidebar from "../../service/Home/Sidebar.service";
 
+const sorter = (data) => {
+  return data.slice().sort((a,b) => b.sucursalId - a.sucursalId)
+};
+
 const columns = [
   {
     title: "Datos Generales",
@@ -478,7 +482,7 @@ export default {
           this.loading = false;
           return;
         }
-        this.lstSucursales = r.data.result;
+        this.lstSucursales = sorter(r.data.result);
         this.lstFilter = this.lstSucursales;
         this.loading = false;
         this.countRows();

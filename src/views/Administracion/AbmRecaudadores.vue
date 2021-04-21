@@ -260,7 +260,7 @@ import RecaudadoresComisiones from "../../components/Administracion/Recaudadores
 import Sidebar from "../../service/Home/Sidebar.service";
 
 const sorter = (data) => {
-  return data.slice().sort((a,b) => b.entidadId - a.entidadId)
+  return data.slice().sort((a,b) => b.recaudadorId - a.recaudadorId)
 };
 
 const columns = [

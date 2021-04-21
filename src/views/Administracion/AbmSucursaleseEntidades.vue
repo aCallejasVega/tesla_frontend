@@ -19,7 +19,7 @@
           <a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
             <a-row type="flex" justify="end">
               <a-col :xs="24" :sm="24" :md="24" :lg="4" :xl="4"
-                ><b>{{filter}}</b></a-col
+                ><b></b></a-col
               >
               <a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20" align="right">
                  <a-input-search
@@ -103,9 +103,7 @@
               {{record.telefono}} 
             </a-col>
           </a-row>
-         </template>
-         <template slot="informacionTributaria" slot-scope="text, record">
-          <a-row type="flex">
+           <a-row type="flex">
             <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
               Departamento
             </a-col>
@@ -115,14 +113,60 @@
           </a-row>
           <a-row type="flex">
             <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
-              Localidad
+              Municipio
             </a-col>
             <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
-              {{record.localidadDescripcion}} 
+              {{record.municipioDescripcion}} 
             </a-col>
           </a-row>
-          
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Correo Electrónico
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.email}} 
+            </a-col>
+          </a-row>
+         </template>
+         <template slot="informacionTributaria" slot-scope="text, record">
+            <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Codigo Actividad Económica
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.codigoActividadEconomica}} 
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Actividad Económica
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.actividadEconomica}} 
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Numero Sucursal SIN
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.numeroSucursalSin}} 
+            </a-col>
+          </a-row>
+         
         </template>
+        <template slot="parametrizacion" slot-scope="text, record" >
+         <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Emite Factura Tesla
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.emiteFacturaTesla == true ? 'SI' : 'NO' }} 
+            </a-col>
+          </a-row>
+        </template>
+
+
       </a-table>
     </a-card>
     <div v-if="displayForm"
@@ -152,6 +196,7 @@
         :wrapper-col="wrapperCol"
         size="small"
       >
+        <a-divider orientation="left">Información General</a-divider>
         <a-form-model-item ref="nombreSucursal" label="Nombre Sucursal" prop="nombreSucursal">
           <a-input
             v-model="sucursalEntidadObj.nombreSucursal"
@@ -185,6 +230,76 @@
             :maxLength="10"
           />
         </a-form-model-item>
+         <a-form-model-item label="Departamento" prop="departamentoId">
+          <a-select
+            v-model="sucursalEntidadObj.departamentoId"
+            placeholder="Seleccione Departamento"
+            @change="cargarMunicipios(sucursalEntidadObj.departamentoId)"
+          >
+            <a-select-option
+              v-for="(item, i) in lstDepartamentos"
+              :key="i"
+              :value="item.dominioId" 
+            >
+              {{ item.descripcion }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <a-form-model-item label="Municipio" prop="municipioId">
+          <a-select
+            v-model="sucursalEntidadObj.municipioId"
+            placeholder="Seleccione Municipio"
+          >
+            <a-select-option
+              v-for="(item, i) in lstMunicipios"
+              :key="i"
+              :value="item.dominioId"
+            >
+              {{ item.descripcion }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <a-form-model-item ref="email" label="Correo Electrónico" prop="email">
+          <a-input
+            v-model="sucursalEntidadObj.email"
+            @blur="
+              () => {
+                $refs.email.onFieldBlur();
+              }
+            "
+            :maxLength="50"
+          />
+        </a-form-model-item>
+        <a-divider orientation="left">Información Tributaria</a-divider>
+        <a-form-model-item ref="codigoActividadEconomica" label="Código Actividad Económica" prop="codigoActividadEconomica">
+          <a-input
+            v-model="sucursalEntidadObj.codigoActividadEconomica"
+            @blur="
+              () => {
+                $refs.codigoActividadEconomica.onFieldBlur();
+              }
+            "
+            :maxLength="10"
+          />
+        </a-form-model-item>
+        <a-form-model-item ref="actividadEconomica" label="Actividad Económica" prop="actividadEconomica">
+          <a-input
+            v-model="sucursalEntidadObj.actividadEconomica"
+            @blur="
+              () => {
+                $refs.actividadEconomica.onFieldBlur();
+              }
+            "
+            :maxLength="255"
+          />
+        </a-form-model-item>
+        <a-form-model-item ref="numeroSucursalSin" label="Número Sucursal SIN" prop="numeroSucursalSin">
+          <a-input-number v-model="sucursalEntidadObj.numeroSucursalSin" :min="0" :max="50" />
+        </a-form-model-item>
+        <a-divider orientation="left" >Parametrización</a-divider>
+        <a-form-model-item ref="emiteFacturaTesla" label="¿Emite Factura Tesla?" prop="emiteFacturaTesla">
+          <a-switch v-model="sucursalEntidadObj.emiteFacturaTesla" />
+        </a-form-model-item>
       </a-form-model>
       <template slot="actions" class="ant-card-actions">
          <a-button type="link" @click="onSubmit" style="color:white; background-color:#339966;border:0px" > 
@@ -197,27 +312,38 @@
   </div>
 </template>
 <script>
+import Dominios from "../../service/Administraciones/Dominio.service";
 import SucursalesEntidades from "../../service/Administraciones/SucursalEntidad.service";
 import Sidebar from "../../service/Home/Sidebar.service";
 
+
+const sorter = (data) => {
+  return data.slice().sort((a,b) => b.sucursalEntidadId - a.sucursalEntidadId)
+};
+
 const columns = [
   {
-    title: "Datos Generales",
+    title: "Información General",
     dataIndex: "nombreSucursal",
     //fixed: "left",
     scopedSlots: { customRender: "datosGenerales" },
-    width: "40%"
+    width: "35%"
   },
   {
     title: "Información Tributaria",
     scopedSlots: { customRender: "informacionTributaria" },
-    width: "40%"
+    width: "35%"
+  },
+  {
+    title: "Parametrización",
+    scopedSlots: { customRender: "parametrizacion" },
+    width: "15%"
   },
   {
     title: "Estado",
     dataIndex: "estado",
     scopedSlots: { customRender: "estado" },
-    width: "20%"
+    width: "15%"
   },
 ];
 
@@ -241,6 +367,9 @@ export default {
       /**Otros */
       current: null,
       displayModal: true,
+      /*Dominios*/
+      lstDepartamentos: [],
+      lstMunicipios: [],
 
       /*******FORMULARIO SUCRUSALES********* */
       /*Datos*/
@@ -288,6 +417,42 @@ export default {
             trigger: "blur",
           },
         ],
+        departamentoId: [
+          {
+            required: true,
+            message: "Debe seleccionar un Departamento.",
+            trigger: "change",
+          },
+        ],
+        municipioId: [
+          {
+            required: true,
+            message: "Debe seleccionar un Municipo",
+            trigger: "change",
+          },
+        ],
+        numeroSucursalSin: [
+          {
+            trigger: "blur",
+            message: "El rango de es de 0 - 20.",
+            pattern:  /^[0-9]?$|^20$/ 
+          },
+        ],
+        codigoActividadEconomica: [
+          {
+            trigger: "blur",
+            message: "Debe registrar solo números.",
+            pattern:  /^[0-9,$]*$/ 
+          },
+        ],
+        email: [
+          {
+            trigger: "blur",
+            message: "El correo electrónico esta incorrecto.",
+            pattern:  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
+          },
+        ],
+        
       },
        /**Filter */
       search: '',
@@ -327,11 +492,43 @@ export default {
   mounted() {
     this.entidadId = this.$route.params.entidadId;
     this.cargarSucursalEntidadesPorEntidad(this.entidadId);
+    this.cargarDepartamentos();
 
-     this.cargarOpcionesByEstado(null);
+    this.cargarOpcionesByEstado(null);
   },
 
   methods: {
+    /*Lista de Dominio*/
+    cargarDepartamentos() {
+      Dominios.getListDominos("departamento_id").then((r) => {
+        if(r.status === 204) {
+          this.lstDepartamentos = [];
+          this.$notification.warning("La parametrización de dominios no esta completa.");
+          return;
+        }
+
+        this.lstDepartamentos = r.data.result;
+      }).catch((error) => {
+          console.log(error);
+          this.lstDepartamentos = [];
+          this.$notification.error(error.response.data.message, error.response.data.code);
+        });
+    },
+    cargarMunicipios(agrupadorId) {
+      Dominios.getListDominosByAgrupador(agrupadorId).then((r) => {
+        if(r.status === 204) {
+          this.lstMunicipios = [];
+          this.$notification.warning("La parametrización de dominios no esta completa.");
+          return;
+        }
+
+        this.lstMunicipios = r.data.result;
+      }).catch((error) => {
+          console.log(error);
+          this.lstMunicipios = [];
+          this.$notification.error(error.response.data.message, error.response.data.code);
+        });
+    },
     /*****LISTADO DE SUCURSALES*** */
     /**Menú */
     cargarOpcionesByEstado(estadoInicial) {
@@ -438,7 +635,7 @@ export default {
           this.loading = false;
           return;
         }
-        this.lstSucursalesEntidades = r.data.result;
+        this.lstSucursalesEntidades = sorter(r.data.result);
         this.lstFilter = this.lstSucursalesEntidades;
         this.countRows();
         this.loading = false;

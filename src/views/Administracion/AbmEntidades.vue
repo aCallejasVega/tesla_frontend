@@ -601,6 +601,12 @@ export default {
               "El NIT debe contener al menos 10 caracteres y máximo 13",
             trigger: "blur",
           },
+          
+          {
+            trigger: "blur",
+            message: "Debe registrar solo números.",
+            pattern:  /^[0-9,$]*$/ 
+          },
         ],
         tipoFacturacionId: [
           {
