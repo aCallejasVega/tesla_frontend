@@ -36,10 +36,8 @@
       collapsedWidth="150"
     >
       <a-menu-item v-for="menu in menuList" :key="menu.privilegiosId">
-        
         <a-icon :type="menu.icono" @click="navegar(menu.link)" />
         <span @click="navegar(menu.link)">
-        
           {{ menu.descripcion }}
         </span>
       </a-menu-item>

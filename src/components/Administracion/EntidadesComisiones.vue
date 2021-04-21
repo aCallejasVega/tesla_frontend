@@ -1,7 +1,6 @@
 <template>
   <div v-if="displayFormComision">
     <a-card title="Formulario de Comisión">
-
       <a-form-model
         ref="ruleFormComision"
         :model="entidadComisionObj"
@@ -43,25 +42,25 @@
       </a-form-model>
       <template slot="actions" class="ant-card-actions">
         <a-tooltip placement="top" title="Registra Comisión por Entidad">
-          <a-button @click="onSubmitComision" type="link"> Registrar </a-button>
+          <a-button @click="onSubmitComision" type="link" style="color:white; background-color:#339966;border:0px"><a-icon type="form" /> Registrar </a-button>
         </a-tooltip>
         <a-tooltip placement="top" title="Vuelve al Listado de Comisión">
-          <a-button @click="cancelarFormComisionEdicion" type="link"> Cancelar </a-button>
+          <a-button @click="cancelarFormComisionEdicion" type="primary" ghost><a-icon type="reload" /> Cancelar </a-button>
         </a-tooltip>
       </template>
     </a-card>
   </div>
   <div v-else>
     <a-alert
-      message="Solo puede modificar registros donde la Empresa no este dado de alta."
+      message="Solo puede modificar registros donde la Entidad no este dado de alta."
       type="info"
       show-icon
     />
     <a-card style="width: 100%">
       <template slot="actions" class="ant-card-actions">
         <a-button-group>
-          <a-button @click="nuevaComision"> NUEVO </a-button>
-          <a-button @click="editarEntidadComision"> MODIFICAR </a-button>
+          <a-button type="primary" @click="nuevaComision"> NUEVO </a-button>
+          <a-button type="primary" @click="editarEntidadComision"> MODIFICAR </a-button>
         </a-button-group>
       </template>
     </a-card>
@@ -72,6 +71,7 @@
       rowKey="entidadComisionId"
       :pagination="pagination"
       :row-selection="rowSelectionComision"
+      :loading="loading"
     >
       <template slot="comision" slot-scope="text, record">
         <money v-model="record.comision" v-bind="money" disabled="true"></money>
@@ -83,7 +83,7 @@
             {{ record.estado }}
           </a-tag>
         </div>
-        <div v-if="record.estado == 'DESACTIVO'" align="center">
+        <div v-if="record.estado == 'INACTIVO'" align="center">
           <a-tag color="red">
             <a-icon type="caret-down" :style="{ fontSize: '20px' }" />
             {{ record.estado }}
@@ -141,6 +141,7 @@ export default {
       },
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
+      loading: false,
        //MONTOS
       money: {
         decimal: ".",
@@ -183,7 +184,7 @@ export default {
         },
         getCheckboxProps: record => ({
           props: {
-            disabled: (record.estado === 'DESACTIVO' || (record.estado === 'ACTIVO' && record.estadoEntidad === 'ACTIVO' )),
+            disabled: (record.estado === 'INACTIVO' || (record.estado === 'ACTIVO' && record.estadoEntidad === 'ACTIVO' )),
           },
         }),
       };
@@ -238,17 +239,25 @@ export default {
     
     /**Operaciones */
     cargarEntidadesComisiones(entidadId) {
-      console.log("aqui " + entidadId);
+      this.loading = true;
       EnitdadesComisiones.getlstEntidadesComisionesByEntidadId(entidadId).then(
         (r) => {
           this.lstEntidadesComisiones = r.data.result;
+           this.loading = false;
         }
-      );
+      ).catch((error) => {
+          console.log(error);
+          this.$notification.error(error.response.data.message, error.response.data.code);
+          this.loading = false;
+        });
     },
     cargarEntidadComision(entidadComisionId) {
       EnitdadesComisiones.getEntidadComision(entidadComisionId).then((r) => {
         this.entidadComisionObj = r.data.result;
-      });
+      }).catch((error) => {
+          console.log(error);
+          this.$notification.error(error.response.data.message, error.response.data.code);
+        });
     },
 
     guardarEntidadComision() {

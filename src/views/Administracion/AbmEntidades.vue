@@ -1,19 +1,45 @@
 <template>
   <div>
+    <div v-if="!displayForm"
+        style="
+          border: 2px solid #21618c;
+          border-radius: 5px;
+          height: 100%;
+          width: 100%;
+          padding: 1%;
+          color: #21618c;
+        "
+      >
+        <a-row type="flex" justify="space-around" align="middle"
+          ><a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+            <h2><b style="color: #21618c"> Administración de Registro de Entidades </b></h2></a-col
+          >
+          <a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14" align="right">
+            <a-row type="flex" justify="end">
+              <a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20" align="right">
+               <a-input-search
+                  v-model="search"
+                  placeholder="Buscar por nombre..."
+                  @search="filterTable"
+                  enter-button=" Buscar "
+                  :maxLength="50"
+                />
+              </a-col>
+            </a-row>
+          </a-col>
+        </a-row>
+    </div>
+   
    
     <a-card v-if="!displayForm" style="width: 100%">
-      <a-page-header
-        style="border: 1px solid rgb(224, 206, 206)"
-        title="Administración de Registro de Entidades"
-      />
-    </a-card>
-    <a-card v-if="!displayForm" style="width: 100%">
       <template slot="actions" class="ant-card-actions">
+        <b>{{filter}}</b>
         <a-button-group>
           <a-button
             v-for="(item, i) in lstOpciones"
             :key="i"
             @click="seleccionarOpcion(item.transaccion)"
+            type="primary"
           >
             {{ item.etiqueta }}
           </a-button>
@@ -22,39 +48,15 @@
     </a-card>
     <a-card v-if="!displayForm" style="width: 100%">
       <!--LISTADO DE ENTIDADES------------------------------------------>
-       <a-row type="flex" justify="end">
-         <a-col :span="12">
-          <b>{{filter}}</b>
-         </a-col>
-        <a-col :span="12" >
-          <a-input-search
-            v-model="search"
-            placeholder="Buscar por nombre..."
-            @search="filterTable"
-            enter-button=" Buscar "
-            :maxLength="50"
-            size="small"
-          />
-        </a-col>
-      </a-row>
-      <br/>
       <a-table
         :row-selection="rowSelection"
         :columns="columns"
         :data-source="lstFilter"
         rowKey="entidadId"
         :pagination="pagination"
-        :scroll="{ x: 2000 }"
+        :loading = "loading"
+        :scroll="{ x: 1000 }"
       >
-        <template slot="comprobante" slot-scope="text, record">
-          <a-checkbox :checked="record.comprobanteEnUno"> </a-checkbox>
-        </template>
-         <template slot="esCobradora" slot-scope="text, record">
-          <a-checkbox :checked="record.esCobradora"> </a-checkbox>
-        </template>
-         <template slot="esPagadora" slot-scope="text, record">
-          <a-checkbox :checked="record.esPagadora"> </a-checkbox>
-        </template>
         <template slot="logo" slot-scope="text, record">
          <img v-if="record.imagen64 != null"
             :src="record.imagen64"
@@ -62,7 +64,7 @@
             width="64px"
             height="64px"
           />
-          <a-button type="link" @click="openModalLogo(record.entidadId, record.nombre)" icon="upload" size="small" v-if="record.estado != 'DESACTIVO'">
+          <a-button type="link" @click="openModalLogo(record.entidadId, record.nombre)" icon="upload" size="small" v-if="record.estado != 'INACTIVO'">
             Subir
           </a-button>
         </template>
@@ -73,7 +75,7 @@
               {{ record.estado }}
             </a-tag>
           </div>
-          <div v-if="record.estado == 'DESACTIVO'" align="center">
+          <div v-if="record.estado == 'INACTIVO'" align="center">
             <a-tag color="red">
               <a-icon type="caret-down" :style="{ fontSize: '20px' }" />
               {{ record.estado }}
@@ -94,14 +96,6 @@
             Sucursales
           </a>
           <br />
-          <!--
-          <a-badge :count="record.recaudadorIdLst !== null ? 7 : 0" :number-style="{
-            backgroundColor: '#fff',
-            color: '#999',
-            boxShadow: '0 0 0 1px #d9d9d9 inset',
-          }">
-            <a href="javascript:;" @click="openModal(record.entidadId)" class="head-example"> Recaudadoras </a>
-          </a-badge>-->
           <a
             href="javascript:;"
             @click="openModalRecaudadora(record.entidadId)"
@@ -114,16 +108,131 @@
             Comisión </a
           ><br />
         </template>
+        <template slot="datosEntidad" slot-scope="text, record">
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Nombre
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValueMain">
+              {{record.nombre}} 
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Tipo Entidad
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.tipoEntidadDescripcion}}
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Nombre Comercial
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.nombreComercial}}
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Dirección
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.direccion}}
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Teléfono
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.telefono}}
+            </a-col>
+          </a-row>
+        </template>
+        <template slot="informacionTributaria" slot-scope="text, record">
+           <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Actividad Económica Grande
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.actividadEconomicaDescripcion}}
+            </a-col>
+          </a-row>
+           <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Municipio
+            </a-col>
+           <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.municipioDescripcion}}
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              NIT
+            </a-col>
+           <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.nit}}
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Modalidad Facturación
+            </a-col>
+           <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              {{record.tipoFacturacionDescripcion}}
+            </a-col>
+          </a-row>
+           <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
+              Comprobante en uno
+            </a-col>
+           <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+            {{ record.comprobanteEnUno ? 'SI' : 'NO'}}
+            </a-col>
+          </a-row>
+        </template>
+        <template slot="parametrizacion" slot-scope="text, record">
+           <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="18" class="labelTittle">
+              ¿Realiza Cobros?
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="6" class="labelValue">
+              {{ record.esCobrador ? 'SI' : 'NO'}}
+            </a-col>
+          </a-row>
+           <a-row type="flex">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="18" class="labelTittle">
+              ¿Realiza Pagos?
+            </a-col>
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="6" class="labelValue">
+               {{ record.esPagadora ? 'SI' : 'NO'}}
+            </a-col>
+          </a-row>
+        </template>
       </a-table>
     </a-card>
+
+    <div v-if="displayForm"
+        style="
+          border: 2px solid #21618c;
+          border-radius: 5px;
+          height: 100%;
+          width: 100%;
+          padding: 1%;
+          color: #21618c;
+        "
+      >
+        <a-row type="flex" justify="space-around" align="middle"
+          ><a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+            <h2><b style="color: #21618c"><a-icon type="arrow-left" @click="volverListado"/> Administración de Entidades (Empresas, Universidades y otros): {{subTitle}} </b></h2>
+            </a-col
+          >
+        </a-row>
+    </div>
+
+
     <a-card v-if="displayForm">
-      <a-page-header
-        style="border: 1px solid rgb(224, 206, 206)"
-        title="Administración de Empresas, Universidades y otros"
-        :sub-title="subTitle"
-        @back="() => volverListado()"
-      />
-      <br />
       <!--FORMULARIO DE ENTIDADES---------------------------------------->
       <a-form-model
         ref="ruleForm"
@@ -134,7 +243,7 @@
         size="small"
       >
         <a-divider orientation="left">Información General</a-divider>
-        <a-form-model-item ref="nombre" label="Nombre Empresa" prop="nombre">
+        <a-form-model-item ref="nombre" label="Nombre Entidad" prop="nombre">
           <a-input
             v-model="entidadObj.nombre"
             :maxLength="200"
@@ -196,7 +305,7 @@
        
         <a-divider orientation="left">Información Tributaria</a-divider>
         <a-form-model-item
-          label="Actividad Económica"
+          label="Actividad Económica Grande"
           prop="actividadEconomicaId"
         >
           <a-select
@@ -271,8 +380,11 @@
         </a-form-model-item>
       </a-form-model>
       <template slot="actions" class="ant-card-actions">
-        <a-button type="link" @click="onSubmit"> Registrar </a-button>
-        <a-button type="link" @click="resetForm"> Limpiar </a-button>
+        <a-button type="link" @click="onSubmit" style="color:white; background-color:#339966;border:0px" > 
+          <a-icon type="form" />
+            Registrar 
+          </a-button>
+        <a-button type="primary" ghost @click="resetForm"><a-icon type="reload" /> Limpiar </a-button>
       </template>
     </a-card>
 
@@ -287,6 +399,9 @@
       :centered="true"
       :closable="false"
       :maskClosable="false"
+      :okButtonProps = "{ style: { color:'white', background: '#339966', border: '0px' } }"
+      :cancelButtonProps = "{ style: {  color:'white', background: 'red', border: '0px'  } }"
+     
     >
       <RecaudadorLst :entidadObj = entidadObj />
     </a-modal>
@@ -333,81 +448,49 @@ import LogoUpload from "../../components/Administracion/LogoUpload.vue";
 import RecaudadorLst from "../../components/Administracion/RecaudadorLst.vue"
 import Sidebar from "../../service/Home/Sidebar.service";
 
+const sorter = (data) => {
+  return data.slice().sort((a,b) => b.entidadId - a.entidadId)
+};
+
 /**Listado de Entidades */
 const columns = [
   {
-    title: "Nombre",
+    title: "Datos Generales",
     dataIndex: "nombre",
-    fixed: "left",
+    scopedSlots: { customRender: "datosEntidad" },
+    width: "25%"
   },
   {
-    title: "Tipo Entidad",
-    dataIndex: "tipoEntidadDescripcion",
-  },
-  {
-    title: "Nombre Comercial",
-    dataIndex: "nombreComercial",
-  },
-  {
-    title: "Dirección",
-    dataIndex: "direccion",
-  },
-  {
-    title: "Teléfono",
-    dataIndex: "telefono",
-  },
-  {
-    title: "Actividad Económica",
+    title: "Información Tributaria",
     dataIndex: "actividadEconomicaDescripcion",
-    //width: "200px"
+    scopedSlots: { customRender: "informacionTributaria" },
+    width: "25%"
   },
   {
-    title: "Municipio",
-    dataIndex: "municipioDescripcion",
-    //width: "200px"
-  },
-  {
-    title: "Nit",
-    dataIndex: "nit",
-    //width: "150px"
-  },
-  {
-    title: "Tipo Facturación",
-    dataIndex: "tipoFacturacionDescripcion",
-    //width: "150px"
-  },
-  {
-    title: "Comprobante en uno",
-    dataIndex: "comprobanteEnUno",
-    scopedSlots: { customRender: "comprobante" },
-    //width: "120px"
-  },
-  {
-    title: "Realiza Cobros",
+    title: "Transacciones a realizar",
     dataIndex: "esCobradora",
-    scopedSlots: { customRender: "esCobradora" },
-  },
-  {
-    title: "Realiza Pagos",
-    dataIndex: "esPagadora",
-    scopedSlots: { customRender: "esPagadora" },
+    scopedSlots: { customRender: "parametrizacion" },
+    width: "15%"
   },
   {
     title: "Logo",
     dataIndex: "pathLogo",
     scopedSlots: { customRender: "logo" },
+    width: "10%"
   },
   {
     title: "Estado",
     dataIndex: "estado",
-    fixed: "right",
+    //fixed: "right",
     scopedSlots: { customRender: "estado" },
+    width: "10%"
   },
   {
     title: "Opciones",
     dataIndex: "",
     scopedSlots: { customRender: "opciones" },
-    fixed: "right",
+    //fixed: "right",
+    width: "15%"
   },
 ];
 
@@ -429,6 +512,7 @@ export default {
       pagination: {
         pageSize: 5,
       },
+      loading: false,
       /*menu*/
       lstOpciones:[],
       /**Otros */
@@ -517,6 +601,12 @@ export default {
               "El NIT debe contener al menos 10 caracteres y máximo 13",
             trigger: "blur",
           },
+          
+          {
+            trigger: "blur",
+            message: "Debe registrar solo números.",
+            pattern:  /^[0-9,$]*$/ 
+          },
         ],
         tipoFacturacionId: [
           {
@@ -595,13 +685,13 @@ export default {
         case "CREAR": //CREAR
           this.entidadObj = {};
           this.displayForm = true;
-          this.subTitle = "Formulario Registro Nuevo";
+          this.subTitle = "Registro Nuevo";
           break;
         case "MODIFICAR": //Modiicar
           if (this.selectedRowKeys.length === 1) {
             this.cargarEntidad(this.selectedRowKeys);
             this.displayForm = true;
-            this.subTitle = "Formulario Modificación de Registro";
+            this.subTitle = "Modificación de Registro";
 
           } else {
             this.$notification.warning(
@@ -665,7 +755,7 @@ export default {
             );
           }
           break;
-        case "DESACTIVAR": //BAJAR
+        case "INACTIVAR": //BAJAR
           if (this.selectedRowKeys.length > 0) {
             this.$confirm({
               title:
@@ -679,7 +769,7 @@ export default {
                 console.log("ok");
                 this.actualizaListaEntidadesTransaccion(
                   this.selectedRowKeys,
-                  "DESACTIVAR"
+                  "INACTIVAR"
                 );
               },
               onCancel() {
@@ -700,22 +790,22 @@ export default {
     /**LISTADO DE ENTIDADES************************************/
     /**Opeaciones */
     cargarEntidades() {
-      this.$Progress.start();
+      this.loading = true;
       Entidades.getLstEntidad()
         .then((r) => {
           if (r.status === 204) {
             this.lstEntidades = [];
             this.lstFilter = [];
             this.$notification.warning(
-              "No se ha encontrado ninguna Empresa registrada"
+              "No se ha encontrado ninguna Entidad registrada"
             );
-            this.$Progress.finish();
+            this.loading = false;
             return;
           }
-          this.lstEntidades = r.data.result;
+          this.lstEntidades = sorter(r.data.result);
           this.lstFilter = this.lstEntidades;
           this.countRows();
-          this.$Progress.finish();
+          this.loading = false;
         })
         .catch((error) => {
           this.lstEntidades = [];
@@ -724,7 +814,7 @@ export default {
             error.response.data.message,
             error.response.data.code
           );
-          this.$Progress.fail();
+          this.loading = false;
         });
 
         this.countRows();
@@ -864,7 +954,7 @@ export default {
     /*Operaciones*/
     guardarEntidad() {
       if(!this.verificarTipoTransaccion(this.entidadObj)) {
-        this.$notification.warning("Debe registrar si Realiza Cobros y/o Realiza Pagos");
+        this.$notification.warning("Debe registrar si la Entidad Realiza Cobros y/o Realiza Pagos");
         return;
       }
       this.$Progress.start();
@@ -990,9 +1080,29 @@ export default {
       let rowTotal = this.lstEntidades.length;
       this.filter = "Registros: " + rowFilter + "/" + rowTotal;
     }
+
+   
    
   },
 };
 </script>
 <style scoped>
+  .labelTittle {
+    background-color:#FAFAFA; 
+    font-weight:bold; 
+    padding-right:5px;
+    height: 100%;
+  }
+  .labelValue {
+    border-width: 0.1px;
+    border-color:#FAFAFA;
+    border-style: solid;
+  }
+  .labelValueMain {
+    border-width: 0.1px;
+    border-color:#FAFAFA;
+    border-style: solid;
+    color: #839DFF;
+    background-color:#FAFAFA; 
+  }
 </style>

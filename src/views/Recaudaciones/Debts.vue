@@ -1,28 +1,62 @@
 <template>
   <div>
     <a-card style="width: 100%">
-      <a-page-header
-        style="border: 1px solid rgb(224, 206, 206)"
-        :title="title"
-        @back="$router.back()"
-      />
-      <br />
+      <div
+        style="
+          border: 2px solid #21618c;
+          border-radius: 5px;
+          height: 100%;
+          width: 100%;
+          padding: 1%;
+          color: #21618c;
+        "
+      >
+        <a-row type="flex" justify="space-around" align="middle"
+          ><a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+            <h2><b style="color: #21618c"><a-icon type="arrow-left" @click="$router.back()"/> {{title}}</b></h2></a-col
+          >
+          <a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
+            <a-row type="flex" justify="end">
+              <a-col :xs="24" :sm="24" :md="24" :lg="4" :xl="4"
+                ><b></b></a-col
+              >
+              <a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20" align="right">
+               <a-input-search
+                  v-model="search"
+                  placeholder="Datos Cliente: Código, CI/NIT o Nombre "
+                  @search="buscar"
+                  enter-button=" Buscar "
+                  :maxLength="15"
+                  size="small"
+                  v-if="!displayCliente"
+                />
+                <a-button type="primary" @click="reload" size="small" v-if="displayCliente">
+                  Nueva Búsqueda
+                </a-button>
+              </a-col>
+            </a-row>
+          </a-col>
+        </a-row>
+      </div>
+
+
+      <br/>
       <div v-if="!displayCliente">
         <!--Buscar Clientes-->
+        <!--
         <a-row type="flex" justify="end">
           <a-col :xs="24" :sm="24" :md="18" :lg="18">
             <a-input-search
               v-model="search"
               placeholder="Datos Cliente: Código, CI/NIT o Nombre "
-              @keyup="buscar(false)"
-              @search="buscar(true)"
+              @search="buscar"
               enter-button=" Buscar "
               :maxLength="15"
               size="small"
             />
           </a-col>
         </a-row>
-        <br />
+        <br />-->
         <!--Lista de Clientes-->
         <a-table
           :row-selection="rowSelectionC"
@@ -35,6 +69,7 @@
           :scroll="{ x: 350 }"
           size="small"
           :pagination="pagination"
+          :loading="loading"
         >
           <a slot="name" slot-scope="text">{{ text }}</a>
         </a-table>
@@ -42,6 +77,7 @@
 
       <!-- Lista de Deudas-->
       <div v-if="displayCliente">
+        <!--
         <a-row type="flex" justify="space-around">
           <a-col :xs="24" :sm="24" :md="24" :lg="24" align="right">
             <a-button type="primary" @click="reload" size="small">
@@ -49,7 +85,7 @@
             </a-button>
           </a-col>
         </a-row>
-        <br />
+        <br />-->
         <div class="titulo-tabla">
           <a-row>
             <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
@@ -85,7 +121,7 @@
           :row-selection="rowSelectionS"
           :pagination="false"
           :scroll="{ x: 350 }"
-          :loading="loading"
+          :loading="loadingServ"
         >
           <template slot="key" slot-scope="text, record">
             <div class="grupo-tabla">
@@ -248,8 +284,17 @@
             type="link"
             :disabled="!selectedRowKeys.length > 0"
             @click="confirmCobro"
+            block
+            style="
+              height: 50px;
+              background-color: #339966;
+              border-color: #339966;
+            "
           >
-            Cobrar
+            <span :style="{ fontSize: '14px', color:'white'  }">
+              <b> <a-icon type="dollar" :style="{ fontSize: '22px' }" />
+                Cobrar</b>
+            </span>
           </a-button>
         </a-tooltip>
       </template>
@@ -264,7 +309,10 @@
         :centered="true"
         :closable="false"
         :maskClosable="false"
+        :okButtonProps = "{ style: { color:'white', background: '#339966', border: '0px' } }"
+        :cancelButtonProps = "{ style: {  color:'white', background: 'red', border: '0px'  } }"
       >
+      <!-- :okButtonProps = "{ style: { color:'white', background: 'green' } }"-->
         <p> <a-icon type="question-circle" theme="twoTone" two-tone-color="#FAAD14" :style="{ fontSize: '2em' }"/>
         ¿Está seguro de cobrar las deudas seleccionadas? (Comprobante {{entidadObj.comprobanteEnUno ? 'En Uno' : 'Por Transacción'}})</p>
         <br/>
@@ -455,6 +503,7 @@ export default {
       pagination: {
         pageSize: 10,
       },
+      loading: false,
 
       //TABLA SERVICIODEUDAS
       lstServiciosDeudas: [],
@@ -462,7 +511,7 @@ export default {
       sumTotal: 0,
       efectivo: 0,
       selectedRowKeys: [],
-      loading: false,
+      loadingServ: false,
 
       //MONTOS
       money: {
@@ -598,32 +647,34 @@ export default {
     /*********************************************** 
     BUSQUEDA DE CLIENTE
     ************************************************/
-    cargarClientes(dato, mostrarMensajeVacio) {
+    cargarClientes(dato) {
+      this.loading = true;
       PaymentDebts.cargarClientes(this.entidadId, dato)
         .then((r) => {
           if (r.status === 204) {
             this.lstClientes = [];
-            if(mostrarMensajeVacio) {
-              this.$notification.warning(
-                "No existen cliente con parámetro de búsqueda: " + dato + "."
-              );
-            }
+            this.$notification.warning(
+              "No existen cliente con parámetro de búsqueda: " + dato + "."
+            );
+            this.loading = false;
             return;
           }
 
           this.lstClientes = r.data.result;
+          this.loading = false;
         })
         .catch((error) => {
           this.lstClientes = [];
+          this.loading = false;
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
           );
         });
     },
-    buscar(mostrarMensajeVacio) {
+    buscar() {
       if (this.search.length > 0) {
-        this.cargarClientes(this.search, mostrarMensajeVacio);
+        this.cargarClientes(this.search);
       } else {
         this.lstClientes = [];
       }
@@ -641,7 +692,7 @@ export default {
       this.efectivo = 0;
     },
     cargarServicioDeudas() {
-      this.$Progress.start();
+      this.loadingServ = true;
       PaymentDebts.cargarServicioDeudas(
         this.entidadId,
         this.clienteDto.codigoCliente
@@ -652,16 +703,14 @@ export default {
               "No existe registro de deudas para el cliente seleccionado"
             );
             this.lstServiciosDeudas = [];
-            this.loading = false;
-            this.$Progress.finish();
+            this.loadingServ = false;
             return;
           }
 
           this.lstServiciosDeudas = r.data.result;
-          this.loading = false;
+          this.loadingServ = false;
           console.log(JSON.stringify(this.lstServiciosDeudas));
           //this.$notification.success(r.data.message);
-          this.$Progress.finish();
         })
         .catch((error) => {
           this.$notification.error(
@@ -669,8 +718,7 @@ export default {
             error.response.data.code
           );
           this.lstServiciosDeudas = [];
-          this.loading = false;
-          this.$Progress.fail();
+          this.loadingServ = false;
         });
     },
     sumSubTotal(record, deuda) {
@@ -855,4 +903,7 @@ export default {
   background: rgb(150,197,203); 
   border: 1px;
 }
+
+
+
 </style>
