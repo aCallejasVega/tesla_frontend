@@ -1,13 +1,16 @@
 <template>
   <div>
     <a-card style="width: 100%">
-      <a-page-header
-        class="a-page-header"
-        title="LISTA DE DEUDAS."
-      />
+      <div class="card-head">
+        <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <h2>
+            <b style="color: #08632D"> REPORTE GENERAL DE DEUDAS. </b>
+          </h2>
+        </a-col>
+      </div>
       <a-divider orientation="left">Busqueda</a-divider>
 
-      <a-form >
+      <a-form>
         <a-row :gutter="1">
           <a-col :span="5"></a-col>
           <a-col :span="7">
@@ -15,8 +18,8 @@
               label="Fecha Inicio :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
-              style="margin-bottom: 25px;"
-               class="a-item-form"
+              style="margin-bottom: 25px"
+              class="a-item-form"
             >
               <a-date-picker
                 format="DD/MM/YYYY "
@@ -30,7 +33,7 @@
               label="Fecha Fin :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
-               class="a-item-form"
+              class="a-item-form"
             >
               <a-date-picker
                 format="DD/MM/YYYY"
@@ -51,7 +54,7 @@
               label="Empresas :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
-               class="a-item-form"
+              class="a-item-form"
             >
               <a-select
                 v-model="formBusqueda.entidadId"
@@ -74,7 +77,7 @@
               label="Recaudadoras :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
-               class="a-item-form"
+              class="a-item-form"
             >
               <a-select
                 v-model="formBusqueda.recaudadorId"
@@ -97,7 +100,7 @@
               label="Estado :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
-               class="a-item-form"
+              class="a-item-form"
             >
               <a-select v-model="formBusqueda.estado" :disabled="disableEstado">
                 <a-select-option value="All">
@@ -117,29 +120,51 @@
         </a-row>
       </a-form>
 
-      <template slot="actions" class="ant-card-actions">
-        <a-button type="link"  @click="limpiar()">
-          <span :style="{ fontSize: '20px' }">
-            <a-icon type="undo" /> Limpiar
-          </span>
-        </a-button>
-        <a-button
-          type="link"
-        
-          @click="findDeudasByParameterForReport(1)"
-        >
-          <span :style="{ fontSize: '20px' }">
-            <a-icon type="search" /> Buscar
-          </span>
-        </a-button>
-        <a-button
-          type="link"
-          icon="printer"
-          @click="visibleModalTipoReporte = true"
-        >
-          Generar Reporte
-        </a-button>
-      </template>
+      <br />
+      <a-row type="flex" justify="center" align="top" :gutter="16">
+        <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+          <a-button
+            type="dashed"
+            @click="limpiar()"
+            block
+            :style="{
+              fontSize: '19px',
+              height: '50px',
+            }"
+          >
+            <span :style="{ fontSize: '20px' }">
+              <a-icon type="undo" /> Limpiar
+            </span>
+          </a-button>
+        </a-col>
+        <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+          <a-button
+            type="danger"
+            @click="findDeudasByParameterForReport(1)"
+            block
+            :style="{
+              fontSize: '19px',
+              height: '50px',
+            }"
+          >
+            <span> <a-icon type="search" /> Buscar </span>
+          </a-button>
+        </a-col>
+        <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+          <a-button
+            type="primary"
+            icon="printer"
+            @click="visibleModalTipoReporte = true"
+            block
+            :style="{
+              fontSize: '19px',
+              height: '50px',
+            }"
+          >
+            Generar Reporte
+          </a-button>
+        </a-col>
+      </a-row>
     </a-card>
     <a-card style="width: 100%">
       <a-divider orientation="left">DATOS DE LAS DEUDAS</a-divider>
@@ -148,7 +173,7 @@
         :data-source="data"
         :pagination="pagination"
         align="center"
-         :loading="loadingTable"
+        :loading="loadingTable"
       ></a-table>
     </a-card>
 
@@ -302,7 +327,7 @@ export default {
       link: null,
       viewCargando: false,
       disableEstado: false,
-      loadingTable:false,
+      loadingTable: false,
     };
   },
   created() {
@@ -319,20 +344,19 @@ export default {
   },
   methods: {
     findDeudasByParameterForReport(page) {
-      this.loadingTable=true;
+      this.loadingTable = true;
       this.formBusqueda.paginacion = page;
-    
+
       ReportesAdmin.findDeudasByParameterForReport(this.formBusqueda)
         .then((response) => {
-          
           this.data = response.data.data.content;
           this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
-          this.loadingTable=false;
+          this.loadingTable = false;
         })
         .catch((error) => {
           this.data = [];
-          this.loadingTable=false;
+          this.loadingTable = false;
         });
     },
     getEstadoHistoricos() {
@@ -423,6 +447,6 @@ export default {
 <style scoped>
 @import "../../../../public/plantilla.css";
 .a-item-form {
-    margin: 0px;
+  margin: 0px;
 }
 </style>

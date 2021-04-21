@@ -1,33 +1,36 @@
 <template>
   <div>
     <a-card style="width: 100%">
-      <div
-        style="
-          border: 2px solid #21618c;
-          border-radius: 5px;
-          height: 50px;
-          width: 100%;
-          padding-top: 1%;
-          padding-left:1%;
-          color:#21618c;
-        "
-      >
-        <a-row type="flex" justify="space-around" align="middle"
-          ><a-col :span="24"><h3><b style=" color:#21618c;">ENVIO DE ARCHIVOS CON ABONADOS.</b> </h3></a-col>
-        </a-row>
+      <div class="card-head">
+        <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <h2>
+            <b style="color: #08632d"> REPORTE GENERAL DE DEUDAS. </b>
+          </h2>
+        </a-col>
       </div>
-  
+
       <a-row style="width: 100%" align="top">
         <a-col :span="24">
           <a-card style="width: 100%">
-            
             <a-row type="flex" justify="center" align="top">
-              <a-col  :xs="0" :sm="0" :md="6" :lg="6" :xl="6"></a-col>
+              <a-col :xs="0" :sm="0" :md="6" :lg="6" :xl="6"></a-col>
               <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
                 <a-form-item
                   label="Seleccione un Servicio :"
-                  :label-col="{ xs:{span:24}, sm:{span:24}, md:{span:24}, lg:{span:10}, xl:{span:10} }"
-                  :wrapper-col="{ xs:{span:24}, sm:{span:24}, md:{span:24}, lg:{span:14}, xl:{span:14} }"
+                  :label-col="{
+                    xs: { span: 24 },
+                    sm: { span: 24 },
+                    md: { span: 24 },
+                    lg: { span: 10 },
+                    xl: { span: 10 },
+                  }"
+                  :wrapper-col="{
+                    xs: { span: 24 },
+                    sm: { span: 24 },
+                    md: { span: 24 },
+                    lg: { span: 14 },
+                    xl: { span: 14 },
+                  }"
                   class="a-item-form"
                 >
                   <a-select
@@ -72,7 +75,7 @@
                 <a-icon type="inbox" />
               </p>
               <p class="ant-upload-text">
-                Haga clic o arrastre el archivo a esta área para cargarla.
+                Haga clic o arrastre el archivo a esta área.
               </p>
             </a-upload-dragger>
             <a-alert
@@ -84,15 +87,12 @@
             />
             <br />
             <a-button
-              type="link"
+              type="primary"
               block
               @click="showConfirmProcearArchivo"
               :style="{
                 fontSize: '19px',
                 height: '50px',
-                backgroundColor: '#0d9178',
-                borderColor: '#0d9178',
-                color: '#FFFFFF',
               }"
               :disabled="buttonProcesar"
             >
@@ -102,7 +102,6 @@
         </a-col>
       </a-row>
     </a-card>
-
     <p />
     <a-row type="flex" justify="space-around" align="top">
       <a-col :span="24">
@@ -111,9 +110,9 @@
             <a-form layout="inline">
               <a-form-item label="Busqueda de Beneficiario : ">
                 <a-input-search
-                  placeholder="Introduzca texto de búsqueda"
+                  placeholder="Código, Beneficiario, Periodo......"
                   v-model="paramBusqueda"
-                  style="width: 200px"
+                  style="width: 300px"
                   enter-button
                   @search="onSearch"
                 />
@@ -121,7 +120,7 @@
             </a-form>
           </a-row>
 
-          <a-divider orientation="left" class="a-divider" style=" color:#21618c;"
+          <a-divider orientation="left" 
             >BENEFICIARIO REGISTRADOS.</a-divider
           >
 
@@ -568,5 +567,13 @@ td.column-money {
 }
 .a-divider {
   padding: 0px;
+}
+.card-head {
+  border: 2px solid #086346;
+  border-radius: 8px;
+  height: 55px;
+  width: 100%;
+  padding: 1%;
+  color: #086346;
 }
 </style>

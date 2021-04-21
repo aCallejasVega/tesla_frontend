@@ -1,5 +1,5 @@
 <template>
-  <a-layout-header class="header" style="padding-left: 0px; padding-right: 5px">
+  <a-layout-header  style="padding-left: 0px; padding-right: 5px">
     <a-row type="flex" justify="end" align="top">
       <a-col
         :span="10"
@@ -120,28 +120,7 @@ img {
   max-width: 100%;
   height: auto;
 }
-.header {
-  background: rgb(13, 34, 51);
-  background: -moz-linear-gradient(
-    83deg,
-    rgba(13, 34, 51, 1) 21%,
-    rgba(159, 168, 178, 1) 45%,
-    rgba(13, 34, 51, 1) 62%
-  );
-  background: -webkit-linear-gradient(
-    83deg,
-    rgba(13, 34, 51, 1) 21%,
-    rgba(159, 168, 178, 1) 45%,
-    rgba(13, 34, 51, 1) 62%
-  );
-  background: linear-gradient(
-    83deg,
-    rgba(13, 34, 51, 1) 21%,
-    rgba(159, 168, 178, 1) 45%,
-    rgba(13, 34, 51, 1) 62%
-  );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#0d2233",endColorstr="#0d2233",GradientType=1);
-}
+
 .text-famili3 {
   font-family: "Cabin Sketch", cursive;
   font-family: "Cormorant Unicase", serif;

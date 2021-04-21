@@ -1,10 +1,13 @@
 <template>
   <div>
     <a-card style="width: 100%">
-      <a-page-header
-        class="a-page-header"
-        title="REPORTE POR ARCHIVOS ENVIADOS."
-      />
+      <div class="card-head">
+        <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <h2>
+            <b style="color: #08632D"> REPORTE POR ARCHIVOS CARGADOS. </b>
+          </h2>
+        </a-col>
+      </div>
       <a-divider orientation="left">Busqueda</a-divider>
       <a-row type="flex" justify="center">
         <a-form layout="inline" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -32,35 +35,43 @@
               button-style="solid"
               v-model="formBusqueda.estado"
             >
-              <a-radio-button value="All" >
-                Todos
-              </a-radio-button>
-              <a-radio-button value="ACTIVO" >
-                Activo
-              </a-radio-button>
-              <a-radio-button value="DESACTIVO" >
-                Desactivado
-              </a-radio-button>
-              <a-radio-button value="FALLIDO" >
-                Fallidos
-              </a-radio-button>
+              <a-radio-button value="All"> Todos </a-radio-button>
+              <a-radio-button value="ACTIVO"> Activo </a-radio-button>
+              <a-radio-button value="DESACTIVO"> Inactivo </a-radio-button>
+              <a-radio-button value="FALLIDO"> Fallidos </a-radio-button>
             </a-radio-group>
           </a-form-item>
         </a-form>
       </a-row>
-
-      <template slot="actions" class="ant-card-actions">
-        <a-button type="link"  @click="limpiar()">
-          <span :style="{ fontSize: '20px' }">
-            <a-icon type="undo" /> Limpiar
-          </span>
-        </a-button>
-        <a-button type="link"  @click="findArchivos(1)">
-          <span :style="{ fontSize: '20px' }">
-            <a-icon type="search" /> Buscar
-          </span>
-        </a-button>
-      </template>
+      <br />
+      <a-row type="flex" justify="center" align="top" :gutter="16">
+        <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <a-button
+            type="dashed"
+            block
+            @click="limpiar()"
+            :style="{
+              fontSize: '19px',
+              height: '50px',
+            }"
+          >
+            <span> <a-icon type="undo" /> Limpiar </span>
+          </a-button>
+        </a-col>
+        <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <a-button
+            type="primary"
+            @click="findArchivos(1)"
+            block
+            :style="{
+              fontSize: '19px',
+              height: '50px',
+            }"
+          >
+            <span> <a-icon type="search" /> Buscar </span>
+          </a-button>
+        </a-col>
+      </a-row>
     </a-card>
 
     <a-card style="width: 100%">
@@ -82,7 +93,7 @@
           <div v-if="record.estado == 'DESACTIVO'">
             <a-tag color="blue">
               <a-icon type="inbox" :style="{ fontSize: '20px' }" />
-              <a @click="showModal(record.archivoId)">DESACTIVADO</a>
+              <a @click="showModal(record.archivoId)">INACTIVO</a>
             </a-tag>
           </div>
           <div v-if="record.estado == 'FALLIDO'">
@@ -272,7 +283,7 @@ export default {
       url: null,
       recaudadoresList: [],
       link: null,
-      loadingTable:false,
+      loadingTable: false,
     };
   },
   created() {
@@ -289,7 +300,7 @@ export default {
   },
   methods: {
     findArchivos(page) {
-      this.loadingTable=true;
+      this.loadingTable = true;
       ReportesEntidad.findArchivos(
         page,
         this.formBusqueda.fechaInicio,
@@ -300,11 +311,11 @@ export default {
           this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
           this.data = response.data.data.content;
-          this.loadingTable=false;
+          this.loadingTable = false;
         })
         .catch((error) => {
-          this.data =[];
-          this.loadingTable=false;
+          this.data = [];
+          this.loadingTable = false;
         });
     },
     showModal(archivoId) {
@@ -312,6 +323,7 @@ export default {
       this.archivoId = archivoId;
     },
     closeModal() {
+      this.visibleModalForm=false;
       this.visibleModal = false;
       this.archivoId = null;
     },
@@ -356,8 +368,6 @@ export default {
       this.visibleModalForm = false;
       this.visibleModalReporte = true;
       this.formBusqueda.archivoId = this.archivoId;
-
-     // this.urlReporte = `http://localhost:9080/api/ReportEntidad/findDeudasByArchivoIdAndEstado/${this.formBusqueda.archivoId}/${this.formBusqueda.export}`;
     },
 
     openReportesPorArchivo() {
@@ -419,4 +429,12 @@ export default {
 </script>
 <style soped>
 @import "../../../../public/plantilla.css";
+.card-head {
+  border: 2px solid #086346;
+  border-radius: 8px;
+  height: 55px;
+  width: 100%;
+  padding: 1%;
+  color: #086346;
+}
 </style>

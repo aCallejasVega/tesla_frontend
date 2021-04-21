@@ -1,8 +1,14 @@
 <template>
   <div>
-    <a-card style="width: 100%;">
-      <a-page-header title="REPORTE GENERAL DE DEUDAS" class="a-page-header"  />
-      <a-divider orientation="left" style=" margin: 6px">PARAMETROS DE BUSQUEDA</a-divider>
+    <a-card style="width: 100%">
+      <div class="card-head">
+        <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <h2>
+            <b style="color: #08632d"> REPORTE GENERAL DE DEUDAS. </b>
+          </h2>
+        </a-col>
+      </div>
+     
 
       <a-form>
         <a-row>
@@ -12,7 +18,7 @@
               label="Fecha Inicio :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
-             class="a-item-form"
+              class="a-item-form"
             >
               <a-date-picker
                 format="DD/MM/YYYY "
@@ -79,8 +85,47 @@
           <a-col :span="4"></a-col>
         </a-row>
       </a-form>
-
-      <template slot="actions" class="ant-card-actions">
+      <br />
+      <a-row type="flex" justify="center" align="top" :gutter="16">
+        <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+          <a-button
+            type="dashed"
+            @click="limpiar()"
+            block
+            :style="{
+              fontSize: '19px',
+              height: '50px',
+            }"
+          >
+            <span> <a-icon type="undo" /> Limpiar </span>
+          </a-button>
+        </a-col>
+        <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+          <a-button
+            type="danger"
+            @click="findDeudasByParameterForReport(1)"
+            block
+            :style="{
+              fontSize: '19px',
+              height: '50px',
+            }"
+          >
+            <span> <a-icon type="search" /> Buscar </span>
+          </a-button>
+        </a-col>
+        <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+          <a-button type="primary" @click="visibleModalTipoReporte = true"  block
+            :style="{
+              fontSize: '19px',
+              height: '50px',
+            }">
+            <span >
+              <a-icon type="printer" /> Generar Reporte
+            </span>
+          </a-button>
+        </a-col>
+      </a-row>
+      <!--template slot="actions" class="ant-card-actions">
         <a-button type="link" @click="limpiar()">
           <span :style="{ fontSize: '20px' }">
             <a-icon type="undo" /> Limpiar
@@ -96,10 +141,12 @@
             <a-icon type="printer" /> Generar Reporte
           </span>
         </a-button>
-      </template>
+      </template-->
     </a-card>
     <a-card style="width: 100%">
-      <a-divider orientation="left" class="a-divider">DATOS DE LAS DEUDAS</a-divider>
+      <a-divider orientation="left" class="a-divider"
+        >DATOS DE LAS DEUDAS</a-divider
+      >
       <a-table
         :columns="columns"
         :data-source="data"
@@ -165,7 +212,6 @@ import ReportesRecaudacion from "../../../service/Recaudaciones/ReportesRecaudac
 import locale from "ant-design-vue/es/date-picker/locale/es_ES";
 import moment from "moment";
 import "moment/locale/es";
-
 
 const columns = [
   {
@@ -419,6 +465,14 @@ export default {
 <style scoped>
 @import "../../../../public/plantilla.css";
 .a-item-form {
-    margin: 0px;
+  margin: 0px;
+}
+.card-head {
+  border: 2px solid #086346;
+  border-radius: 8px;
+  height: 55px;
+  width: 100%;
+  padding: 1%;
+  color: #086346;
 }
 </style>

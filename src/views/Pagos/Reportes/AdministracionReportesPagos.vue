@@ -4,17 +4,17 @@
       <div class="card-head">
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
-            <b style="color: #08632D"> REPORTE GENERAL DE DEUDAS. </b>
+            <b style="color: #21618c"> REPORTE GENERAL DE PAGOS </b>
           </h2>
         </a-col>
       </div>
 
-      <a-divider orientation="left">BUSQUEDA</a-divider>
+      <a-divider orientation="left" style="color: #21618c">BUSQUEDA</a-divider>
 
       <a-form>
         <a-row :gutter="1">
-          <a-col :span="2"></a-col>
-          <a-col :span="10">
+          <a-col :xs="24" :sm="24" :md="24" :lg="2" :xl="2"></a-col>
+          <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
             <a-form-item
               label="Fecha Inicio :"
               :label-col="{ span: 8 }"
@@ -23,12 +23,12 @@
             >
               <a-date-picker
                 format="DD/MM/YYYY "
-                v-model="formBusqueda.fechaInicio"
+                v-model="formBusqueda.fechaIni"
                 :locale="locale"
               />
             </a-form-item>
           </a-col>
-          <a-col :span="10">
+          <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
             <a-form-item
               label="Fecha Fin :"
               :label-col="{ span: 8 }"
@@ -43,13 +43,40 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="2"></a-col>
+          <a-col :xs="24" :sm="24" :md="24" :lg="2" :xl="2"></a-col>
         </a-row>
       </a-form>
       <a-form>
         <a-row>
-          <a-col :span="2"></a-col>
-          <a-col :span="10">
+          <a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+            <a-form-item
+              label="Servicio :"
+              :label-col="{ span: 8 }"
+              :wrapper-col="{ span: 16 }"
+              class="a-item-form"
+            >
+              <a-select
+                style="width: 100%"
+                v-model="formBusqueda.servicioProductoId"
+                @change="getRecaudadores"
+              >
+                <a-select-opt-group
+                  v-for="(servicios, index) in servicioProductosList"
+                  :key="index"
+                >
+                  <span slot="label">{{ servicios.descripcion }}</span>
+                  <a-select-option
+                    v-for="producto in servicios.servicioProductoEntityList"
+                    :key="producto.servicioProductoId"
+                    :value="producto.servicioProductoId"
+                  >
+                    {{ producto.descripcion }}
+                  </a-select-option>
+                </a-select-opt-group>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
             <a-form-item
               label="Recaudadora :"
               :label-col="{ span: 8 }"
@@ -60,19 +87,19 @@
                 mode="tags"
                 size="default"
                 v-model="checkedListRecaudacion"
-                @change="onChangeRecaudacion"
               >
                 <a-select-option
-                  v-for="item in recaudadoresList"
-                  v-bind:value="item.value"
-                  v-bind:key="item.value"
-                  >{{ item.label }}</a-select-option
+                  v-for="recaudador in recaudadoresList"
+                  :key="recaudador.recaudadorId"
+                  :value="recaudador.recaudadorId.toString()"
                 >
+                  {{ recaudador.nombre }}
+                </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
 
-          <a-col :span="10">
+          <a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
             <a-form-item
               label="Estado :"
               :label-col="{ span: 8 }"
@@ -89,10 +116,8 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="2"></a-col>
         </a-row>
       </a-form>
-
       <br />
       <a-row type="flex" justify="center" align="top" :gutter="16">
         <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
@@ -105,20 +130,24 @@
               height: '50px',
             }"
           >
-            <span> <a-icon type="undo" /> Limpiar </span>
+            <span :style="{ fontSize: '20px' }">
+              <a-icon type="undo" /> Limpiar
+            </span>
           </a-button>
         </a-col>
         <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
           <a-button
-            type="danger"
-            @click="findDeudasByParameterForReport(1)"
+            type="primary"
+            @click="findListReporteGrid(1)"
             block
             :style="{
               fontSize: '19px',
               height: '50px',
             }"
           >
-            <span> <a-icon type="search" /> Buscar </span>
+            <span :style="{ fontSize: '20px' }">
+              <a-icon type="search" /> Buscar
+            </span>
           </a-button>
         </a-col>
         <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
@@ -129,6 +158,9 @@
             :style="{
               fontSize: '19px',
               height: '50px',
+              backgroundColor: '#0d9178',
+              borderColor: '#0d9178',
+              color: '#FFFFFF',
             }"
           >
             <span :style="{ fontSize: '20px' }">
@@ -137,11 +169,11 @@
           </a-button>
         </a-col>
       </a-row>
-
-      
     </a-card>
     <a-card style="width: 100%">
-      <a-divider orientation="left">DATOS DE LAS DEUDAS</a-divider>
+      <a-divider orientation="left" style="color: #21618c"
+        >DATOS DE LOS PAGOS</a-divider
+      >
       <a-table
         :columns="columns"
         :data-source="data"
@@ -224,69 +256,59 @@
   </div>
 </template>
 <script>
-import ReportesEntidad from "../../../service/Entidades/ReportesEntidad.service";
+import ReportesPagos from "@/service/Pagos/ReportesPagos.service.js";
+
 import locale from "ant-design-vue/es/date-picker/locale/es_ES";
 import moment from "moment";
 import "moment/locale/es";
 
 const columns = [
   {
-    title: "Servicio",
-    dataIndex: "servicio",
-    key: "servicio",
-    width: "10%",
-    scopedSlots: { customRender: "servicio" },
+    title: "CÓDIGO",
+    dataIndex: "codigoCliente",
+    key: "codigoCliente",
+    width: "7%",
+    scopedSlots: { customRender: "codigoCliente" },
   },
   {
-    title: "Tipo Servicio",
-    dataIndex: "tipoServicio",
-    key: "tipoServicio",
+    title: "BENEFICIARIO",
+    dataIndex: "nombreCliente",
+    key: "nombreCliente",
     width: "12%",
   },
   {
-    title: "Periodo",
-    dataIndex: "periodo",
-    key: "periodo",
-    width: "8%",
-  },
-  {
-    title: "Cód. Cliente",
-    dataIndex: "codigoCliente",
-    key: "codigoCliente",
-    width: "10%",
-    align: "center",
+    title: "NRO. DOC.",
+    dataIndex: "nroDocumentoCliente",
+    key: "nroDocumentoCliente",
+    width: "7%",
   },
 
   {
-    title: "Nombre Recaudadora",
-    dataIndex: "nombreRecaudadora",
-    key: "nombreRecaudadora",
-    width: "20%",
+    title: "PERIODO",
+    dataIndex: "periodo",
+    key: "periodo",
+    width: "10%",
   },
+
   {
-    title: "Fecha Cobro",
-    dataIndex: "fechaCreacion",
+    title: "APODERADO",
+    dataIndex: "nombreTitular",
+    key: "nombreTitular",
+    width: "10%",
+  },
+
+  {
+    title: "FECHA PAGO",
+    dataIndex: "fechaEstado",
     key: "fechaCreacion",
-    width: "15%",
+    width: "10%",
   },
   {
-    title: "Total",
+    title: "TOTAL (Bs)",
     dataIndex: "total",
     key: "total",
     width: "10%",
-  },
-  /*{
-    title: "Comision",
-    dataIndex: "comision",
-    key: "comision",
-    width: "10%",
-  },*/
-  {
-    title: "Estado",
-    key: "estado",
-    dataIndex: "estado",
-    width: "10%",
-    scopedSlots: { customRender: "estado" },
+    align: "center",
   },
 ];
 export default {
@@ -294,11 +316,13 @@ export default {
     return {
       locale,
       formBusqueda: {
-        fechaInicio: null,
+        fechaIni: null,
         fechaFin: null,
-        recaudadorArray: [],
-        estadoArray: [],
+        servicioProductoId: null,
+        recaudadorIdList: [],
+        estadoList: [],
         export: "pdf",
+        paginacion: 1,
       },
       columns,
       data: [],
@@ -323,21 +347,34 @@ export default {
       indeterminateEstado: false,
       checkAllEstado: false,
       loadingTable: false,
+      servicioProductosList: [],
     };
   },
   created() {
-    this.findDeudasByParameterForReport(1);
+    this.getServiciosProductos();
+    this.findListReporteGrid(1);
     this.getEstadoHistoricos();
-    this.getRecaudadores();
+
     this.pagination = {
       total: this.total,
       onChange: (page) => {
-        this.findDeudasByParameterForReport(page);
+        this.findListReporteGrid(page);
       },
     };
   },
   methods: {
-    findDeudasByParameterForReport(page) {
+    getServiciosProductos() {
+      ReportesPagos.findForSelect()
+        .then((response) => {
+          console.log("-----------------------------------------------");
+          this.servicioProductosList = response.data.data;
+          console.log(JSON.stringify(this.servicioProductosList));
+        })
+        .catch((error) => {
+          this.servicioProductosList = [];
+        });
+    },
+    findListReporteGrid(page) {
       if (
         this.checkedListRecaudacion == null ||
         this.checkedListRecaudacion == ""
@@ -347,11 +384,13 @@ export default {
       if (this.checkedListEstado == null || this.checkedListEstado == "") {
         this.onCheckAllChangeEstado();
       }
+
       this.loadingTable = true;
       this.formBusqueda.paginacion = page;
-      this.formBusqueda.recaudadorArray = this.checkedListRecaudacion;
-      this.formBusqueda.estadoArray = this.checkedListEstado;
-      ReportesEntidad.findDeudasByParameterForReport(this.formBusqueda)
+
+      this.formBusqueda.recaudadorIdList = this.checkedListRecaudacion;
+      this.formBusqueda.estadoList = this.checkedListEstado;
+      ReportesPagos.listForGridAdministracion(this.formBusqueda)
         .then((response) => {
           this.data = response.data.data.content;
           this.pagination.pageSize = response.data.data.numberOfElements;
@@ -364,7 +403,7 @@ export default {
         });
     },
     getEstadoHistoricos() {
-      ReportesEntidad.getEstadoHistoricos()
+      ReportesPagos.getEstadoHistoricos("HISTORICOS_DEUDAS")
         .then((response) => {
           this.estadoList = response.data.data;
         })
@@ -373,7 +412,11 @@ export default {
         });
     },
     getRecaudadores() {
-      ReportesEntidad.getRecaudadoresByEntidad()
+      this.recaudadoresList = [];
+      this.checkedListRecaudacion = [];
+      ReportesPagos.findRecaudadoresByEntidadId(
+        this.formBusqueda.servicioProductoId
+      )
         .then((response) => {
           this.recaudadoresList = response.data.data;
         })
@@ -394,9 +437,10 @@ export default {
       this.mensajeVisible = false;
       this.link = null;
       this.viewCargando = true;
-      this.formBusqueda.recaudadorArray = this.checkedListRecaudacion;
-      this.formBusqueda.estadoArray = this.checkedListEstado;
-      ReportesEntidad.openModalGenerarReporte(this.formBusqueda)
+      this.formBusqueda.recaudadorIdList = this.checkedListRecaudacion;
+      this.formBusqueda.estadoList = this.checkedListEstado;
+
+      ReportesPagos.listForReportAdministracion(this.formBusqueda)
         .then((response) => {
           this.viewCargando = false;
           if (response.status == 200) {
@@ -448,7 +492,8 @@ export default {
       }
     },
     limpiar() {
-      this.formBusqueda.fechaInicio = null;
+      this.formBusqueda.servicioProductoId = null;
+      this.formBusqueda.fechaIni = null;
       this.formBusqueda.fechaFin = null;
       this.formBusqueda.recaudadorId = "All";
       this.formBusqueda.estado = "All";
@@ -457,13 +502,13 @@ export default {
       this.checkedListEstado = [];
       this.data = [];
     },
-    onChangeRecaudacion(checkedListRecaudacion) {
+    /*onChangeRecaudacion(checkedListRecaudacion) {
       this.indeterminateRecaudacion =
         !!checkedListRecaudacion.length &&
         checkedListRecaudacion.length < this.recaudadoresList.length;
       this.checkAllRecaudacion =
         checkedListRecaudacion.length === this.recaudadoresList.length;
-    },
+    },*/
     onCheckAllChangeRecaudacion() {
       let i = 0;
       let v = [];
@@ -496,5 +541,13 @@ export default {
 @import "../../../../public/plantilla.css";
 .a-item-form {
   margin: 0px;
+}
+.card-head {
+  border: 2px solid #21618c;
+  border-radius: 8px;
+  height: 55px;
+  width: 100%;
+  padding: 1%;
+  color: #21618c;
 }
 </style>

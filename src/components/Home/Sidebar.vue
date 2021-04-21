@@ -22,7 +22,7 @@
     </a-row>
     <br />
     <div v-if="!collapsed" class="entiades">
-      {{datos.nombreEntidad}}
+      {{ datos.nombreEntidad }}
     </div>
     <a-divider v-if="!collapsed" style="color: #f5962a"
       >MENU PRINCIPAL</a-divider
@@ -31,14 +31,15 @@
     <a-menu
       theme="dark"
       breakpoint="xl"
-      :default-selected-keys="['1']"
+      :default-selected-keys="['0']"
       mode="inline"
       collapsedWidth="150"
     >
       <a-menu-item v-for="menu in menuList" :key="menu.privilegiosId">
-        <a-icon :type="menu.icono" />
-
+        
+        <a-icon :type="menu.icono" @click="navegar(menu.link)" />
         <span @click="navegar(menu.link)">
+        
           {{ menu.descripcion }}
         </span>
       </a-menu-item>
@@ -67,11 +68,11 @@ export default {
       collapsed: false,
       menuList: [],
       subMenuList: [],
-      datos:{
+      datos: {
         nombreUsuario: null,
-        correo:null,
+        correo: null,
         nombreEntidad: null,
-        path: null
+        path: null,
       },
     };
   },
@@ -85,7 +86,6 @@ export default {
       Sidebar.getDatosLogin()
         .then((response) => {
           this.datos = response.data.data;
-        
         })
         .catch((error) => {
           console.log("Error");

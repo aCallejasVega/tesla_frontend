@@ -21,6 +21,10 @@ import AdminReportesDeudasCobradas from "../views/Administracion/Reportes/AdminR
 import UploadFileAbonos from "../views/Pagos/UploadFileAbonos";
 import PaymentsServicios from "../views/Pagos/PaymentsServicios";
 import SearchServicios from "../views/Pagos/SearchServicios";
+import EntidadReportesPagos from "../views/Pagos/Reportes/EntidadReportesPagos";
+import RecaudadoraReportesPagos from "../views/Pagos/Reportes/RecaudadoraReportesPagos";
+import AdministracionReportesPagos from "../views/Pagos/Reportes/AdministracionReportesPagos";
+
 
 
 Vue.use(VueRouter);
@@ -34,7 +38,7 @@ const routes = [
       libre: false
     },
     children: [
-      
+
       {
         path: "/",
         name: "index",
@@ -43,7 +47,7 @@ const routes = [
           libre: false
         }
       },
-     
+
       {
         path: "/UploadFile",
         name: "UploadFile",
@@ -59,7 +63,7 @@ const routes = [
         meta: {
           libre: false
         },
-        
+
       },
       {
         path: "/HistoricoDeudas",
@@ -68,8 +72,8 @@ const routes = [
         meta: {
           libre: false
         },
-      
-      }, 
+
+      },
       {
         path: "/HistoricoDeudasDetalle/:archivoId",
         name: "HistoricoDeudasDetalle",
@@ -86,7 +90,7 @@ const routes = [
           libre: false
         },
       },
-       {
+      {
         path: "/EntidadDeudasCobradasPorArchivo",
         name: "EntidadDeudasCobradasPorArchivo",
         component: EntidadDeudasCobradasPorArchivo,
@@ -165,7 +169,7 @@ const routes = [
         meta: {
           libre: false
         }
-      },      
+      },
       {
         path: "/SearchServicios",
         name: "SearchServicios",
@@ -182,6 +186,31 @@ const routes = [
           libre: false
         }
       },
+      {
+        path: "/EntidadReportesPagos",
+        name: "EntidadReportesPagos",
+        component: EntidadReportesPagos,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/RecaudadoraReportesPagos",
+        name: "RecaudadoraReportesPagos",
+        component: RecaudadoraReportesPagos,
+        meta: {
+          libre: false
+        }
+      },  
+      {
+        path: "/AdministracionReportesPagos",
+        name: "AdministracionReportesPagos",
+        component: AdministracionReportesPagos,
+        meta: {
+          libre: false
+        }
+      },  
+          
     ]
   },
   {
@@ -202,20 +231,20 @@ const router = new VueRouter({
 
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem("token");  
+  const token = localStorage.getItem("token");
 
-  if (to.matched.some(record => record.meta.libre)) {    
+  if (to.matched.some(record => record.meta.libre)) {
     next();
   } else if (token) {
-    const { exp } = decode(token);    
-    if (exp < (new Date().getTime() + 1) / 1000) {   
+    const { exp } = decode(token);
+    if (exp < (new Date().getTime() + 1) / 1000) {
       localStorage.clear();
       next({ name: "login" });
-    }else{      
-      
+    } else {
+
       next();
-    }    
-  } else {    
+    }
+  } else {
     next({ name: "login" });
   }
 });

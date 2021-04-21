@@ -1,10 +1,14 @@
 <template>
   <div>
     <a-card style="width: 100%">
-      <a-page-header
-        class="a-page-header"
-        title="LISTA DE ARCHIVOS HISTÓRICOS ENVIADOS."
-      />
+   
+      <div class="card-head">
+        <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <h2>
+            <b style="color: #08632D"> LISTA DE ARCHIVOS CARGADOS. </b>
+          </h2>
+        </a-col>
+      </div>
       <a-divider orientation="left">Busqueda</a-divider>
       <a-row type="flex" justify="center">
         <a-form layout="inline" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -34,25 +38,36 @@
             >
               <a-radio-button value="null"> Todos </a-radio-button>
               <a-radio-button value="ACTIVO"> Activo </a-radio-button>
-              <a-radio-button value="DESACTIVO"> Desactivado </a-radio-button>
+              <a-radio-button value="DESACTIVO"> Inactivo </a-radio-button>
               <a-radio-button value="FALLIDO"> Fallidos </a-radio-button>
             </a-radio-group>
           </a-form-item>
         </a-form>
       </a-row>
-
-      <template slot="actions" class="ant-card-actions">
-        <a-button type="link"  @click="limpiar()">
-          <span :style="{ fontSize: '19px' }">
-            <a-icon type="undo" /> Limpiar
-          </span>
-        </a-button>
-        <a-button type="link" @click="findArchivos(1)">
-          <span :style="{ fontSize: '19px' }">
-            <a-icon type="search" /> Buscar
-          </span>
-        </a-button>
-      </template>
+      <br />
+      <a-row type="flex" justify="center" align="top" :gutter="16">
+        <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <a-button type="dashed" @click="limpiar()" block :style="{
+              fontSize: '19px',
+              height: '50px',
+            }">
+            <span >
+              <a-icon type="undo" /> Limpiar
+            </span>
+          </a-button>
+        </a-col>
+        <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <a-button type="primary" block @click="findArchivos(1)" :style="{
+              fontSize: '19px',
+              height: '50px',
+            }">
+            <span >
+              <a-icon type="search" /> Buscar
+            </span>
+          </a-button>
+        </a-col>
+      </a-row>
+     
     </a-card>
 
     <a-card style="width: 100%">
@@ -80,7 +95,7 @@
           <div v-if="record.estado == 'DESACTIVO'">
             <a-tag color="blue">
               <a-icon type="inbox" :style="{ fontSize: '20px' }" />
-              <a @click="showModal(record.archivoId)">DESACTIVADO</a>
+              <a @click="showModal(record.archivoId)">INACTIVO</a>
             </a-tag>
           </div>
           <div v-if="record.estado == 'FALLIDO'">
@@ -233,12 +248,12 @@ const columns = [
     width: "25%",
   },
   {
-    title: "Fecha de Envió.",
+    title: "Fecha de Cargado.",
     dataIndex: "fechaCreacion",
     width: "15%",
   },
   {
-    title: "Nro. Registro",
+    title: "Cantidad Registros",
     dataIndex: "nroRegistros",
     width: "15%",
     align: "center",
@@ -376,5 +391,12 @@ export default {
 </script>
 <style>
 @import "../../../public/plantilla.css";
-
+.card-head {
+  border: 2px solid #086346;
+  border-radius: 8px;
+  height: 55px;
+  width: 100%;
+  padding: 1%;
+  color: #086346;
+}
 </style>

@@ -41,6 +41,8 @@ export default {
             }
       });
     },
-   
+    verificarPeriodo(archivoId,codigoCliente,nroRegistro, periodo){
+        return Api().get(`api/recaudadoraPagos/verificarPrelacion/${archivoId}/${codigoCliente}/${nroRegistro}/${periodo}`, this.headersConfig());
+    },
 
 };

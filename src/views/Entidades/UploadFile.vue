@@ -1,13 +1,18 @@
 <template>
   <div>
     <a-card style="width: 100%">
-      <a-page-header class="a-page-header" title="ENVIO DE ARCHIVOS." />
+    
+      <div class="card-head">
+        <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <h2>
+            <b style="color: #08632D"> CARGADO DE ARCHIVOS. </b>
+          </h2>
+        </a-col>
+      </div>
       <a-row style="width: 100%" align="top">
         <a-col :span="24">
           <a-card style="width: 100%">
-            <a-divider orientation="left"  style=" margin: 6px"
-              >ENVIO DE ARCHIVOS CON DEUDAS.</a-divider
-            >
+            
             <a-upload-dragger
               list-type="picture"
               name="file"
@@ -27,7 +32,7 @@
                 <a-icon type="inbox" />
               </p>
               <p class="ant-upload-text">
-                Haga clic o arrastre el archivo a esta área para cargarla.
+                Haga clic o arrastre el archivo a esta área.
               </p>
             </a-upload-dragger>
             <a-alert
@@ -37,20 +42,19 @@
               show-icon
               v-if="booleanMensjae"
             />
-
-            <template slot="actions" class="ant-card-actions">
-              <a-button
-                type="link"
-                block
-                @click="showConfirmProcearArchivo"
-                :disabled="buttonProcesar"
-               
-                style=""
-                
-              >
-                <span :style="{ fontSize: '19px' }"> <a-icon type="download" /> Procesar Datos </span>
-              </a-button>
-            </template>
+            <br />
+            <a-button
+              type="primary"
+              block
+              :style="{
+                fontSize: '19px',
+                height: '50px',
+              }"
+              @click="showConfirmProcearArchivo"
+              :disabled="buttonProcesar"
+            >
+              <span> <a-icon type="download" /> Procesar Cargado de Datos </span>
+            </a-button>
           </a-card>
         </a-col>
       </a-row>
@@ -64,9 +68,9 @@
             <a-form layout="inline">
               <a-form-item label="Busqueda de Deudas : ">
                 <a-input-search
-                  placeholder="Introduzca texto de búsqueda"
+                  placeholder="Código de Cliente, Nombre del Cliente, Nro. Documento del Cliente"
                   v-model="paramBusqueda"
-                  style="width: 200px"
+                  style="width: 400px"
                   enter-button
                   @search="onSearch"
                 />
@@ -75,7 +79,7 @@
           </a-row>
 
           <a-divider orientation="left" class="a-divider"
-            >DEUDAS REGISTRADAS.</a-divider
+            >LISTA DE REGISTROS CARGADOS</a-divider
           >
 
           <a-table
@@ -499,7 +503,15 @@ td.column-money {
   font-weight: bold;
   color: #033f79;
 }
-.a-divider{
-  padding:0px;
+.a-divider {
+  padding: 0px;
+}
+.card-head {
+  border: 2px solid #126580;
+  border-radius: 8px;
+  height: 55px;
+  width: 100%;
+  padding: 1%;
+  color: #126580;
 }
 </style>

@@ -2,30 +2,19 @@
   <div>
     <a-card style="width: 100%">
       <div
-        style="
-          border: 2px solid #21618c;
-          border-radius: 5px;
-          height: 55px;
-          width: 100%;
-          padding: 1%;
-          color: #21618c;
-        "
+        class="card-head"
       >
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
-            <b style="color: #21618c"
-              > <a-icon type="arrow-left"  @click="$router.back()"/>  CENTRO DE PAGOS - {{ servicioProducto.descripcion }}</b
+            <b style="color: #08632d">
+              <a-icon type="arrow-left" @click="$router.back()" /> 
+              PAGOS - {{ servicioProducto.descripcion }}</b
             >
           </h2>
         </a-col>
       </div>
 
-      <!--a-page-header
-        style="border: 1px solid rgb(224, 206, 206)"
-        :title="servicioProducto.descripcion"
-        @back="$router.back()"
-      >
-      </a-page-header-->
+     
     </a-card>
 
     <a-row>
@@ -46,10 +35,10 @@
           }"
         >
           <a-row type="flex" justify="end">
-            <a-col :xs="24" :sm="24" :md="20" :lg="20">
+            <a-col :xs="24" :sm="24" :md="24" :lg="24">
               <a-input-search
                 v-model="paramBusqueda"
-                placeholder="Ingrese parametros de busqueda."
+                placeholder="Código Cliente, Nro. Documento, Beneficiario...."
                 @search="getAbonosParaPagar()"
                 enter-button=" Buscar "
                 :maxLength="100"
@@ -84,15 +73,9 @@
           title="Beneficiario Seleccionado"
           :headStyle="{
             backgroundColor: '#288371',
-
             color: '#FFFFFF',
           }"
         >
-          <!--a slot="extra">
-            <a-button ghost @click="openModalDatosAdicionales">
-              Datos Adicionales
-            </a-button>
-          </a-->
           <a-table
             :columns="columnsBeneficiario"
             :data-source="beneficiarioPagoList"
@@ -125,7 +108,7 @@
                   <td class="td-align-left">{{ record.periodo }}</td>
                 </tr>
                 <tr>
-                  <td class="td-align-right">Abonado:</td>
+                  <td class="td-align-right">Beneficiario:</td>
                   <td class="td-align-left">
                     {{ record.nombreCliente }}
                   </td>
@@ -223,9 +206,7 @@
                   :disabled="showButtonRealizaPago"
                   block
                   style="
-                    height: 50px;
-                    background-color: #0d9178;
-                    border-color: #0d9178;
+                    height: 50px;                    
                   "
                 >
                   <span :style="{ fontSize: '19px' }">
@@ -418,7 +399,7 @@
               </td>
             </tr>
             <tr>
-              <td class="td-align-right">Abonado:</td>
+              <td class="td-align-right">Beneficiario:</td>
               <td class="td-align-left">
                 {{ record.nombreCliente }}
               </td>
@@ -501,23 +482,6 @@
             </tfoot>
           </table>
         </template>
-        <!--template slot="footer">
-          <table style="width: 100%; height: 30px">
-            <tfoot class="styled-footer">
-              <tr>
-                <td colspan="2"></td>
-                <td align="right"><b>TOTAL A CANCELAR </b></td>
-                <td
-                  align="right"
-                  style="padding-right: 5%"
-                  v-if="showAbonadoTable"
-                >
-                  <b>{{ montoTotalPagar | numericFormat("0.00") }}</b>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </template-->
       </a-table>
 
       <template slot="footer">
@@ -539,9 +503,7 @@
               @click="realizarPago"
               block
               style="
-                height: 40px;
-                background-color: #0d9178;
-                border-color: #0d9178;
+                height: 40px;               
               "
             >
               Procesar
@@ -561,7 +523,7 @@
       <a-row type="flex" justify="center">
         <a-spin
           size="large"
-          tip="El reporte se esta cargando...."
+          tip="El comprobante se esta cargando...."
           v-if="viewCargando"
         >
         </a-spin>
@@ -654,7 +616,7 @@ export default {
   computed: {
     rowSelection() {
       return {
-        type: "radio",
+        /*type: "radio",*/
         onChange: (selectedRowKeys, selectedRows) => {
           if (selectedRows.length > 0) {
             this.showButtonRealizaPago = false;
@@ -764,11 +726,40 @@ export default {
     },
     openConfirmvVsible() {
       this.montoTotalPagar = 0;
-      console.log(JSON.stringify(this.selectedBeneficiarioLits));
-      this.selectedBeneficiarioLits.forEach((item) => {
+this.confirmvVsible = true;
+      /*this.selectedBeneficiarioLits.forEach((item) => {
         this.montoTotalPagar = this.montoTotalPagar + item.totalPagar;
+        PaymentsAbonos.verificarPeriodo(
+          item.archivoId,
+          item.codigoCliente,
+          item.nroRegistro,
+          item.periodo
+        )
+          .then((response) => {
+            console.log(response.data.prelacion);
+            if (response.data.prelacion) {
+              this.confirmvVsible = true;
+            } else {
+              this.confirmvVsible = false;
+              this.showConfirm();
+            }
+          })
+          .catch((error) => {});
+      });*/
+    },
+    showConfirm() {
+      const h = this.$createElement;
+      this.$info({
+        title: "No se puede procesar el pago!",
+        content: h("div", {}, [
+          h(
+            "p",
+            "No se puede procesar el pago debido a que existe una bonificación con periodo anterior."
+          ),
+        ]),
+        okText: "Aceptar",
+        onOk() {},
       });
-      this.confirmvVsible = true;
     },
     checkDatosTitular() {
       this.formDatosAdicionales.datosTitular = !this.formDatosAdicionales
@@ -892,5 +883,13 @@ td.column-money {
 }
 .a-divider {
   padding: 0px;
+}
+.card-head {
+  border: 2px solid #086346;
+  border-radius: 8px;
+  height: 55px;
+  width: 100%;
+  padding: 1%;
+  color: #086346;
 }
 </style>
