@@ -677,6 +677,7 @@ export default {
     cargarSucursalEntidad(sucursalId) {
       SucursalesEntidades.getSucursalEntidad(sucursalId).then((r) => {
         this.sucursalEntidadObj = r.data.result;
+        this.cargarMunicipios(this.sucursalEntidadObj.departamentoId);
       });
     },
     guardarSucursalEntidad() {

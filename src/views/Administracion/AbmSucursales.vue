@@ -560,6 +560,7 @@ export default {
     cargarSucursal(sucursalId) {
       Sucursales.getSucursal(sucursalId).then((r) => {
         this.sucursalObj = r.data.result;
+        this.cargarLocalidades(this.sucursalObj.departamentoId);
       });
     },
     guardarSucursal() {
