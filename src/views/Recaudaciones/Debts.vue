@@ -42,21 +42,6 @@
 
       <br/>
       <div v-if="!displayCliente">
-        <!--Buscar Clientes-->
-        <!--
-        <a-row type="flex" justify="end">
-          <a-col :xs="24" :sm="24" :md="18" :lg="18">
-            <a-input-search
-              v-model="search"
-              placeholder="Datos Cliente: Código, CI/NIT o Nombre "
-              @search="buscar"
-              enter-button=" Buscar "
-              :maxLength="15"
-              size="small"
-            />
-          </a-col>
-        </a-row>
-        <br />-->
         <!--Lista de Clientes-->
         <a-table
           :row-selection="rowSelectionC"
@@ -727,7 +712,10 @@ export default {
         console.log("negat");
         deuda.subTotal = 0;
       }
-      deuda.montoUnitario = deuda.subTotal;
+      /*************** */
+      //Si la cantidad es diferente de 1
+      deuda.montoUnitario = (deuda.subTotal / deuda.cantidad).toFixed(2);
+      /******* */
       record.subTotal = record.deudaClienteDtos.reduce(
         (sum, item) => sum + Number(item.subTotal),
         0
@@ -784,7 +772,15 @@ export default {
         this.displayModal = false;
         return;
       }
-      //this.cobrarDeudas();
+      
+      if(!this.verificarPrelacion(this.selectedRowKeys)) {
+        console.log('PPPPPPPPPPP')
+        this.$notification.warning(
+          "Existe Deudas que deben ser cobradas antes de las seleccionadas."
+        );
+        this.displayModal = false;
+        return;
+      }
 
       this.displayModal = true;
     },
@@ -795,8 +791,11 @@ export default {
     },
     cobrarDeudas(e) {
       this.$Progress.start();
+      this.clienteDto.montoTotalCobrado = this.sumTotal;
       PaymentDebts.cobrarDeudas(this.clienteDto, 5) //Debe ser Ctte = 5
         .then((r) => {
+          console.log('sadasdasdasdas');
+          console.log(r)
           this.viewFileDownload(r);
           //this.$notification.success(r.data.message);
 
@@ -811,7 +810,7 @@ export default {
         })
         .catch((error) => {
           console.log("entro a error");
-          console.log(error.response.data.message);
+          console.log(this.ab2str(error.response.data) )
           //Se añade por el reporte implementado
           this.cargarServicioDeudas();
           this.inicializar();
@@ -821,6 +820,7 @@ export default {
             error.response.data.message,
             error.response.data.code
           );*/
+          this.$notification.error(this.ab2str(error.response.data));
           this.$Progress.fail();
         });
     },
@@ -830,6 +830,15 @@ export default {
       });
       this.link = URL.createObjectURL(file);
       this.viewCargando = false;
+    },
+
+    ab2str(buf) {
+      //return String.fromCharCode.apply(null, new Uint16Array(buf));
+      var binaryString = '', bytes = new Uint8Array(buf), length = bytes.length;
+      for(var i=0; i<length; i++) {
+        binaryString += String.fromCharCode(bytes[i]);
+      }
+      return binaryString;
     },
     /*******************************************
      * Otros
@@ -847,6 +856,20 @@ export default {
         this.sumSubTotal(record, deuda);
       });
     },
+    verificarPrelacion(selectedRowKeys) {
+      let maxRow = Math.max.apply(null,selectedRowKeys);
+      console.log(maxRow)
+      if(maxRow != 0) {
+        for(let i= (maxRow-1); i >= 0; i--) {
+          if(!selectedRowKeys.includes(i)) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        return true;
+      }
+    }
   },
 };
 </script>

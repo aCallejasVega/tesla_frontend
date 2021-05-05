@@ -1,5 +1,3 @@
-  
-
 <template>
   <div>
      <div v-if="!displayForm"
@@ -165,8 +163,15 @@
             </a-col>
           </a-row>
         </template>
-
-
+         <template
+          slot="opciones"
+          slot-scope="text, record"
+          v-if="(record.estado == 'ACTIVO' || record.estado == 'CREADO') && record.emiteFacturaTesla"
+        >
+          <a href="javascript:; " @click="abrirModal(record.entidadId, record.sucursalEntidadId)">
+            Credenciales Facturacion
+          </a>
+        </template>
       </a-table>
     </a-card>
     <div v-if="displayForm"
@@ -309,12 +314,28 @@
           <a-button type="primary" ghost @click="resetForm"><a-icon type="reload" /> Limpiar </a-button>
       </template>
     </a-card>
+
+    <a-modal
+      v-model="displayModalCredenciales"
+      title="Registrar Credenciales Facturación"
+      ok-text="Registrar"
+      cancel-text="Cancelar"
+      @ok="closeModal()"
+      width="60%"
+      :centered="true"
+      :destroyOnClose="true"
+      :footer="null"
+     
+    >
+      <Credenciales :entidadId="entidadIdSelect" :sucursalEntidadId="sucursalEntidadIdSelect" />
+    </a-modal>
   </div>
 </template>
 <script>
 import Dominios from "../../service/Administraciones/Dominio.service";
 import SucursalesEntidades from "../../service/Administraciones/SucursalEntidad.service";
 import Sidebar from "../../service/Home/Sidebar.service";
+import Credenciales from "../../components/Administracion/CredencialesFacturacion.vue"
 
 
 const sorter = (data) => {
@@ -327,17 +348,17 @@ const columns = [
     dataIndex: "nombreSucursal",
     //fixed: "left",
     scopedSlots: { customRender: "datosGenerales" },
-    width: "35%"
+    width: "25%"
   },
   {
     title: "Información Tributaria",
     scopedSlots: { customRender: "informacionTributaria" },
-    width: "35%"
+    width: "25%"
   },
   {
     title: "Parametrización",
     scopedSlots: { customRender: "parametrizacion" },
-    width: "15%"
+    width: "20%"
   },
   {
     title: "Estado",
@@ -345,9 +366,18 @@ const columns = [
     scopedSlots: { customRender: "estado" },
     width: "15%"
   },
+   {
+    title: "Opciones",
+    dataIndex: "",
+    scopedSlots: { customRender: "opciones" },
+    width: "15%"
+  },
 ];
 
 export default {
+  components: {
+    Credenciales,
+  },
   data() {
     return {
       /*******LISTADO DE SUCURSALES********* */
@@ -433,6 +463,11 @@ export default {
         ],
         numeroSucursalSin: [
           {
+            required: true,
+            message: "Debe ingresar el numero asignado por el SIN",
+            trigger: "blur",
+          },
+          {
             trigger: "blur",
             message: "El rango de es de 0 - 20.",
             pattern:  /^[0-9]?$|^20$/ 
@@ -440,9 +475,21 @@ export default {
         ],
         codigoActividadEconomica: [
           {
+            required: true,
+            message: "Debe registrar el código de la Actividad Económica",
+            trigger: "blur",
+          },
+          {
             trigger: "blur",
             message: "Debe registrar solo números.",
             pattern:  /^[0-9,$]*$/ 
+          },
+        ],
+        actividadEconomica: [
+          {
+            required: true,
+            message: "Debe registrar la Actividad Económica",
+            trigger: "blur",
           },
         ],
         email: [
@@ -459,6 +506,10 @@ export default {
       lstFilter: [],
       filter: 'Registros: 0/0',
 
+      /**Modal */
+      displayModalCredenciales: false,
+      sucursalEntidadIdSelect: null,
+      entidadIdSelect: null,
     };
   },
   computed: {
@@ -703,6 +754,8 @@ export default {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.guardarSucursalEntidad(this.sucursalEntidadObj);
+
+          this.selectedRowKeys = [];
         } else {
           console.log("error submit!!");
           this.$notification.warning("Debe resolver las validaciones del formulario.");
@@ -728,6 +781,16 @@ export default {
       let rowFilter = this.lstFilter.length;
       let rowTotal = this.lstSucursalesEntidades.length;
       this.filter = "Registros: " + rowFilter + "/" + rowTotal;
+    },
+
+    /**Modal */
+    closeModal() {
+      this.displayModalCredenciales = false;
+    },
+    abrirModal(entidadId, sucursalEntidadId) {
+      this.displayModalCredenciales = true;
+      this.entidadIdSelect = entidadId;
+      this.sucursalEntidadIdSelect = sucursalEntidadId;
     }
     
   },

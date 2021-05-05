@@ -21,6 +21,9 @@ export default {
   getLstSucursalEntidadByEntidadId(entidadId) {
     return Api().get(`api/sucursalesentidades/entidades/${entidadId}`, this.headersConfig());
   },
+  getLstSucursalEntidadByEntidadIdActivos(entidadId) {
+    return Api().get(`api/sucursalesentidades/entidades/${entidadId}/activos`, this.headersConfig());
+  },
   postSucursalEntidad(sucursalEntidadObj) {
     console.log(JSON.stringify(sucursalEntidadObj))
     return Api().post(`api/sucursalesentidades`, sucursalEntidadObj, this.headersConfig());
@@ -31,5 +34,16 @@ export default {
   putLstSucursalEntidadTransaccion(sucursaEntidadlIdLst, transaccion) {
     return Api().put(`api/sucursalesentidades/listas/${transaccion}`, sucursaEntidadlIdLst, this.headersConfig());
   },
-  
+  getListSucursalesEntidadesByUsuario() {
+    return Api().get(`api/sucursalesentidades/entidades`, this.headersConfig());
+  },
+  getSucursalEmtidadEmiteFacturaTesla() {
+    return Api().get(`api/sucursalesentidades/emisionesfacturas`, this.headersConfig());
+  },
+  putCredencialesFacturacion(credencialesFacturacionObj) {
+    return Api().put(`api/sucursalesentidades/credenciales`, credencialesFacturacionObj, this.headersConfig());
+  },
+  getCredencialFacturacion(sucursalEntidadId) {
+    return Api().get(`api/sucursalesentidades/credenciales/${sucursalEntidadId}`, this.headersConfig());
+  }
 };

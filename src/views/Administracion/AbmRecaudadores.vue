@@ -203,7 +203,7 @@
             :maxLength="10"
           />
         </a-form-model-item>
-        <a-divider orientation="left"
+        <a-divider orientation="left" v-if="recaudadorObj.recaudadorId == null"
           >Entidades donde serán habilitadas</a-divider
         >
         <a-form-model-item
@@ -667,6 +667,8 @@ export default {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.guardarRecaudador(this.recaudadorObj);
+
+          this.selectedRowKeys = [];
         } else {
           console.log("error submit!!");
           this.$notification.warning(

@@ -32,6 +32,9 @@ export default {
   },
   getDatosLogin(){
     return Api().get(`api/Menu/getDatosLogin`, this.headersConfig());
+  },
+  //Facturacion Computarizada
+  getOperacionesFacturacionLst(tabla, estadoInicial){
+    return Api().get(`api/menufacturas/operaciones/${tabla}/estados/${estadoInicial}`, this.headersConfig());    
   }
-
 };

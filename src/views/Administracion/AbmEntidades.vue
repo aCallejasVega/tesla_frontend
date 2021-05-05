@@ -982,6 +982,8 @@ export default {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.guardarEntidad(this.entidadObj);
+
+          this.selectedRowKeys = [];
         } else {
           console.log("error submit!!");
           this.$notification.warning(
