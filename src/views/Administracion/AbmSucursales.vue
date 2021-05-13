@@ -560,6 +560,7 @@ export default {
     cargarSucursal(sucursalId) {
       Sucursales.getSucursal(sucursalId).then((r) => {
         this.sucursalObj = r.data.result;
+        this.cargarLocalidades(this.sucursalObj.departamentoId);
       });
     },
     guardarSucursal() {
@@ -585,6 +586,8 @@ export default {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.guardarSucursal(this.sucursalObj);
+
+          this.selectedRowKeys = [];
         } else {
           console.log("error submit!!");
           this.$notification.warning("Debe resolver las validaciones del formulario.");

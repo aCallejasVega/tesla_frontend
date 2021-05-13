@@ -24,10 +24,24 @@ import SearchServicios from "../views/Pagos/SearchServicios";
 import EntidadReportesPagos from "../views/Pagos/Reportes/EntidadReportesPagos";
 import RecaudadoraReportesPagos from "../views/Pagos/Reportes/RecaudadoraReportesPagos";
 import AdministracionReportesPagos from "../views/Pagos/Reportes/AdministracionReportesPagos";
+
 import ReImpresionComprobantes from "../views/Pagos/ReImpresionComprobantes";
 import AdminUsuarios from "../views/Administracion/AdminUsuarios";
 import RegistroPersona from "../components/Administracion/RegistroPersona";
 import RecaudacionReporteCajero from '../views/Recaudaciones/Reportes/RecaudacionReporteCajero';
+
+import GenerateCodigoControl from "../views/Administracion/GenerateCodigoControl";
+import LibroVentas from "../views/Entidades/Facturacion/LibroVentas";
+import ListInvoicesA from "../views/Recaudaciones/Facturacion/ListInvoicesA";
+import ListInvoicesR from "../views/Recaudaciones/Facturacion/ListInvoicesR";
+import ListInvoicesAR from "../views/Recaudaciones/Facturacion/ListInvoicesAR";
+import SearchEntidadesDebts from '../views/Recaudaciones/SearchEntidadesDebts';
+import SearchEntidadesInvoicesAR from '../views/Recaudaciones/Facturacion/SearchEntidadesInvoicesAR';
+import SearchEntidadesInvoicesA from '../views/Recaudaciones/Facturacion/SearchEntidadesInvoicesA';
+import SearchEntidadesInvoicesR from '../views/Recaudaciones/Facturacion/SearchEntidadesInvoicesR';
+import Dosificaciones from "../views/Entidades/Facturacion/AbmDosificaciones";
+import RegCredenciales from "../views/Entidades/Facturacion/RegCredenciales";
+
 
 Vue.use(VueRouter);
 
@@ -262,9 +276,94 @@ const routes = [
           libre: false
         }
       },
-      
-
-
+      {
+        path: "/GenerateCodigoControl",
+        name: "GenerateCodigoControl",
+        component: GenerateCodigoControl,
+        meta: {
+          libre: false
+        }
+      },  
+      {
+        path: "/SearchEntidadesDebts",
+        name: "SearchEntidadesDebts",
+        component: SearchEntidadesDebts,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/LibroVentas",
+        name: "LibroVentas",
+        component: LibroVentas,
+        meta: {
+          libre: false
+        }
+      }, 
+      {
+        path: "/ListInvoices/:entidadId",
+        name: "ListInvoicesA",
+        component: ListInvoicesA,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/ListInvoices/:entidadId",
+        name: "ListInvoicesAR",
+        component: ListInvoicesAR,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/ListInvoices/:entidadId",
+        name: "ListInvoicesR",
+        component: ListInvoicesR,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/SearchEntidadesInvoicesA",
+        name: "SearchEntidadesInvoicesA",
+        component: SearchEntidadesInvoicesA,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/SearchEntidadesInvoicesAR",
+        name: "SearchEntidadesInvoicesAR",
+        component: SearchEntidadesInvoicesAR,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/SearchEntidadesInvoicesR",
+        name: "SearchEntidadesInvoicesR",
+        component: SearchEntidadesInvoicesR,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/Dosificaciones",
+        name: "Dosificaciones",
+        component: Dosificaciones,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/RegCredenciales",
+        name: "RegCredenciales",
+        component: RegCredenciales,
+        meta: {
+          libre: false
+        },
+      },
     ]
   },
   {
