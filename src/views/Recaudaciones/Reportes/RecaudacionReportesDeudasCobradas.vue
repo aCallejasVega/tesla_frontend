@@ -8,8 +8,8 @@
           </h2>
         </a-col>
       </div>
-     
 
+      <a-divider orientation="left">BUSQUEDA</a-divider>
       <a-form>
         <a-row>
           <a-col :span="2"></a-col>
@@ -24,6 +24,7 @@
                 format="DD/MM/YYYY "
                 v-model="formBusqueda.fechaInicio"
                 :locale="locale"
+                style="width: 100%"
               />
             </a-form-item>
           </a-col>
@@ -38,6 +39,7 @@
                 format="DD/MM/YYYY"
                 v-model="formBusqueda.fechaFin"
                 :locale="locale"
+                style="width: 100%"
               />
             </a-form-item>
           </a-col>
@@ -114,14 +116,16 @@
           </a-button>
         </a-col>
         <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
-          <a-button type="primary" @click="visibleModalTipoReporte = true"  block
+          <a-button
+            type="primary"
+            @click="visibleModalTipoReporte = true"
+            block
             :style="{
               fontSize: '19px',
               height: '50px',
-            }">
-            <span >
-              <a-icon type="printer" /> Generar Reporte
-            </span>
+            }"
+          >
+            <span> <a-icon type="printer" /> Generar Reporte </span>
           </a-button>
         </a-col>
       </a-row>

@@ -14,7 +14,7 @@
       <a-form>
         <a-row :gutter="1">
           <a-col :span="2"></a-col>
-          <a-col :span="10">
+          <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
             <a-form-item
               label="Fecha Inicio :"
               :label-col="{ span: 8 }"
@@ -25,10 +25,11 @@
                 format="DD/MM/YYYY "
                 v-model="formBusqueda.fechaInicio"
                 :locale="locale"
+                style="width: 100%;"
               />
             </a-form-item>
           </a-col>
-          <a-col :span="10">
+          <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
             <a-form-item
               label="Fecha Fin :"
               :label-col="{ span: 8 }"
@@ -40,6 +41,7 @@
                 format="DD/MM/YYYY"
                 v-model="formBusqueda.fechaFin"
                 :locale="locale"
+                style="width: 100%;"
               />
             </a-form-item>
           </a-col>
@@ -49,7 +51,7 @@
       <a-form>
         <a-row>
           <a-col :span="2"></a-col>
-          <a-col :span="10">
+          <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
             <a-form-item
               label="Recaudadora :"
               :label-col="{ span: 8 }"
@@ -72,7 +74,7 @@
             </a-form-item>
           </a-col>
 
-          <a-col :span="10">
+          <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
             <a-form-item
               label="Estado :"
               :label-col="{ span: 8 }"

@@ -1,16 +1,15 @@
 <template>
   <div>
     <a-card style="width: 100%">
-    <div class="card-head" >
+      <div class="card-head">
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
-            <b style="color: #21618c">              
-              REPORTE GENERAL DE PAGOS </b>
+            <b style="color: #08632d"> REPORTE GENERAL DE PAGOS </b>
           </h2>
         </a-col>
       </div>
-     
-      <a-divider orientation="left" style="color: #1b7ae4">BUSQUEDA</a-divider>
+
+      <a-divider orientation="left">BUSQUEDA</a-divider>
 
       <a-form>
         <a-row :gutter="1">
@@ -26,6 +25,7 @@
                 format="DD/MM/YYYY "
                 v-model="formBusqueda.fechaIni"
                 :locale="locale"
+                style="width: 100%"
               />
             </a-form-item>
           </a-col>
@@ -41,7 +41,7 @@
                 format="DD/MM/YYYY"
                 v-model="formBusqueda.fechaFin"
                 :locale="locale"
-             
+                style="width: 100%"
               />
             </a-form-item>
           </a-col>
@@ -50,10 +50,10 @@
       </a-form>
       <a-form>
         <a-row>
-         <a-col :span="2"></a-col>
+          <a-col :span="2"></a-col>
           <a-col :span="10">
             <a-form-item
-              label="Servicio :"
+              label="Tipo de Pagos :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
               class="a-item-form"
@@ -121,9 +121,9 @@
           <a-col :span="2"></a-col>
         </a-row>
       </a-form>
-      <br>
-      <a-row  type="flex" justify="center" align="top" :gutter="16">
-        <a-col  :span="8">
+      <br />
+      <a-row type="flex" justify="center" align="top" :gutter="16">
+        <a-col :span="8">
           <a-button
             type="dashed"
             @click="limpiar()"
@@ -133,14 +133,12 @@
               height: '50px',
             }"
           >
-            <span :style="{ fontSize: '20px' }">
-              <a-icon type="undo" /> Limpiar
-            </span>
+            <span> <a-icon type="undo" /> Limpiar </span>
           </a-button>
         </a-col>
-        <a-col  :span="8">
+        <a-col :span="8">
           <a-button
-            type="primary"
+            type="danger"
             @click="findListReporteGrid(1)"
             block
             :style="{
@@ -148,12 +146,10 @@
               height: '50px',
             }"
           >
-            <span :style="{ fontSize: '20px' }">
-              <a-icon type="search" /> Buscar
-            </span>
+            <span> <a-icon type="search" /> Buscar </span>
           </a-button>
         </a-col>
-        <a-col  :span="8">
+        <a-col :span="8">
           <a-button
             type="primary"
             @click="visibleModalTipoReporte = true"
@@ -161,14 +157,9 @@
             :style="{
               fontSize: '19px',
               height: '50px',
-              backgroundColor: '#0d9178',
-              borderColor: '#0d9178',
-              color: '#FFFFFF',
             }"
           >
-            <span :style="{ fontSize: '20px' }">
-              <a-icon type="printer" /> Generar Reporte
-            </span>
+            <span> <a-icon type="printer" /> Generar Reporte </span>
           </a-button>
         </a-col>
       </a-row>
@@ -321,7 +312,7 @@ export default {
       formBusqueda: {
         fechaIni: null,
         fechaFin: null,
-        servicioProductoId: null,              
+        servicioProductoId: null,
         export: "pdf",
         paginacion: 1,
       },
@@ -355,7 +346,7 @@ export default {
     this.getServiciosProductos();
     this.findListReporteGrid(1);
     this.getEstadoHistoricos();
-    this.getRecaudadores();
+    //this.getRecaudadores();
     this.pagination = {
       total: this.total,
       onChange: (page) => {
@@ -364,7 +355,6 @@ export default {
     };
   },
   methods: {
-
     getServiciosProductos() {
       ReportesPagos.findServiciosForRecaudadorId()
         .then((response) => {
@@ -379,7 +369,7 @@ export default {
         this.checkedListRecaudacion == null ||
         this.checkedListRecaudacion == ""
       ) {
-        this.onCheckAllChangeRecaudacion();
+        //this.onCheckAllChangeRecaudacion();
       }
       if (this.checkedListEstado == null || this.checkedListEstado == "") {
         this.onCheckAllChangeEstado();
@@ -391,6 +381,7 @@ export default {
       this.formBusqueda.estadoList = this.checkedListEstado;
       ReportesPagos.listForGridRecaudacion(this.formBusqueda)
         .then((response) => {
+          console.log(JSON.stringify(response.data.data.content));
           this.data = response.data.data.content;
           this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
@@ -404,13 +395,14 @@ export default {
     getEstadoHistoricos() {
       ReportesPagos.getEstadoHistoricos()
         .then((response) => {
+          console.log(JSON.stringify(response.data.data));
           this.estadoList = response.data.data;
         })
         .catch((error) => {
           this.estadoList = [];
         });
     },
-    getRecaudadores() {
+    /* getRecaudadores() {
       ReportesPagos.getRecaudadoresByEntidad()
         .then((response) => {
           this.recaudadoresList = response.data.data;
@@ -418,13 +410,13 @@ export default {
         .catch((error) => {
           this.recaudadoresList = [];
         });
-    },
+    },*/
     openModalGenerarReporte() {
       if (
         this.checkedListRecaudacion == null ||
         this.checkedListRecaudacion == ""
       ) {
-        this.onCheckAllChangeRecaudacion();
+        // this.onCheckAllChangeRecaudacion();
       }
       if (this.checkedListEstado == null || this.checkedListEstado == "") {
         this.onCheckAllChangeEstado();
@@ -436,7 +428,7 @@ export default {
       this.formBusqueda.estadoList = this.checkedListEstado;
 
       ReportesPagos.listForReportRecaudacion(this.formBusqueda)
-        .then((response) => {            
+        .then((response) => {
           this.viewCargando = false;
           if (response.status == 200) {
             if (this.formBusqueda.export == "pdf") {
@@ -448,7 +440,7 @@ export default {
             this.mensajeVisible = true;
           }
         })
-        .catch((error) => {                    
+        .catch((error) => {
           this.viewCargando = false;
           this.mensajeVisible = true;
           this.link = null;
@@ -497,14 +489,14 @@ export default {
       this.checkedListEstado = [];
       this.data = [];
     },
-    onChangeRecaudacion(checkedListRecaudacion) {
+    /* onChangeRecaudacion(checkedListRecaudacion) {
       this.indeterminateRecaudacion =
         !!checkedListRecaudacion.length &&
         checkedListRecaudacion.length < this.recaudadoresList.length;
       this.checkAllRecaudacion =
         checkedListRecaudacion.length === this.recaudadoresList.length;
-    },
-    onCheckAllChangeRecaudacion() {
+    },*/
+    /*  onCheckAllChangeRecaudacion() {
       let i = 0;
       let v = [];
       this.recaudadoresList.forEach((element) => {
@@ -512,7 +504,7 @@ export default {
         i++;
       });
       this.checkedListRecaudacion = v;
-    },
+    },*/
 
     onChangeEstado(checkedListEstado) {
       this.indeterminateEstado =
@@ -538,11 +530,11 @@ export default {
   margin: 0px;
 }
 .card-head {
-  border: 2px solid #21618c;
+  border: 2px solid #08632d;
   border-radius: 8px;
   height: 55px;
   width: 100%;
   padding: 1%;
-  color: #21618c;
+  color: #08632d;
 }
 </style>

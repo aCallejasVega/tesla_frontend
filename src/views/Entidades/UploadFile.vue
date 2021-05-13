@@ -1,18 +1,16 @@
 <template>
   <div>
     <a-card style="width: 100%">
-    
       <div class="card-head">
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
-            <b style="color: #08632D"> CARGADO DE ARCHIVOS. </b>
+            <b style="color: #08632d"> CARGADO DE ARCHIVOS. </b>
           </h2>
         </a-col>
       </div>
       <a-row style="width: 100%" align="top">
         <a-col :span="24">
           <a-card style="width: 100%">
-            
             <a-upload-dragger
               list-type="picture"
               name="file"
@@ -53,7 +51,9 @@
               @click="showConfirmProcearArchivo"
               :disabled="buttonProcesar"
             >
-              <span> <a-icon type="download" /> Procesar Cargado de Datos </span>
+              <span>
+                <a-icon type="download" /> Procesar Cargado de Datos
+              </span>
             </a-button>
           </a-card>
         </a-col>
@@ -91,76 +91,86 @@
             :loading="loadingTable"
           >
             <template slot="archivoId" slot-scope="text, record">
-              <table
-                style="width: 100%; background-color: #f2f0ef"
-                class="styled-header"
-              >
-                <tr>
-                  <td class="td-align-right">Código de Cliente:</td>
-                  <td class="td-align-left">{{ record.codigoCliente }}</td>
-                  <td class="td-align-right">Nro. Documento:</td>
-                  <td class="td-align-left">{{ record.nroDocumento }}</td>
-                </tr>
-                <tr>
-                  <td class="td-align-right">Nombre de Cliente:</td>
-                  <td class="td-align-left">{{ record.nombreCliente }}</td>
-                  <td class="td-align-right">Teléfono:</td>
-                  <td class="td-align-left">{{ record.telefono }}</td>
-                </tr>
-                <tr>
-                  <td class="td-align-right">Dirección:</td>
-                  <td class="td-align-left">{{ record.direccion }}</td>
-                  <td class="td-align-right">Nit:</td>
-                  <td class="td-align-left">{{ record.nit }}</td>
-                </tr>
-                <tr>
-                  <td class="td-align-right">Periodo:</td>
-                  <td class="td-align-left">{{ record.periodo }}</td>
-                  <td class="td-align-right">Tipo de Pago:</td>
-                  <td class="td-align-left">
-                    <div v-if="record.esPostpago">POSTPAGO</div>
-                    <div v-else>PREPAGO</div>
-                  </td>
-                </tr>
-              </table>
-              <a-divider orientation="left" style="color: #033f79"
-                >Detalle</a-divider
-              >
-              <table style="width: 100%" class="styled-table">
-                <thead>
+              <font size="2">
+                <table
+                  style="width: 100%; background-color: #f2f0ef"
+                  class="styled-header"
+                >
                   <tr>
-                    <th style="width: 5%">CANTIDAD.</th>
-                    <th style="width: 65%">CONCEPTO.</th>
-                    <th style="width: 15%">MONTO UNIT.</th>
-                    <th style="width: 15%">SUB-TOTAL.</th>
+                    <td class="td-align-right">Código de Cliente:</td>
+                    <td class="td-align-left">{{ record.codigoCliente }}</td>
+                    <td class="td-align-right">Nro. Documento:</td>
+                    <td class="td-align-left">{{ record.nroDocumento }}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(concepto, i) in record.conceptoLisit"
-                    :key="i"
-                    :class="i % 2 == 0 ? 'active-row' : ''"
-                  >
-                    <td style="width: 5%">{{ concepto.cantidad }}</td>
-                    <td style="width: 65%">{{ concepto.concepto }}</td>
-                    <td align="center" style="width: 15%">
-                      {{ concepto.montoUnitario }}
-                    </td>
-                    <td align="center" style="width: 15%">
-                      {{ concepto.subTotal }}
-                    </td>
+                  <tr>
+                    <td class="td-align-right">Nombre de Cliente:</td>
+                    <td class="td-align-left">{{ record.nombreCliente }}</td>
+                    <td class="td-align-right">Teléfono / correo:</td>
+                    <td class="td-align-left">{{ record.telefono }} / {{record.correoCliente}}</td>
                   </tr>
-                </tbody>
-                <tfoot>
-                  <tr class="styled-footer">
-                    <td colspan="2"></td>
-                    <td><b>TOTAL</b></td>
-                    <td align="center">
-                      <b>{{ record.total }}</b>
+                  <tr>
+                    <td class="td-align-right">Dirección:</td>
+                    <td class="td-align-left">{{ record.direccion }}</td>
+                    <td class="td-align-right">Nit:</td>
+                    <td class="td-align-left">{{ record.nit }}</td>
+                  </tr>
+                  <tr>
+                    <td class="td-align-right">Periodo:</td>
+                    <td class="td-align-left">{{ record.periodo }}</td>
+                    <td class="td-align-right">Tipo de Pago:</td>
+                    <td class="td-align-left">
+                      <div v-if="record.esPostpago">POSTPAGO</div>
+                      <div v-else>PREPAGO</div>
                     </td>
                   </tr>
-                </tfoot>
-              </table>
+                   <tr>
+                    <td class="td-align-right">Tipo Servicio:</td>
+                    <td class="td-align-left">{{ record.tipoServicio }}</td>
+                    <td class="td-align-right">Servicio:</td>
+                    <td class="td-align-left">
+                      {{record.servicio}}
+                    </td>
+                  </tr>
+                </table>
+              </font>
+              
+              <font size="2">
+                <table style="width: 100%" class="styled-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 5%">CANTIDAD.</th>
+                      <th style="width: 65%">CONCEPTO.</th>
+                      <th style="width: 15%">MONTO UNIT.</th>
+                      <th style="width: 15%">SUB-TOTAL.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(concepto, i) in record.conceptoLisit"
+                      :key="i"
+                      :class="i % 2 == 0 ? 'active-row' : ''"
+                    >
+                      <td style="width: 5%">{{ concepto.cantidad }}</td>
+                      <td style="width: 65%">{{ concepto.concepto }}</td>
+                      <td align="center" style="width: 15%">
+                        {{ concepto.montoUnitario }}
+                      </td>
+                      <td align="center" style="width: 15%">
+                        {{ concepto.subTotal }}
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr class="styled-footer">
+                      <td colspan="2"></td>
+                      <td><b>TOTAL</b></td>
+                      <td align="center">
+                        <b>{{ record.total }}</b>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </font>
             </template>
           </a-table>
         </a-card>
@@ -326,6 +336,8 @@ export default {
         this.titutloMensaje = "Éxito";
         this.buttonProcesar = false;
         this.showUpload = false;
+        this.data=[];
+
       } else if (status === "error") {
         this.mensajeUpload = info.file.response.mensaje;
         this.tipoMensaje = "warning";

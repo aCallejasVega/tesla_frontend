@@ -22,10 +22,10 @@ export default {
         return Api().get(`api/servicioProductos/findByProductos/tipo/${tipoEntidad}`, this.headersConfig());
     },
 
-    getAbonosParaPagar(servicioProductoId,paramBusqueda) {
+    getBeneficiariosParaPagar(servicioProductoId,paramBusqueda) {
         return Api().get(`api/recaudadoraPagos/getBeneficiariosParaPagar/${servicioProductoId}/${paramBusqueda}`, this.headersConfig());
     },
-    getAbonado(archivoId,codigoCliente,nroDocumentoCliente) {
+    getDetalleBeneficiariosaPagar(archivoId,codigoCliente,nroDocumentoCliente) {
         return Api().get(`api/recaudadoraPagos/getBeneficiario/${archivoId}/${codigoCliente}/${nroDocumentoCliente}`, this.headersConfig());
     },
     getServicioProductos(servicioProductoId){
@@ -41,8 +41,8 @@ export default {
             }
       });
     },
-    verificarPeriodo(archivoId,codigoCliente,nroRegistro, periodo){
-        return Api().get(`api/recaudadoraPagos/verificarPrelacion/${archivoId}/${codigoCliente}/${nroRegistro}/${periodo}`, this.headersConfig());
+    verificarPeriodo(archivoId,codigoCliente,nroRegistro){
+        return Api().get(`api/recaudadoraPagos/verificarPrelacion/${archivoId}/${codigoCliente}/${nroRegistro}`, this.headersConfig());
     },
 
 };

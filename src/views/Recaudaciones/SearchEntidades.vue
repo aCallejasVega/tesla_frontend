@@ -2,18 +2,11 @@
   <div>
     <a-card style="width: 100%">
        <div
-        style="
-          border: 2px solid #21618c;
-          border-radius: 5px;
-          height: 100%;
-          width: 100%;
-          padding: 1%;
-          color: #21618c;
-        "
+        class="card-head"
       >
         <a-row type="flex" justify="space-around" align="middle"
           ><a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
-            <h2><b style="color: #21618c">Búsqueda de Entidad</b></h2></a-col
+            <h2><b style="color: #086346">Búsqueda de Entidad</b></h2></a-col
           >
           <a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
             <a-row type="flex" justify="end">
@@ -276,5 +269,13 @@ export default {
 .card .info button:hover {
   background: dodgerblue;
   color: white;
+}
+.card-head {
+  border: 2px solid #086346;
+  border-radius: 8px;
+  height: 55px;
+  width: 100%;
+  padding: 1%;
+  color: #086346;
 }
 </style>

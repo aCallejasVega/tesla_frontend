@@ -130,7 +130,7 @@ export default {
     findDeudasArchivoHistorico(page) {
       HistoricoDeudas.findDeudasArchivoHistorico(this.archivoId, page, this.paramBusqueda)
         .then((response) => {
-          console.log(JSON.stringify(response.data.data.content));
+          
           this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
           this.data = response.data.data.content;

@@ -1,10 +1,7 @@
 <template>
   <div>
     <a-card style="width: 100%">
-      <div
-        class="card-head"
-
-      >
+      <div class="card-head" style="width: 100%">
         <a-row type="flex" justify="space-around" align="middle"
           ><a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
             <h2><b style="color: #08632d">PAGOS</b></h2></a-col
@@ -12,7 +9,7 @@
           <a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
             <a-row type="flex" justify="end">
               <a-col :xs="24" :sm="24" :md="24" :lg="4" :xl="4"
-                ><b>Buscar por :</b></a-col
+                ><b><h3>Buscar por :</h3> </b></a-col
               >
               <a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20">
                 <a-input-search
@@ -30,54 +27,48 @@
       <!--Tipos de Entidades-->
     </a-card>
     <a-card style="width: 100%">
-     
-       
-          <a-row>
-          <a-divider orientation="left"> TIPOS DE EMPRESAS </a-divider>
-          </a-row>
-          <a-row type="flex" justify="center">
-            <a-col
-              :xs="{ span: 24 }"
-              :sm="{ span: 24 }"
-              :md="{ span: 12 }"
-              :lg="{ span: 6 }"
-              hoverable
-              v-for="(item, i) in lstTipoEntidades"
-              :key="i"
-              @click="findByProductosByTipoEntidad(item.dominioId)"
-            >
-              <a-card hoverable>
-                <a-card-meta :title="item.descripcion">
-                  <a-avatar slot="avatar" :src="item.imagen64" :size="44" />
-                </a-card-meta>
-              </a-card>
-            </a-col>
-          </a-row>
-     
-    
-   
+      <a-row>
+        <a-divider orientation="left"> TIPOS DE EMPRESAS </a-divider>
+      </a-row>
+      <a-row type="flex" justify="center">
+        <a-col
+          :xs="{ span: 24 }"
+          :sm="{ span: 24 }"
+          :md="{ span: 12 }"
+          :lg="{ span: 5 }"
+          hoverable
+          v-for="(item, i) in lstTipoEntidades"
+          :key="i"
+          @click="findByProductosByTipoEntidad(item.dominioId)"
+        >
+          <a-card hoverable>
+            <a-card-meta :title="item.descripcion">           
+              <a-avatar  slot="avatar" :src="item.imagen64" :size="54" />
+            </a-card-meta>
+          </a-card>
+        </a-col>
+      </a-row>
+
       <!--Entidades-->
-       <a-divider orientation="left"> SERVICIOS </a-divider>
+      <a-divider orientation="left"> </a-divider>
       <div style="width: 100%" v-if="displayProductos">
         <div>
-       
           <a-row type="flex" justify="center" :gutter="16">
-          <a-col
+            <a-col
               :xs="24"
               :sm="24"
               :md="12"
               :lg="6"
               class="card"
-             v-for="(item, i) in productosList"
+              v-for="(item, i) in productosList"
               :key="i"
               @click="seleccionar(item.servicioProductoId)"
             >
-              <img :src="item.imagenBase64" />
-              <div>
-                <h1>{{ item.descripcion }}</h1>
+              <img :src="item.imagenBase64" style="height:130px" />
+              <div style="width: 100%; height:30px;font-size: 12px; text-align:center; padding: 5px;color:#084d6e; ">
+                <b>{{ item.descripcion }}</b>
               </div>
             </a-col>
-
           </a-row>
         </div>
       </div>
@@ -85,7 +76,7 @@
   </div>
 </template>
 <script>
-import PaymentsAbonos from "../../service/Pagos/PaymentsAbonos.service";
+import PaymentsBeneficiarios from "../../service/Pagos/PaymentsBeneficiarios.service";
 export default {
   data() {
     return {
@@ -105,11 +96,10 @@ export default {
   },
 
   methods: {
-    /**Datos */
     findByProductosByParametros() {
       this.displayProductos = false;
       this.productosList = [];
-      PaymentsAbonos.findByProductosByParametros(this.search)
+      PaymentsBeneficiarios.findByProductosByParametros(this.search)
         .then((r) => {
           if (r.data.status) {
             this.productosList = r.data.data;
@@ -134,7 +124,7 @@ export default {
     findByProductosByTipoEntidad(tipoEntidadId) {
       this.displayProductos = false;
       this.productosList = [];
-      PaymentsAbonos.findByProductosByTipoEntidad(tipoEntidadId)
+      PaymentsBeneficiarios.findByProductosByTipoEntidad(tipoEntidadId)
         .then((r) => {
           if (r.data.status) {
             this.productosList = r.data.data;
@@ -157,7 +147,7 @@ export default {
         });
     },
     cargarTiposEntidades() {
-      PaymentsAbonos.cargarTiposEntidades()
+      PaymentsBeneficiarios.cargarTiposEntidades()
         .then((r) => {
           this.lstTipoEntidades = r.data.result;
         })
@@ -180,7 +170,7 @@ export default {
 
     /**Acciones*/
     seleccionar(servicioProductoId) {
-      console.log("--------------------" + servicioProductoId);
+ 
       this.$router.push({
         name: "PaymentsServicios",
         params: { servicioProductoId: servicioProductoId },
@@ -198,10 +188,11 @@ export default {
 }
 
 .card {
-  width: 180px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
+  margin:5px;
   border-radius: 3px;
-  padding: 1.5rem;
+ 
   background: white;
   position: relative;
   display: flex;
@@ -277,7 +268,7 @@ export default {
 .card-head {
   border: 2px solid #086346;
   border-radius: 8px;
-  height: 55px;
+  height: 60px;
   width: 100%;
   padding: 1%;
   color: #086346;

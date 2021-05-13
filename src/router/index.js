@@ -24,8 +24,10 @@ import SearchServicios from "../views/Pagos/SearchServicios";
 import EntidadReportesPagos from "../views/Pagos/Reportes/EntidadReportesPagos";
 import RecaudadoraReportesPagos from "../views/Pagos/Reportes/RecaudadoraReportesPagos";
 import AdministracionReportesPagos from "../views/Pagos/Reportes/AdministracionReportesPagos";
-
-
+import ReImpresionComprobantes from "../views/Pagos/ReImpresionComprobantes";
+import AdminUsuarios from "../views/Administracion/AdminUsuarios";
+import RegistroPersona from "../components/Administracion/RegistroPersona";
+import RecaudacionReporteCajero from '../views/Recaudaciones/Reportes/RecaudacionReporteCajero';
 
 Vue.use(VueRouter);
 
@@ -201,7 +203,7 @@ const routes = [
         meta: {
           libre: false
         }
-      },  
+      },
       {
         path: "/AdministracionReportesPagos",
         name: "AdministracionReportesPagos",
@@ -209,8 +211,60 @@ const routes = [
         meta: {
           libre: false
         }
-      },  
-          
+      },
+
+      {
+        path: "/ReImpresionComprobantes",
+        name: "ReImpresionComprobantes",
+        component: ReImpresionComprobantes,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "AdminUsuarios/COBROS/ADM_ENTIDADES",
+        name: "AdminUsuarios/COBROS/ADM_ENTIDADES",
+        component: AdminUsuarios,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "AdminUsuarios/COBROS/ADM_RECAUDACION",
+        name: "AdminUsuarios/COBROS/ADM_RECAUDACION",
+        component: AdminUsuarios,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "AdminUsuarios/ADMIN",
+        name: "AdminUsuarios/ADMIN",
+        component: AdminUsuarios,
+        meta: {
+          libre: false
+        }
+      },
+      
+      {
+        path: "/RegistroPersona",
+        name: "RegistroPersona",
+        component: RegistroPersona,
+        meta: {
+          libre: false
+        }
+      },
+      {
+        path: "/RecaudacionReporteCajero",
+        name: "RecaudacionReporteCajero",
+        component: RecaudacionReporteCajero,
+        meta: {
+          libre: false
+        }
+      },
+      
+
+
     ]
   },
   {

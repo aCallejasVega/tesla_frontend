@@ -4,17 +4,17 @@
       <div class="card-head" >
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
-            <b style="color: #21618c">              
+            <b style="color: #08632d">              
               REPORTE GENERAL DE PAGOS </b>
           </h2>
         </a-col>
       </div>
-      <a-divider orientation="left" style="color: #21618c">BUSQUEDA</a-divider>
+      <a-divider orientation="left" >BUSQUEDA</a-divider>
 
       <a-form>
         <a-row :gutter="1">
           <a-col :span="2"></a-col>
-          <a-col :span="10">
+          <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
             <a-form-item
               label="Fecha Inicio :"
               :label-col="{ span: 8 }"
@@ -25,10 +25,11 @@
                 format="DD/MM/YYYY "
                 v-model="formBusqueda.fechaIni"
                 :locale="locale"
+                  style="width: 100%"
               />
             </a-form-item>
           </a-col>
-          <a-col :span="10">
+          <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
             <a-form-item
               label="Fecha Fin :"
               :label-col="{ span: 8 }"
@@ -40,6 +41,7 @@
                 format="DD/MM/YYYY"
                 v-model="formBusqueda.fechaFin"
                 :locale="locale"
+                  style="width: 100%"
               />
             </a-form-item>
           </a-col>
@@ -48,9 +50,9 @@
       </a-form>
       <a-form>
         <a-row>
-          <a-col :span="8">
+          <a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
             <a-form-item
-              label="Servicio :"
+              label="Tipo de Pago :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
               class="a-item-form"
@@ -75,7 +77,7 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
             <a-form-item
               label="Recaudadora :"
               :label-col="{ span: 8 }"
@@ -98,7 +100,7 @@
             </a-form-item>
           </a-col>
 
-          <a-col :span="8">
+          <a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
             <a-form-item
               label="Estado :"
               :label-col="{ span: 8 }"
@@ -119,7 +121,7 @@
       </a-form>
       <br>
       <a-row  type="flex" justify="center" align="top" :gutter="16">
-        <a-col  :span="8">
+        <a-col  :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
           <a-button
             type="dashed"
             @click="limpiar()"
@@ -136,7 +138,7 @@
         </a-col>
         <a-col  :span="8">
           <a-button
-            type="primary"
+            type="danger"
             @click="findListReporteGrid(1)"
             block
             :style="{
@@ -144,12 +146,12 @@
               height: '50px',
             }"
           >
-            <span :style="{ fontSize: '20px' }">
+            <span >
               <a-icon type="search" /> Buscar
             </span>
           </a-button>
         </a-col>
-        <a-col  :span="8">
+        <a-col  :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
           <a-button
             type="primary"
             @click="visibleModalTipoReporte = true"
@@ -157,12 +159,10 @@
             :style="{
               fontSize: '19px',
               height: '50px',
-              backgroundColor: '#0d9178',
-              borderColor: '#0d9178',
-              color: '#FFFFFF',
+              
             }"
           >
-            <span :style="{ fontSize: '20px' }">
+            <span >
               <a-icon type="printer" /> Generar Reporte
             </span>
           </a-button>
@@ -170,7 +170,7 @@
       </a-row>
     </a-card>
     <a-card style="width: 100%">
-      <a-divider orientation="left" style="color: #21618c"
+      <a-divider orientation="left" 
         >DATOS DE LOS PAGOS</a-divider
       >
       <a-table
@@ -535,11 +535,11 @@ export default {
   margin: 0px;
 }
 .card-head {
-  border: 2px solid #21618c;
+  border: 2px solid #08632d;
   border-radius: 8px;
   height: 55px;
   width: 100%;
   padding: 1%;
-  color: #21618c;
+  color: #08632d;
 }
 </style>

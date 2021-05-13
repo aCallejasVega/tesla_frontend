@@ -1,20 +1,16 @@
 <template>
   <div>
     <a-card style="width: 100%">
-      <div
-        class="card-head"
-      >
+      <div class="card-head">
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
             <b style="color: #08632d">
-              <a-icon type="arrow-left" @click="$router.back()" /> 
+              <a-icon type="arrow-left" @click="$router.back()" />
               PAGOS - {{ servicioProducto.descripcion }}</b
             >
           </h2>
         </a-col>
       </div>
-
-     
     </a-card>
 
     <a-row>
@@ -29,7 +25,7 @@
         <a-card
           title="Busqueda de Beneficiario"
           :headStyle="{
-            backgroundColor: '#288371',
+            backgroundColor: '#558D55',
 
             color: '#FFFF',
           }"
@@ -39,7 +35,7 @@
               <a-input-search
                 v-model="paramBusqueda"
                 placeholder="Código Cliente, Nro. Documento, Beneficiario...."
-                @search="getAbonosParaPagar()"
+                @search="getBeneficiariosParaPagar()"
                 enter-button=" Buscar "
                 :maxLength="100"
               />
@@ -59,7 +55,7 @@
                   shape="circle"
                   icon="right-circle"
                   size="large"
-                  @click="getAbonado(record)"
+                  @click="getDetalleBeneficiariosaPagar(record)"
                 />
               </span>
             </a-table>
@@ -72,7 +68,7 @@
           style="width: 100%; padding: 0px; margin: 0px; border: 0px"
           title="Beneficiario Seleccionado"
           :headStyle="{
-            backgroundColor: '#288371',
+            backgroundColor: '#558D55',
             color: '#FFFFFF',
           }"
         >
@@ -205,13 +201,11 @@
                   type="primary"
                   :disabled="showButtonRealizaPago"
                   block
-                  style="
-                    height: 50px;                    
-                  "
+                  style="height: 50px"
                 >
                   <span :style="{ fontSize: '19px' }">
                     <b>
-                      <a-icon type="dollar" :style="{ fontSize: '22px' }" />
+                      <a-icon type="dollar" />
                       Realizar Pago</b
                     >
                   </span>
@@ -467,7 +461,7 @@
               </tr>
             </tbody>
 
-            <tfoot class="styled-footer">
+            <tfoot>
               <tr>
                 <td colspan="2"></td>
                 <td><b>TOTAL</b></td>
@@ -480,6 +474,21 @@
                 </td>
               </tr>
             </tfoot>
+          </table>
+        </template>
+        <template slot="footer" v-if="viewFooterTable">
+          <table>
+            <tr class="styled-footer">
+              <td align="right" style="width: 80%">
+                <b
+                  >SUMA TOTAL A CANCELAR DE LOS BENEFICIOS SELECCIONADOS EN
+                  (Bs):</b
+                >
+              </td>
+              <td align="right" style="padding-right: 5%; width: 20%">
+                <b>{{ montoTotalPagar | numericFormat("0.00") }}</b>
+              </td>
+            </tr>
           </table>
         </template>
       </a-table>
@@ -502,10 +511,9 @@
               type="primary"
               @click="realizarPago"
               block
-              style="
-                height: 40px;               
-              "
+              style="height: 40px"
             >
+              <a-icon type="dollar" />
               Procesar
             </a-button>
           </a-col>
@@ -547,7 +555,7 @@
 </template>
 
 <script>
-import PaymentsAbonos from "../../service/Pagos/PaymentsAbonos.service";
+import PaymentsBeneficiarios from "../../service/Pagos/PaymentsBeneficiarios.service";
 
 const columns = [
   { title: "CÓDIGO ", dataIndex: "codigoCliente", key: "codigoCliente" },
@@ -607,6 +615,7 @@ export default {
       visibleModalReporte: false,
       beneficiarioSeleccionado: {},
       viewFrame: false,
+      viewFooterTable: false,
     };
   },
   created() {
@@ -630,7 +639,7 @@ export default {
   },
   methods: {
     getDatosServicio() {
-      PaymentsAbonos.getServicioProductos(this.servicioProductoId)
+      PaymentsBeneficiarios.getServicioProductos(this.servicioProductoId)
         .then((response) => {
           this.servicioProducto = response.data.data;
         })
@@ -638,16 +647,16 @@ export default {
           this.servicioProducto = {};
         });
     },
-    getAbonosParaPagar() {
+    getBeneficiariosParaPagar() {
       this.beneficiarioPagoList = [];
       this.showButtonRealizaPago = true;
       this.selectedBeneficiarioLits = [];
       this.formDatosAdicionales.nombreTitular = "";
       this.formDatosAdicionales.documento = "";
-      (this.formDatosAdicionales.datosTitular = false),
-        (this.beneficiarioList = []);
+      this.formDatosAdicionales.datosTitular = false;
+      this.beneficiarioList = [];
       this.loadingTable = true;
-      PaymentsAbonos.getAbonosParaPagar(
+      PaymentsBeneficiarios.getBeneficiariosParaPagar(
         this.servicioProductoId,
         this.paramBusqueda
       )
@@ -660,16 +669,16 @@ export default {
         });
     },
 
-    getAbonado(beneficiarioSeleccionado) {
+    getDetalleBeneficiariosaPagar(beneficiarioSeleccionado) {
       this.beneficiarioPagoList = [];
       this.showButtonRealizaPago = true;
       this.selectedBeneficiarioLits = [];
       this.formDatosAdicionales.nombreTitular = "";
       this.formDatosAdicionales.documento = "";
-      (this.formDatosAdicionales.datosTitular = false),
-        (this.beneficiarioSeleccionado = beneficiarioSeleccionado);
+      this.formDatosAdicionales.datosTitular = false;
+      this.beneficiarioSeleccionado = beneficiarioSeleccionado;
       this.showAbonadoTable = false;
-      PaymentsAbonos.getAbonado(
+      PaymentsBeneficiarios.getDetalleBeneficiariosaPagar(
         beneficiarioSeleccionado.archivoId,
         beneficiarioSeleccionado.codigoCliente,
         beneficiarioSeleccionado.nroDocumentoCliente
@@ -683,7 +692,7 @@ export default {
         });
     },
 
-    realizarPago() {
+    procesarPago() {
       let pagosList = [];
       this.confirmvVsible = false;
       this.visibleModalReporte = true;
@@ -699,20 +708,51 @@ export default {
         pago.documentoTitular = this.formDatosAdicionales.documento;
         pagosList.push(pago);
       });
-
-      PaymentsAbonos.realizarPago(pagosList)
+      PaymentsBeneficiarios.realizarPago(pagosList)
         .then((response) => {
           this.viewFileDownload(response);
           this.visibleModalReporte = true;
           this.confirmvVsible = false;
 
-          this.getAbonado(this.beneficiarioSeleccionado);
+          this.getDetalleBeneficiariosaPagar(this.beneficiarioSeleccionado);
           this.viewCargando = false;
           this.viewFrame = true;
+          this.$notification.success(
+            "El pago del beneficio se procesó correctamente."
+          );
         })
         .catch((error) => {
           this.visibleModalReporte = false;
+          console.log(error.response);
+          this.$notification.error(
+            "Ocurrió un error en el servidor, por favor intente la operación más tarde o consulte con su administrador."
+          );
         });
+    },
+    realizarPago() {
+      this.$confirm({
+        title: (h) => (
+          <div style="color:#A45924;">
+            <b>
+          ¡Confirmación del proceso de pago!
+            </b>
+          </div>
+        ),
+        content: (h) => (
+          <div >
+            <b>
+              Está seguro de procesar el pago, no podrá revertir esta operación.
+            </b>
+          </div>
+        ),
+        onOk: () => {
+
+          this.procesarPago();
+        },
+        okText: 'ACEPTAR',        
+        cancelText: 'CANCELAR',
+        class: "test",
+      });
     },
     viewFileDownload(response) {
       var file = new Blob([response.data], {
@@ -726,26 +766,36 @@ export default {
     },
     openConfirmvVsible() {
       this.montoTotalPagar = 0;
-this.confirmvVsible = true;
-      /*this.selectedBeneficiarioLits.forEach((item) => {
+      this.confirmvVsible = false;
+      this.viewFooterTable = false;
+      let nroRegistro = [];
+      let archivoId = null;
+      let codigoCliente = null;
+
+      this.selectedBeneficiarioLits.forEach((item) => {
         this.montoTotalPagar = this.montoTotalPagar + item.totalPagar;
-        PaymentsAbonos.verificarPeriodo(
-          item.archivoId,
-          item.codigoCliente,
-          item.nroRegistro,
-          item.periodo
-        )
-          .then((response) => {
-            console.log(response.data.prelacion);
-            if (response.data.prelacion) {
-              this.confirmvVsible = true;
-            } else {
-              this.confirmvVsible = false;
-              this.showConfirm();
-            }
-          })
-          .catch((error) => {});
-      });*/
+        nroRegistro.push(item.nroRegistro);
+        archivoId = item.archivoId;
+        codigoCliente = item.codigoCliente;
+      });
+      if (nroRegistro.length > 1) {
+        this.viewFooterTable = true;
+      }
+
+      PaymentsBeneficiarios.verificarPeriodo(
+        archivoId,
+        codigoCliente,
+        nroRegistro
+      )
+        .then((response) => {
+          if (response.data.prelacion) {
+            this.confirmvVsible = true;
+          } else {
+            this.confirmvVsible = false;
+            this.showConfirm();
+          }
+        })
+        .catch((error) => {});
     },
     showConfirm() {
       const h = this.$createElement;
@@ -814,7 +864,7 @@ td.column-money {
 .td-align-right {
   text-align: right;
   width: 20%;
-  background-color: #21618c;
+  background-color: #196c80;
   color: #ffffff;
   font-size: 1em;
   font-family: sans-serif;
@@ -823,7 +873,7 @@ td.column-money {
 .td-align-footer {
   text-align: right;
   width: 20%;
-  background-color: #21618c;
+  background-color: #196c80;
   color: #ffffff;
   font-size: 1em;
   font-family: sans-serif;
@@ -831,7 +881,7 @@ td.column-money {
 .td-align-left {
   text-align: left;
   width: 30%;
-  color: #21618c;
+  color: #196c80;
 }
 .styled-table {
   border-collapse: collapse;
@@ -842,7 +892,7 @@ td.column-money {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 .styled-table thead tr {
-  background-color: #21618c;
+  background-color: #196c80;
   color: #ffffff;
   text-align: left;
 }
@@ -852,12 +902,12 @@ td.column-money {
 
   min-width: 400px;
 
-  background-color: #21618c;
+  background-color: #196c80;
   color: #ffffff;
   text-align: left;
 }
 .styled-footer tbody tr {
-  border-bottom: 1px solid #21618c;
+  border-bottom: 1px solid #196c80;
 }
 .styled-table th,
 .styled-table td {
@@ -875,11 +925,11 @@ td.column-money {
 }
 
 .styled-table tbody tr:last-of-type {
-  border-bottom: 2px solid #21618c;
+  border-bottom: 2px solid #196c80;
 }
 .styled-table tbody tr.active-row {
   font-weight: bold;
-  color: #21618c;
+  color: #196c80;
 }
 .a-divider {
   padding: 0px;

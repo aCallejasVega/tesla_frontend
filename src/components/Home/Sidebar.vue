@@ -25,7 +25,7 @@
       {{ datos.nombreEntidad }}
     </div>
     <a-divider v-if="!collapsed" style="color: #f5962a"
-      >MENU PRINCIPAL</a-divider
+      >MENU EMPRESAS</a-divider
     >
 
     <a-menu
@@ -55,6 +55,7 @@
         </a-menu-item>
       </a-sub-menu>
     </a-menu>
+    
   </a-layout-sider>
 </template>
 

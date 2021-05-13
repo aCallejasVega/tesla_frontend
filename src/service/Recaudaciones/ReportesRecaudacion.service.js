@@ -38,6 +38,15 @@ export default {
             }
       });
     },
+    findDeudasCobradasByUsuarioCreacionForGrid(formBusqueda) {
+        return Api().post(`api/ReportRecaudacion/findDeudasCobradasByUsuarioCreacionForGrid`, formBusqueda, {
+            responseType: 'arraybuffer',
+            headers: {
+              'Accept': 'application/pdf',
+              Authorization: `Bearer `+localStorage.getItem("token")
+            }
+      });
+    },
 
 
 };

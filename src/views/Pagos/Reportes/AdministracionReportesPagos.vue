@@ -4,7 +4,7 @@
       <div class="card-head">
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
-            <b style="color: #21618c"> REPORTE GENERAL DE PAGOS </b>
+            <b style="color: #08632d"> REPORTE GENERAL DE PAGOS </b>
           </h2>
         </a-col>
       </div>
@@ -25,6 +25,7 @@
                 format="DD/MM/YYYY "
                 v-model="formBusqueda.fechaIni"
                 :locale="locale"
+                  style="width: 100%"
               />
             </a-form-item>
           </a-col>
@@ -40,6 +41,7 @@
                 format="DD/MM/YYYY"
                 v-model="formBusqueda.fechaFin"
                 :locale="locale"
+                  style="width: 100%"
               />
             </a-form-item>
           </a-col>
@@ -137,7 +139,7 @@
         </a-col>
         <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
           <a-button
-            type="primary"
+            type="danger"
             @click="findListReporteGrid(1)"
             block
             :style="{
@@ -158,9 +160,7 @@
             :style="{
               fontSize: '19px',
               height: '50px',
-              backgroundColor: '#0d9178',
-              borderColor: '#0d9178',
-              color: '#FFFFFF',
+             
             }"
           >
             <span :style="{ fontSize: '20px' }">
@@ -366,9 +366,9 @@ export default {
     getServiciosProductos() {
       ReportesPagos.findForSelect()
         .then((response) => {
-          console.log("-----------------------------------------------");
+   
           this.servicioProductosList = response.data.data;
-          console.log(JSON.stringify(this.servicioProductosList));
+      
         })
         .catch((error) => {
           this.servicioProductosList = [];

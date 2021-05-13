@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import decode from 'jwt-decode';
 import router from '../router/index';
+import AdmStore from './AdministracionStore';
 
 Vue.use(Vuex);
 
@@ -46,5 +47,7 @@ export default new Vuex.Store({
       router.push({ name: 'login' });
     },
   },
-  modules: {},
+  modules: {
+    AdmStore,
+  },
 });

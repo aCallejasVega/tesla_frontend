@@ -4,7 +4,7 @@
       <div class="card-head">
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
-            <b style="color: #08632d"> REPORTE GENERAL DE DEUDAS. </b>
+            <b style="color: #08632d"> CARGA DE ARCHIVOS. </b>
           </h2>
         </a-col>
       </div>
@@ -16,7 +16,7 @@
               <a-col :xs="0" :sm="0" :md="6" :lg="6" :xl="6"></a-col>
               <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
                 <a-form-item
-                  label="Seleccione un Servicio :"
+                  label="Tipo de Pago :"
                   :label-col="{
                     xs: { span: 24 },
                     sm: { span: 24 },
@@ -96,7 +96,7 @@
               }"
               :disabled="buttonProcesar"
             >
-              <span> <a-icon type="download" /> Procesar Datos </span>
+              <span> <a-icon type="download" /> Procesar Cargado de Datos </span>
             </a-button>
           </a-card>
         </a-col>

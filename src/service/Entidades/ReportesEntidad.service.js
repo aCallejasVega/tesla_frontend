@@ -150,7 +150,7 @@ export default {
       openReportesPorArchivo(formBusqueda) {
 
 
-        let urlReporte = `http://localhost:9080/api/ReportEntidad/findDeudasByArchivoIdAndEstado/${formBusqueda.archivoId}/${formBusqueda.export}`;
+        let urlReporte = `api/ReportEntidad/findDeudasByArchivoIdAndEstado/${formBusqueda.archivoId}/${formBusqueda.export}`;
         return Api().get(urlReporte, {
             responseType: 'arraybuffer',
             headers: {

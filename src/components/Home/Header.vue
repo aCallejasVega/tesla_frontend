@@ -77,7 +77,7 @@ export default {
     getDatosLogin() {
       Sidebar.getDatosLogin()
         .then((response) => {
-          console.log(JSON.stringify(response.data.data));
+     
           this.datos = response.data.data;
         })
         .catch((error) => {
