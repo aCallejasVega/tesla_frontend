@@ -74,7 +74,7 @@
         <div class="titulo-tabla">
           <a-row>
             <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
-              <b>N° Documento: </b>
+              <b>CI/NIT:</b>
             </a-col>
             <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:12}" :lg="{span:12}">
               <a-input v-model="clienteDto.nroDocumento" size="small" :maxLength="13" />
@@ -266,17 +266,18 @@
       <template slot="actions" class="ant-card-actions">
         <a-tooltip placement="top" title="Registra cobro de deudas">
           <a-button
-            type="primary"
+            type="link"
             :disabled="!selectedRowKeys.length > 0"
             @click="confirmCobro"
             block
-            :style="{
-              fontSize: '19px',
-              height: '50px',
-            }"
+            style="
+              height: 50px;
+              background-color: #339966;
+              border-color: #339966;
+            "
           >
-            <span >
-              <b> <a-icon type="dollar"  />
+            <span :style="{ fontSize: '14px', color:'white'  }">
+              <b> <a-icon type="dollar" :style="{ fontSize: '22px' }" />
                 Cobrar</b>
             </span>
           </a-button>
@@ -303,7 +304,7 @@
         <div class="titulo-tabla">
           <a-row>
             <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
-              <b>N° Documento: </b>
+              <b>CI/NIT: </b>
             </a-col>
             <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:6}" :lg="{span:6}">
               {{clienteDto.nroDocumento}}
@@ -525,7 +526,11 @@ export default {
       return {
         type: "radio",
         onChange: (selectedRowKeys, selectedRows) => {
-          
+          console.log(
+            `selectedRowKeys: ${selectedRowKeys}`,
+            "selectedRows: ",
+            selectedRows
+          );
           this.displayCliente = true;
           this.clienteDto = {
             codigoCliente: selectedRows[0].codigoCliente,
@@ -533,7 +538,7 @@ export default {
             nombreCliente: selectedRows[0].nombreCliente,
             servicioDeudaDtoList: [],
           };
-         
+          console.log(JSON.stringify(this.clienteDto));
           this.cargarServicioDeudas();
         },
       };
@@ -551,7 +556,8 @@ export default {
           this.selectedRowKeys = selectedRowKeys;
         },
         onSelect: (record, selected, selectedRows) => {
-         
+          console.log("onSelect");
+          console.log(record, selected, selectedRows);
           //calcular suma
           this.sumTotal = 0;
           this.sumTotal = selectedRows.reduce((tot, current) => {
@@ -562,10 +568,11 @@ export default {
 
           //asignar deudas seleccionadas
           this.clienteDto.servicioDeudaDtoList = selectedRows;
-        
+          console.log(JSON.stringify(this.clienteDto));
         },
         onSelectAll: (selected, selectedRows, changeRows) => {
-         
+          console.log("onSelectAll");
+          console.log(selected, selectedRows, changeRows);
           //calcular total
           this.sumTotal = 0;
           this.sumTotal = selectedRows.reduce((tot, current) => {
@@ -576,7 +583,7 @@ export default {
 
           //asignar deudas seleccionadas
           this.clienteDto.servicioDeudaDtoList = selectedRows;
-       
+          console.log(JSON.stringify(this.clienteDto));
         },
       };
     },
@@ -687,7 +694,7 @@ export default {
 
           this.lstServiciosDeudas = r.data.result;
           this.loadingServ = false;
-       
+          console.log(JSON.stringify(this.lstServiciosDeudas));
           //this.$notification.success(r.data.message);
         })
         .catch((error) => {
@@ -753,6 +760,14 @@ export default {
       ) {
         this.$notification.warning(
           "Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO."
+        );
+        this.displayModal = false;
+        return;
+      }
+
+      if(isNaN(this.clienteDto.nroDocumento.trim())) {
+        this.$notification.warning(
+          "El NÚMERO DOCUMENTO es solo numérico."
         );
         this.displayModal = false;
         return;

@@ -19,7 +19,10 @@ export default {
     return Api().get(`api/sucursales`, this.headersConfig());
   },
   getLstSucursales(recaudadorId) {
-    return Api().get(`api/sucursales/recaudadores/${recaudadorId}`, this.headersConfig());
+    if(recaudadorId != null)
+      return Api().get(`api/sucursales/recaudadores/${recaudadorId}`, this.headersConfig());
+    else  
+      return Api().get(`api/sucursales/recaudadores`, this.headersConfig());
   },
   postSucursal(sucursalObj) {
     console.log(JSON.stringify(sucursalObj))

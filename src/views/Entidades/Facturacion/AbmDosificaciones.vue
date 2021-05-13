@@ -84,6 +84,12 @@
               {{ record.estado }}
             </a-tag>
           </div>
+          <div v-if="record.estado == 'HISTORICO'" align="center">
+            <a-tag color="gray">
+              <a-icon type="caret-down" :style="{ fontSize: '20px' }" />
+              {{ record.estado }}
+            </a-tag>
+          </div>
         </template>
         <template slot="caracteristicas" slot-scope="text, record">
           <a-row type="flex">
@@ -153,6 +159,20 @@
             </a-col>
           </a-row>
         </template>
+        <template slot="dosificacion" slot-scope="text, record">
+           <a-row type="flex">
+            <a-col
+              :xs="24"
+              :sm="24"
+              :md="24"
+              :lg="24"
+              :xl="24"
+              class="labelValue"
+            >
+           {{record.llaveDosificacion}}
+            </a-col>
+           </a-row>
+        </template>
         <template slot="datos" slot-scope="text, record">
           <a-row type="flex">
             <a-col
@@ -173,7 +193,9 @@
               :xl="14"
               class="labelValueMain"
             >
-              {{ record.codigoActividadEconomica }} - {{ record.actividadEconomica }}
+            <a-tag color="blue">
+               {{ record.codigoActividadEconomica }} - {{ record.actividadEconomica }}
+            </a-tag>
             </a-col>
           </a-row>
           <a-row type="flex">
@@ -243,6 +265,7 @@
             </a-col>
           </a-row>
         </template>
+         
       </a-table>
     </a-card>
     
@@ -271,7 +294,6 @@
       </a-row>
     </div>
     <br/>
-      <!--LISTADO DE SUCURSALES-->
       <a-form-model
         ref="ruleForm"
         :model="dosificacionObj"
@@ -279,6 +301,7 @@
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
         size="small"
+        disabled="true"
       >
       <a-form-model-item label="Sucursal Emite Factura" >
           <a-input
@@ -434,21 +457,29 @@ const columns = [
     title: "Características",
     dataIndex: "moneda_id",
     scopedSlots: { customRender: "caracteristicas" },
-    width: "40%",
+    width: "25%",
   },
   {
     title: "Datos",
     dataIndex: "actividadEconomica",
     scopedSlots: { customRender: "datos" },
-    width: "40%",
+    width: "30%",
   }, 
+  {
+    title: "LLave Dosificacion",
+    dataIndex: "llaveDosificacion",
+    //fixed: "right",
+    scopedSlots: { customRender: "dosificacion" },
+    width: "30%",
+  },
   {
     title: "Estado",
     dataIndex: "estado",
     //fixed: "right",
     scopedSlots: { customRender: "estado" },
-    width: "20%",
+    width: "15%",
   },
+  
   
 ];
 

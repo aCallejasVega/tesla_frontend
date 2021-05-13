@@ -1,7 +1,8 @@
 <template>
   <div>
-    <!--
     {{entidadId}}<br/>
+    <!--
+    
     {{opcion}}
     ll:{{title}}-->
     <a-card style="width: 100%">
@@ -63,6 +64,15 @@
         
         <a-row type="flex" justify="center" v-if="opcion.libro == false">
           <a-col span="12">
+            <a-form-model-item
+              ref="numeroDocumento"
+              label="NIT/CI Cliente"
+              prop="numeroDocumento"
+            >
+              <a-input v-model="facturaObj.numeroDocumento" :maxLength="200" />
+            </a-form-model-item>
+          </a-col>
+          <a-col span="12">
              <a-form-model-item
               ref="nombreRazonSocial"
               label="Nombre/Razón Social"
@@ -75,15 +85,7 @@
             </a-form-model-item>
            
           </a-col>
-          <a-col span="12">
-            <a-form-model-item
-              ref="numeroDocumento"
-              label="NIT/CI Cliente"
-              prop="numeroDocumento"
-            >
-              <a-input v-model="facturaObj.numeroDocumento" :maxLength="200" />
-            </a-form-model-item>
-          </a-col>
+          
         </a-row>
         <a-row type="flex" justify="center">
           <a-col span="12">
@@ -92,7 +94,7 @@
               label="Fecha Inicio"
               prop="fechaInicioFactura"
             >
-              <a-date-picker
+              <a-date-picker :disabledDate ="disabledDate"
                 format="DD/MM/YYYY"
                 :locale="locale"
                 v-model="facturaObj.fechaInicioFactura"
@@ -110,7 +112,7 @@
               label="Fecha Fin"
               prop="fechaFinFactura"
             >
-              <a-date-picker
+              <a-date-picker :disabledDate ="disabledDate"
                 format="DD/MM/YYYY"
                 :locale="locale"
                 v-model="facturaObj.fechaFinFactura"
@@ -631,7 +633,7 @@ const columns = [
 import Entidades from "../../service/Administraciones/Entidad.service";
 import Invoices from "../../service/Facturacion/Invoices.service";
 import locale from "ant-design-vue/es/date-picker/locale/es_ES";
-
+import moment from "moment";
 
 export default {
   props: {
@@ -723,6 +725,7 @@ export default {
   methods: {
     /**DATOS INICIALS**/
     cargarEntidad(entidadId) {
+      console.log('Entidad=' + entidadId)
       if(entidadId != null) {
         Entidades.getEntidad(entidadId)
           .then((r) => {
@@ -753,9 +756,7 @@ export default {
         if (valid) {
           this.loading = true;
 
-          if(this.opcion.libro && this.entidadId == null) { 
-            //Caso en que solo Entidad debe ver 
-            Invoices.postListFacturaFilter(this.facturaObj, page)
+          Invoices.postListFacturaFilter(this.facturaObj, this.entidadId, page)
               .then((r) => {
                 if (r.status === 204) {
                   this.lstFacturas = [];
@@ -783,36 +784,7 @@ export default {
                 );
                 this.loading = false;
               });
-          } else {
-            //Caso en el que siempre seleccionen una entidad
-            Invoices.postListFacturaFilterEntidad(this.facturaObj, this.entidadId, page)
-              .then((r) => {
-                if (r.status === 204) {
-                  this.lstFacturas = [];
-                  this.$notification.warning(
-                    "No se ha encontrado facturas de acuerdo a los filtros."
-                  );
-                  this.loading = false;
-                  return;
-                }
 
-                this.lstFacturas = r.data.result.content;
-                this.loading = false;
-                this.pagination.pageSize = r.data.result.numberOfElements;
-                this.pagination.total = r.data.result.totalElements;
-
-
-              })
-              .catch((error) => {
-                console.log("errrr");
-                this.lstFacturas = [];
-                this.$notification.error(
-                  error.response.data.message,
-                  error.response.data.code
-                );
-                this.loading = false;
-              });
-          }
         } else {
           console.log("error submit!!");
           this.$notification.warning(
@@ -959,6 +931,10 @@ export default {
         }
       });
     },
+    disabledDate(current) {
+      let customDate = new Date();
+      return current && current > moment(customDate, "YYYY-MM-DD");
+    }
   },
 };
 </script>

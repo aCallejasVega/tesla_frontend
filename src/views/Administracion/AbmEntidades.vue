@@ -180,7 +180,7 @@
               Modalidad Facturación
             </a-col>
            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
-              {{record.tipoFacturacionDescripcion}}
+              {{record.modalidadFacturacionDescripcion}}
             </a-col>
           </a-row>
            <a-row type="flex">
@@ -346,13 +346,13 @@
             :maxLength="13"
           />
         </a-form-model-item>
-         <a-form-model-item label="Modalidad Facturación" prop="tipoFacturacionId">
+         <a-form-model-item label="Modalidad Facturación" prop="modalidadFacturacionId">
           <a-select
-            v-model="entidadObj.tipoFacturacionId"
-            placeholder="Seleccione Tipo de Facturación"
+            v-model="entidadObj.modalidadFacturacionId"
+            placeholder="Seleccione Modalidad de Facturación"
           >
             <a-select-option
-              v-for="(item, i) in lstTipoFacturaciones"
+              v-for="(item, i) in lstModFacturaciones"
               :key="i"
               :value="item.dominioId"
             >
@@ -608,7 +608,7 @@ export default {
             pattern:  /^[0-9,$]*$/ 
           },
         ],
-        tipoFacturacionId: [
+        modalidadFacturacionId: [
           {
             required: true,
             message: "Debe seleccionar una Modalidad de Facturación",
@@ -621,7 +621,7 @@ export default {
       lstTiposEntidades: [],
       lstActividadesEconomicas: [],
       lstMunicipios: [],
-      lstTipoFacturaciones: [],
+      lstModFacturaciones: [],
 
       /**Modal Comision */
       displayModalComision: false,
@@ -669,7 +669,7 @@ export default {
     this.cargarTipoEntidades();
     this.cargarActividadesEconomicas();
     this.cargarMunicipios();
-    this.cargarTipoFacturaciones();
+    this.cargarModalidadFacturaciones();
 
     this.cargarOpcionesByEstado(null);
   },
@@ -930,21 +930,21 @@ export default {
           );
         });
     },
-    cargarTipoFacturaciones() {
-      Dominios.getListDominos("tipo_facturacion_id")
+    cargarModalidadFacturaciones() {
+      Dominios.getListDominos("modalidad_facturacion_id")
         .then((r) => {
           if (r.status === 204) {
-            this.lstTipoFacturaciones = [];
+            this.lstModFacturaciones = [];
             this.$notification.warning(
               "La parametrización de dominios no esta completa."
             );
             return;
           }
-          this.lstTipoFacturaciones = r.data.result;
+          this.lstModFacturaciones = r.data.result;
         })
         .catch((error) => {
           console.log(error);
-          this.lstTipoFacturaciones = [];
+          this.lstModFacturaciones = [];
           this.$notification.error(
             error.response.data.message,
             error.response.data.code

@@ -41,7 +41,8 @@ import SearchEntidadesInvoicesA from '../views/Recaudaciones/Facturacion/SearchE
 import SearchEntidadesInvoicesR from '../views/Recaudaciones/Facturacion/SearchEntidadesInvoicesR';
 import Dosificaciones from "../views/Entidades/Facturacion/AbmDosificaciones";
 import RegCredenciales from "../views/Entidades/Facturacion/RegCredenciales";
-
+import AdmEntSucursalEntidades from "../views/Entidades/Administracion/AdmEntSucursalesEntidades";
+import AdmRecSucursales from "../views/Recaudaciones/Administracion/AdmRecSucursales";
 
 Vue.use(VueRouter);
 
@@ -364,6 +365,37 @@ const routes = [
           libre: false
         },
       },
+      {
+        path: "/RegCredenciales",
+        name: "RegCredenciales",
+        component: RegCredenciales,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/AdmEntSucursalEntidades",
+        name: "AdmEntSucursalEntidades",
+        component: AdmEntSucursalEntidades,
+        meta: {
+          libre: false
+        },
+      },
+      {
+        path: "/AdmRecSucursales",
+        name: "AdmRecSucursales",
+        component: AdmRecSucursales,
+        meta: {
+          libre: false
+        },
+      },
+
+
+
+
+
+      
+          
     ]
   },
   {

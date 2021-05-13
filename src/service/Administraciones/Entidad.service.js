@@ -39,6 +39,6 @@ export default {
   
   getLogo(entidadId) {
     return Api().get(`api/entidades/download/logo/${entidadId}`, this.headersConfig());
-  }
+  },
   
 };
