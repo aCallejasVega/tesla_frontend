@@ -6,7 +6,6 @@ import UploadFile from "../views/Entidades/UploadFile.vue";
 import HistoricoDeudas from "../views/Entidades/HistoricoDeudas.vue";
 import HistoricoDeudasDetalle from "../views/Entidades/HistoricoDeudasDetalle";
 import ReporteDeudasEntidades from "../views/Entidades/ReporteDeudasEntidades";
-import SearchEntidades from '../views/Recaudaciones/SearchEntidades.vue';
 import Debts from '../views/Recaudaciones/Debts.vue';
 import AbmEntidades from '../views/Administracion/AbmEntidades.vue';
 import AbmSucursalesEntidades from '../views/Administracion/AbmSucursaleseEntidades.vue';
@@ -72,15 +71,6 @@ const routes = [
         meta: {
           libre: false
         }
-      },
-      {
-        path: "/SearchEntidades",
-        name: "SearchEntidades",
-        component: SearchEntidades,
-        meta: {
-          libre: false
-        },
-
       },
       {
         path: "/HistoricoDeudas",

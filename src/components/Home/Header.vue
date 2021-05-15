@@ -19,7 +19,17 @@
           <a-divider type="vertical" />
           {{ datos.nombreUsuario }}
           <a-divider type="vertical" />
-
+          <a-tooltip placement="bottom">
+            <template slot="title">
+              <span>Notificaciones</span>
+            </template>
+            <a-badge :count="countNotifications" :number-style="{ color: '#fff', borderColor: '#d9d9d9' }">
+            <a-button shape="circle" @click="displayNotifications = true">
+              <a-icon type="bell" :style="{ fontSize: '20px' }"  />
+            </a-button>
+            </a-badge>
+          </a-tooltip>
+           <a-divider type="vertical" />
           <a-tooltip placement="bottom">
             <template slot="title">
               <span>CAMBIAR CONTRASEÑA</span>
@@ -48,17 +58,39 @@
               <span>SALIR DEL SISTEMA</span>
             </template>
           </a-tooltip>
+          
         </div>
+        
       </a-col>
     </a-row>
+    <Notificaciones @updatingNotif="updateNotif" v-show="false"/>
+    <a-modal
+        v-model="displayNotifications"
+        title="Notificaciones"
+        ok-text="Cobrar"
+        cancel-text="Cancelar"
+        width="600px"
+        :centered="false"
+        :closable="true"
+        :maskClosable="false"
+        :footer="null"
+      >
+      <Notificaciones @updatingNotif="updateNotif"/>
+    </a-modal>
+    
   </a-layout-header>
 </template>
 
 <script>
 import store from "../../store/index";
 import Sidebar from "@/service/Home/Sidebar.service";
+import Notificaciones from "./Notificaciones.vue";
+
 
 export default {
+  components: {
+    Notificaciones,
+  },
   data() {
     return {
       iconConfig: "lock",
@@ -68,11 +100,15 @@ export default {
         nombreEntidad: null,
         path: null,
       },
+      displayNotifications: false,
+      countNotifications: 0,
     };
   },
   created() {
     this.getDatosLogin();
+    
   },
+  
   methods: {
     getDatosLogin() {
       Sidebar.getDatosLogin()
@@ -94,6 +130,9 @@ export default {
     changeLock() {
       this.iconConfig = "lock";
     },
+    updateNotif(value) {
+      this.countNotifications = value;
+    }
   },
 };
 </script>

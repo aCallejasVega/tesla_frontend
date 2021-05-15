@@ -183,6 +183,30 @@
               :xl="10"
               class="labelTittle"
             >
+              Código Actividad Económica
+            </a-col>
+            <a-col
+              :xs="24"
+              :sm="24"
+              :md="24"
+              :lg="24"
+              :xl="14"
+              class="labelValue"
+            >
+              <a-tag color="blue">
+                  {{ record.codigoActividadEconomica }} 
+              </a-tag>
+            </a-col>
+          </a-row>
+          <a-row type="flex">
+            <a-col
+              :xs="24"
+              :sm="24"
+              :md="24"
+              :lg="24"
+              :xl="10"
+              class="labelTittle"
+            >
               Actividad Económica
             </a-col>
             <a-col
@@ -191,11 +215,17 @@
               :md="24"
               :lg="24"
               :xl="14"
-              class="labelValueMain"
+              class="labelValue"
             >
-            <a-tag color="blue">
-               {{ record.codigoActividadEconomica }} - {{ record.actividadEconomica }}
-            </a-tag>
+            <a-tooltip v-if="record.actividadEconomica.length > 40" :key="record.actividadEconomica" :title="record.actividadEconomica">
+                <a-tag :key="record.actividadEconomica" color="blue">
+                  {{ `${record.actividadEconomica.slice(0, 40)}...` }}
+                </a-tag>
+              </a-tooltip>
+              <a-tag v-else color="blue">
+                  {{ record.actividadEconomica }}
+              </a-tag>
+
             </a-col>
           </a-row>
           <a-row type="flex">
@@ -294,6 +324,7 @@
       </a-row>
     </div>
     <br/>
+    
       <a-form-model
         ref="ruleForm"
         :model="dosificacionObj"
@@ -323,20 +354,6 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
-        <a-form-model-item label="Características Especiales" prop="caracteristicasEspecialesId">
-          <a-select
-            v-model="dosificacionObj.caracteristicasEspecialesId"
-            placeholder="Seleccione Tipo Documento Fiscal"
-          >
-            <a-select-option
-              v-for="(item, i) in lstCaracEspeciales"
-              :key="i"
-              :value="item.dominioId"
-            >
-              {{ item.descripcion }}
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
         <a-form-model-item label="Moneda" prop="monedaId">
           <a-select
             v-model="dosificacionObj.monedaId"
@@ -351,9 +368,31 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
-        <a-form-model-item label="Por Terceros" prop="porTerceros">
+        <a-row justify="space-between">
+          <a-col span="3">
+          </a-col>
+          <a-col span="12" align="right">
+            <a-form-model-item label="Características Especiales" prop="caracteristicasEspecialesId">
+          <a-select
+            v-model="dosificacionObj.caracteristicasEspecialesId"
+            placeholder="Seleccione Tipo Documento Fiscal"
+          >
+            <a-select-option
+              v-for="(item, i) in lstCaracEspeciales"
+              :key="i"
+              :value="item.dominioId"
+            >
+              {{ item.descripcion }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+          </a-col>
+          <a-col span="9" flex>
+            <a-form-model-item label="Por Terceros" prop="porTerceros">
           <a-switch v-model="dosificacionObj.porTerceros"/>
         </a-form-model-item>
+          </a-col>
+        </a-row>
         <a-form-model-item ref="codigoActividadEconomica" label="Código Actividad Economica" prop="codigoActividadEconomica">
           <a-input
             v-model="dosificacionObj.codigoActividadEconomica"
@@ -376,8 +415,7 @@
             :maxLength="250"
           />
         </a-form-model-item>
-       
-         <a-form-model-item ref="numeroAutorizacion" label="N° Autorización" prop="numeroAutorizacion">
+        <a-form-model-item ref="numeroAutorizacion" label="N° Autorización" prop="numeroAutorizacion">
           <a-input
             v-model="dosificacionObj.numeroAutorizacion"
             @blur="
@@ -390,27 +428,27 @@
         </a-form-model-item>
         <a-form-model-item ref="fechaVigencia" label="Fecha Vigencia Emisión" prop="fechaVigencia">
           <a-date-picker
-                format="DD/MM/YYYY"
-                :locale="locale"
-                v-model="dosificacionObj.fechaVigencia"
-                @blur="
-                  () => {
-                    $refs.fechaVigencia.onFieldBlur();
-                  }
-                "
-              />
+            format="DD/MM/YYYY"
+            :locale="locale"
+            v-model="dosificacionObj.fechaVigencia"
+            @blur="
+              () => {
+                $refs.fechaVigencia.onFieldBlur();
+              }
+            "
+          />
         </a-form-model-item>
         <a-form-model-item ref="fechaLimiteEmision" label="Fecha Límite Emisión" prop="fechaLimiteEmision">
           <a-date-picker
-                format="DD/MM/YYYY"
-                :locale="locale"
-                v-model="dosificacionObj.fechaLimiteEmision"
-                @blur="
-                  () => {
-                    $refs.fechaLimiteEmision.onFieldBlur();
-                  }
-                "
-              />
+            format="DD/MM/YYYY"
+            :locale="locale"
+            v-model="dosificacionObj.fechaLimiteEmision"
+            @blur="
+              () => {
+                $refs.fechaLimiteEmision.onFieldBlur();
+              }
+            "
+          />
         </a-form-model-item>
         <a-form-model-item ref="llaveDosificacion" label="Llave de Dosificación" prop="llaveDosificacion">
           <a-textarea
@@ -457,20 +495,20 @@ const columns = [
     title: "Características",
     dataIndex: "moneda_id",
     scopedSlots: { customRender: "caracteristicas" },
-    width: "25%",
+    width: "20%",
   },
   {
     title: "Datos",
     dataIndex: "actividadEconomica",
     scopedSlots: { customRender: "datos" },
-    width: "30%",
+    width: "40%",
   }, 
   {
     title: "LLave Dosificacion",
     dataIndex: "llaveDosificacion",
     //fixed: "right",
     scopedSlots: { customRender: "dosificacion" },
-    width: "30%",
+    width: "25%",
   },
   {
     title: "Estado",
@@ -1031,12 +1069,6 @@ export default {
   border-color: #fafafa;
   border-style: solid;
 }
-.labelValueMain {
-  border-width: 0.1px;
-  border-color: #fafafa;
-  border-style: solid;
-  color: #839dff;
-  background-color: #fafafa;
-}
+
 </style>
 
