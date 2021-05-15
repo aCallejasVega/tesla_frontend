@@ -21,8 +21,7 @@
               method="post"
               :action="this.url"
               :headers="{ Authorization: 'Bearer ' + this.token }"
-              @change="handleChange"
-              withCredentials
+              @change="handleChange"            
               :showUploadList="this.showUpload"
               :before-upload="handleClick"
             >

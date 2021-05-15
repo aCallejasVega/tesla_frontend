@@ -5,11 +5,10 @@
         <div
           class="login100-form-title"
           v-bind:style="{
-            'background-image': 'url(' + require('../../assets/images/logo.png') + ')',
+            'background-image':
+              'url(' + require('../../assets/images/logo.png') + ')',
           }"
-        >
-       
-        </div>
+        ></div>
 
         <form class="login100-form">
           <div
@@ -42,9 +41,19 @@
             <span class="focus-input100"></span>
           </div>
 
-
           <div class="container-login100-form-btn">
-            <a-button type="primary" @click="login" style="width:50%"> Login </a-button>
+            <a-button type="primary" @click="login" style="width: 50%">
+              Login
+            </a-button>
+          </div>
+          <br/>
+          <div wrap-input100 validate-input m-b-18 style="width: 100%; margin:5px" v-if="showError">
+            <a-alert
+              message="Hay un problema en el ingreso al sistema."
+              description="El usuario o contraseña no son correctos."
+              type="error"
+              show-icon
+            />
           </div>
         </form>
       </div>
@@ -68,6 +77,7 @@ export default {
         password: "",
       },
       errorCredenciales: false,
+      showError:false,
     };
   },
   methods: {
@@ -76,17 +86,17 @@ export default {
       loginServices
         .login(this.usuario)
         .then((response) => {
-       
           return response.data;
         })
         .then((data) => {
+          this.showError=true;
           this.$store.dispatch("guardarToken", data.access_token);
           this.$router.push({
             name: "index",
           });
         })
         .catch((error) => {
-          console.error(error);
+          this.showError=true;
         });
     },
   },

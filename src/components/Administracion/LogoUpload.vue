@@ -11,7 +11,7 @@
         :before-upload="beforeUpload"
         @change="handleChange"
         :headers="{ Authorization: 'Bearer ' + this.token }"
-        withCredentials
+      
       >
         <img
           v-if="imageUrl"

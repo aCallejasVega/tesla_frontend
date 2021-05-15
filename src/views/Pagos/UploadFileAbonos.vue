@@ -67,7 +67,7 @@
               :action="this.url"
               :headers="{ Authorization: 'Bearer ' + this.token }"
               @change="handleChange"
-              withCredentials
+          
               :showUploadList="this.showUpload"
               :before-upload="handleClick"
             >
