@@ -13,7 +13,7 @@
             v-for="item in lstRecaudadores"
             :key="item.recaudadorId"
           >
-            {{ item.nombre }}
+            {{ item.nombre }} *{{ item.estado }}*
           </a-select-option>
         </a-select>
       </a-col>
@@ -57,6 +57,10 @@ export default {
             return;
           }
           this.lstRecaudadores = r.data.result;
+          //Obtener solo Activos y creados
+          this.lstRecaudadores = this.lstRecaudadores.filter((rec) => {
+            return (rec.estado == 'ACTIVO' || rec.estado == 'CREADO');
+          });
           this.loading = false;
           this.$Progress.finish();
         })
