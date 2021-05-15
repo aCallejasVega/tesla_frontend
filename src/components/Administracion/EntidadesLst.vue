@@ -9,7 +9,7 @@
           style="width: 100%"
         >
           <a-select-option v-for="item in lstEntidades" :key="item.entidadId">
-            {{ item.nombre }}
+            {{ item.nombre }}  *{{item.estado}}*
           </a-select-option>
         </a-select>
       </a-col>
@@ -52,8 +52,10 @@ export default {
           }
 
           this.lstEntidades = r.data.result;
-          console.log("cargando entidades");
-          console.log(this.lstEntidades);
+          //Obtener solo Activos y creados
+          this.lstEntidades = this.lstEntidades.filter((rec) => {
+            return (rec.estado == 'ACTIVO' || rec.estado == 'CREADO');
+          });
           this.$Progress.finish();
         })
         .catch((error) => {

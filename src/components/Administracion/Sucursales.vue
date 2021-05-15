@@ -80,8 +80,15 @@
             <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
               Nombre
             </a-col>
-            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValueMain">
-              {{record.nombre}} 
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14">
+              <a-tooltip v-if="record.nombre.length > 30" :key="record.nombre" :title="record.nombre">
+                <a-tag :key="record.nombre" color="blue">
+                  {{ `${record.nombre.slice(0, 30)}...` }}
+                </a-tag>
+              </a-tooltip>
+              <a-tag v-else color="blue">
+                  {{ record.nombre }}
+              </a-tag>
             </a-col>
           </a-row>
           <a-row type="flex">
@@ -631,11 +638,5 @@ export default {
     border-color:#FAFAFA;
     border-style: solid;
   }
-  .labelValueMain {
-    border-width: 0.1px;
-    border-color:#FAFAFA;
-    border-style: solid;
-    color: #839DFF;
-    background-color:#FAFAFA; 
-  }
+  
 </style>

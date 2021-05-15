@@ -81,8 +81,15 @@
             <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
               Nombre
             </a-col>
-            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValueMain">
-              {{record.nombreSucursal}} 
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              <a-tooltip v-if="record.nombreSucursal.length > 30" :key="record.nombreSucursal" :title="record.nombreSucursal">
+                <a-tag :key="record.nombreSucursal" color="blue">
+                  {{ `${record.nombreSucursal.slice(0, 30)}...` }}
+                </a-tag>
+              </a-tooltip>
+              <a-tag v-else color="blue">
+                  {{ record.nombreSucursal }}
+              </a-tag>
             </a-col>
           </a-row>
           <a-row type="flex">
@@ -459,6 +466,11 @@ export default {
         ],
         email: [
           {
+            required: true,
+            message: "Debe registrar el Correo Electrónico",
+            trigger: "blur",
+          },
+          {
             trigger: "blur",
             message: "El correo electrónico esta incorrecto.",
             pattern:  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
@@ -773,11 +785,5 @@ export default {
     border-color:#FAFAFA;
     border-style: solid;
   }
-  .labelValueMain {
-    border-width: 0.1px;
-    border-color:#FAFAFA;
-    border-style: solid;
-    color: #839DFF;
-    background-color:#FAFAFA; 
-  }
+  
 </style>

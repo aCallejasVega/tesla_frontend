@@ -103,18 +103,26 @@
           >
             Recaudadoras
           </a>
+          <!--
           <br/>
            <a href="javascript:;" @click="openModalComision(record.entidadId)">
             Comisión </a
-          ><br />
+          ><br />-->
         </template>
         <template slot="datosEntidad" slot-scope="text, record">
           <a-row type="flex">
             <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
               Nombre
             </a-col>
-            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValueMain">
-              {{record.nombre}} 
+            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
+              <a-tooltip v-if="record.nombre.length > 30" :key="record.nombre" :title="record.nombre">
+                <a-tag :key="record.nombre" color="blue">
+                  {{ `${record.nombre.slice(0, 30)}...` }}
+                </a-tag>
+              </a-tooltip>
+              <a-tag v-else color="blue">
+                  {{ record.nombre }}
+              </a-tag>
             </a-col>
           </a-row>
           <a-row type="flex">
@@ -159,6 +167,7 @@
               {{record.actividadEconomicaDescripcion}}
             </a-col>
           </a-row>
+          <!--
            <a-row type="flex">
             <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
               Municipio
@@ -167,6 +176,7 @@
               {{record.municipioDescripcion}}
             </a-col>
           </a-row>
+          -->
           <a-row type="flex">
             <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
               NIT
@@ -185,7 +195,7 @@
           </a-row>
            <a-row type="flex">
             <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="10" class="labelTittle">
-              Comprobante en uno
+              Comprobante Agrupado
             </a-col>
            <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="14" class="labelValue">
             {{ record.comprobanteEnUno ? 'SI' : 'NO'}}
@@ -198,7 +208,7 @@
               ¿Realiza Cobros?
             </a-col>
             <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="6" class="labelValue">
-              {{ record.esCobrador ? 'SI' : 'NO'}}
+              {{ record.esCobradora ? 'SI' : 'NO'}}
             </a-col>
           </a-row>
            <a-row type="flex">
@@ -321,6 +331,7 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
+        <!--
         <a-form-model-item label="Municipio" prop="municipioId">
           <a-select
             v-model="entidadObj.municipioId"
@@ -335,6 +346,7 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
+        -->
         <a-form-model-item ref="nit" label="Nit" prop="nit">
           <a-input
             v-model="entidadObj.nit"
@@ -360,7 +372,7 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
-        <a-form-model-item label="¿Comprobante en Uno?" prop="comprobanteEnUno">
+        <a-form-model-item label="¿Comprobante agrupado?" prop="comprobanteEnUno">
           <a-switch v-model="entidadObj.comprobanteEnUno" />
         </a-form-model-item>
         <a-divider orientation="left" v-if="entidadObj.entidadId == null"
@@ -589,11 +601,11 @@ export default {
           },
         ],
         nit: [
-          {
+          /*{
             required: true,
             message: "Debe registrar el nit",
             trigger: "blur",
-          },
+          },*/
           {
             min: 10,
             max: 13,
@@ -1100,11 +1112,5 @@ export default {
     border-color:#FAFAFA;
     border-style: solid;
   }
-  .labelValueMain {
-    border-width: 0.1px;
-    border-color:#FAFAFA;
-    border-style: solid;
-    color: #839DFF;
-    background-color:#FAFAFA; 
-  }
+  
 </style>

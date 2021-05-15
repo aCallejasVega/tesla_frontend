@@ -526,11 +526,11 @@ export default {
       return {
         type: "radio",
         onChange: (selectedRowKeys, selectedRows) => {
-          console.log(
+          /*console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             "selectedRows: ",
             selectedRows
-          );
+          );*/
           this.displayCliente = true;
           this.clienteDto = {
             codigoCliente: selectedRows[0].codigoCliente,
@@ -538,7 +538,7 @@ export default {
             nombreCliente: selectedRows[0].nombreCliente,
             servicioDeudaDtoList: [],
           };
-          console.log(JSON.stringify(this.clienteDto));
+          //console.log(JSON.stringify(this.clienteDto));
           this.cargarServicioDeudas();
         },
       };
@@ -547,17 +547,15 @@ export default {
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
-          console.log("onChange");
-          console.log(
+          /*console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             "selectedRows: ",
             selectedRows
-          );
+          );*/
           this.selectedRowKeys = selectedRowKeys;
         },
         onSelect: (record, selected, selectedRows) => {
-          console.log("onSelect");
-          console.log(record, selected, selectedRows);
+//          console.log(record, selected, selectedRows);
           //calcular suma
           this.sumTotal = 0;
           this.sumTotal = selectedRows.reduce((tot, current) => {
@@ -568,11 +566,11 @@ export default {
 
           //asignar deudas seleccionadas
           this.clienteDto.servicioDeudaDtoList = selectedRows;
-          console.log(JSON.stringify(this.clienteDto));
+          //console.log(JSON.stringify(this.clienteDto));
         },
         onSelectAll: (selected, selectedRows, changeRows) => {
-          console.log("onSelectAll");
-          console.log(selected, selectedRows, changeRows);
+          //console.log("onSelectAll");
+          //console.log(selected, selectedRows, changeRows);
           //calcular total
           this.sumTotal = 0;
           this.sumTotal = selectedRows.reduce((tot, current) => {
@@ -583,7 +581,7 @@ export default {
 
           //asignar deudas seleccionadas
           this.clienteDto.servicioDeudaDtoList = selectedRows;
-          console.log(JSON.stringify(this.clienteDto));
+          //console.log(JSON.stringify(this.clienteDto));
         },
       };
     },
@@ -621,7 +619,6 @@ export default {
           this.title = this.entidadObj.nombre + ": Deudas Clientes";
         })
         .catch((error) => {
-          console.log(error);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -694,7 +691,7 @@ export default {
 
           this.lstServiciosDeudas = r.data.result;
           this.loadingServ = false;
-          console.log(JSON.stringify(this.lstServiciosDeudas));
+          //console.log(JSON.stringify(this.lstServiciosDeudas));
           //this.$notification.success(r.data.message);
         })
         .catch((error) => {
@@ -709,7 +706,6 @@ export default {
     sumSubTotal(record, deuda) {
       //debe ser solo de campos editables
       if (deuda.subTotal < 0 && deuda.editable) {
-        console.log("negat");
         deuda.subTotal = 0;
       }
       /*************** */
@@ -782,7 +778,6 @@ export default {
       }
       
       if(!this.verificarPrelacion(this.selectedRowKeys)) {
-        console.log('PPPPPPPPPPP')
         this.$notification.warning(
           "Existe Deudas que deben ser cobradas antes de las seleccionadas."
         );
@@ -802,8 +797,6 @@ export default {
       this.clienteDto.montoTotalCobrado = this.sumTotal;
       PaymentDebts.cobrarDeudas(this.clienteDto, 5) //Debe ser Ctte = 5
         .then((r) => {
-          console.log('sadasdasdasdas');
-          console.log(r)
           this.viewFileDownload(r);
           //this.$notification.success(r.data.message);
 
@@ -811,14 +804,11 @@ export default {
           this.cargarServicioDeudas();
           this.inicializar();
           this.displayModal = false;
-          console.log("entro al then");
 
           this.visibleModalReporte = true;
           this.$Progress.finish();
         })
         .catch((error) => {
-          console.log("entro a error");
-          console.log(this.ab2str(error.response.data) )
           //Se añade por el reporte implementado
           this.cargarServicioDeudas();
           this.inicializar();
@@ -866,7 +856,6 @@ export default {
     },
     verificarPrelacion(selectedRowKeys) {
       let maxRow = Math.max.apply(null,selectedRowKeys);
-      console.log(maxRow)
       if(maxRow != 0) {
         for(let i= (maxRow-1); i >= 0; i--) {
           if(!selectedRowKeys.includes(i)) {
