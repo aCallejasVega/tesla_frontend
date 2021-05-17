@@ -36,5 +36,8 @@ export default {
   //Facturacion Computarizada
   getOperacionesFacturacionLst(tabla, estadoInicial){
     return Api().get(`api/menufacturas/operaciones/${tabla}/estados/${estadoInicial}`, this.headersConfig());    
+  },
+  cambiarPassord(form){
+    return Api().post(`api/Menu/cambiarPassword`,form,this.headersConfig());
   }
 };
