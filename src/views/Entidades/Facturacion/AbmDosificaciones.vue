@@ -401,7 +401,7 @@
                 $refs.codigoActividadEconomica.onFieldBlur();
               }
             "
-            :maxLength="20"
+            :maxLength="10"
           />
         </a-form-model-item>
         <a-form-model-item ref="actividadEconomica" label="Actividad Economica" prop="actividadEconomica">
@@ -458,7 +458,7 @@
                 $refs.llaveDosificacion.onFieldBlur();
               }
             "
-            :maxLength="250"
+            :maxLength="256"
           />
         </a-form-model-item>
       </a-form-model>
@@ -602,6 +602,11 @@ export default {
           {
             required: true,
             message: "Debe registrar el N° de Autorización",
+            trigger: "blur",
+          },
+          {
+            min: 50,
+            message: "Mínimante la llave de dosificación debe ser mayor a 50",
             trigger: "blur",
           },
         ],
