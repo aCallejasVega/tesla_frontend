@@ -362,7 +362,13 @@ export default {
     getEstadoHistoricos() {
       ReportesRecaudacion.getEstadoHistoricos()
         .then((response) => {
-          this.estadoList = response.data.data;
+
+          console.log(JSON.stringify(response.data.data));
+          response.data.data.forEach((value)=>{
+            if(value.label!="POR PAGAR"){
+               this.estadoList.push(value); 
+            }
+          });
         })
         .catch((error) => {
           this.estadoList = [];

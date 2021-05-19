@@ -113,17 +113,15 @@
           </div>
         </template>
         <template slot="roles" slot-scope="text, record">
-         
-            <a-timeline>
-              <a-timeline-item
-                style="margin: 0px; padding: 0"
-                v-for="(rol, index) in record.rolTransferList"
-                :key="index"
-              >
-                <font size="2"> {{ rol.description }}   </font>
-              </a-timeline-item>
-            </a-timeline>
-       
+          <a-timeline>
+            <a-timeline-item
+              style="margin: 0px; padding: 0"
+              v-for="(rol, index) in record.rolTransferList"
+              :key="index"
+            >
+              <font size="2"> {{ rol.description }} </font>
+            </a-timeline-item>
+          </a-timeline>
         </template>
         <template slot="estado" slot-scope="text, record">
           <div v-if="record.estado == 'ACTIVO'">
@@ -215,6 +213,8 @@
         <a-row>
           <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
             <a-form-model-item
+              ref="materno"
+              prop="materno"
               label="Ap. Materno :"
               :label-col="formItemTowLayout.labelCol"
               :wrapper-col="formItemTowLayout.wrapperCol"
@@ -223,6 +223,11 @@
                 placeholder="Apellido Materno"
                 v-model="form.materno"
                 :readOnly="dissabled"
+                @blur="
+                  () => {
+                    $refs.materno.onFieldBlur();
+                  }
+                "
               >
                 <a-icon slot="suffix" type="user" />
               </a-input>
@@ -230,8 +235,8 @@
           </a-col>
           <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
             <a-form-model-item
-              ref="extensionDocumentoId"
-              prop="extensionDocumentoId"
+              ref="nroDocumento"
+              prop="nroDocumento"
               label="Nro. Doc. :"
               :label-col="formItemTowLayout.labelCol"
               :wrapper-col="formItemTowLayout.wrapperCol"
@@ -256,11 +261,6 @@
                   style="width: 40%"
                   v-model="form.extensionDocumentoId"
                   :disabled="dissabled"
-                  @blur="
-                    () => {
-                      $refs.extensionDocumentoId.onFieldBlur();
-                    }
-                  "
                 >
                   <a-select-option
                     v-for="(extension, index) in extensionDocumentoList"
@@ -324,6 +324,8 @@
           </a-col>
           <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
             <a-form-model-item
+              ref="telefono"
+              prop="telefono"
               label="Teléfono :"
               :label-col="formItemTowLayout.labelCol"
               :wrapper-col="formItemTowLayout.wrapperCol"
@@ -332,6 +334,11 @@
                 placeholder="Teléfono"
                 v-model="form.telefono"
                 :readOnly="dissabled"
+                @blur="
+                  () => {
+                    $refs.telefono.onFieldBlur();
+                  }
+                "
               >
                 <a-icon slot="suffix" type="phone" />
               </a-input>
@@ -393,18 +400,25 @@
             </a-form-model-item>
           </a-col>
         </a-row>
-        <a-row v-if="subModulo == 'ADMIN'">
+        <!---a-row v-if="subModulo == 'ADMIN'">
           <a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
             <a-form-model-item
+            ref="correoElectronico"
+              prop="correoElectronico"
               label="Es Administrador "
               :label-col="formItemTowLayout.labelCol"
               :wrapper-col="formItemTowLayout.wrapperCol"
               :readOnly="dissabled"
             >
-              <a-switch v-model="form.esAdmin" :disabled="dissabled" />
+              <a-switch v-model="form.esAdmin" :disabled="dissabled" 
+               @blur="
+                  () => {
+                    $refs.correoElectronico.onFieldBlur();
+                  }
+                "/>
             </a-form-model-item>
           </a-col>
-        </a-row>
+        </a-row-->
       </a-form-model>
 
       <template slot="footer">
@@ -648,28 +662,39 @@ export default {
       privilegiosDesActivar: [],
       entidadesList: [],
       recaudadorasList: [],
+      selectedRowsList:[],
       rules: {
         nombres: [
           {
             required: true,
-            message: "Debe registrar el nombre",
+            message: "Debe registrar el nombre.",
             trigger: "blur",
           },
           {
             min: 2,
-            message: "Mínimante el nombre debe tener 2 caracteres",
+            max: 149,
+            message: "El rango de caracteres debe ser de 2 a 150.",
             trigger: "blur",
           },
         ],
         paterno: [
           {
             required: true,
-            message: "Debe registrar el apellido paterno",
+            message: "Debe registrar el apellido paterno.",
             trigger: "blur",
           },
           {
             min: 2,
-            message: "Mínimante el nombre debe tener 2 caracteres",
+            max: 99,
+            message: "El rango de caracteres debe ser de 2 a 100.",
+            trigger: "blur",
+          },
+        ],
+        materno: [
+          {
+            min: 2,
+            max: 99,
+            message: "El rango de caracteres debe ser de 2 a 100.",
             trigger: "blur",
           },
         ],
@@ -677,26 +702,21 @@ export default {
         direccion: [
           {
             required: true,
-            message: "Debe registrar la dirección",
+            message: "Debe registrar la dirección.",
             trigger: "blur",
           },
           {
             min: 5,
-            message: "Mínimante la dirección debe tener 5 caracteres",
+            max: 199,
+            message: "El rango de caracteres debe ser de 5 a 200.",
             trigger: "blur",
           },
         ],
         nroDocumento: [
           {
-            required: true,
-            message: "Debe registrar el Nro. de documento.",
-            trigger: "blur",
-          },
-          {
             min: 7,
             max: 10,
-            message:
-              "El Nro. de documento contener al menos 5 caracteres y máximo 10",
+            message: "El rango de caracteres debe ser de 7 a 10.",
             trigger: "blur",
           },
         ],
@@ -710,8 +730,30 @@ export default {
         correoElectronico: [
           {
             required: true,
+            type: "email",
+            message: "Debe registrar Correo Electrónico valido.",
+            trigger: "change",
+          },
+          {
+            min: 5,
+            max: 99,
+            message: "El rango de caracteres debe ser de 5 a 100.",
+            trigger: "blur",
+          },
+        ],
+        entidadId: [
+          {
+            required: true,
             message: "Debe registrar Correo Electronico.",
             trigger: "change",
+          },
+        ],
+        telefono: [
+          {
+            min: 5,
+            max: 10,
+            message: "El rango de caracteres debe ser de 5 a 100.",
+            trigger: "blur",
           },
         ],
       },
@@ -724,7 +766,9 @@ export default {
       return {
         type: "radio",
         onChange: (selectedRowKeys, selectedRows) => {
-          this.selectPersona = selectedRows[0];
+          this.selectedRowsList=selectedRows;
+          this.selectPersona = selectedRows[0];          
+          this.estado = this.selectPersona.estado;
           this.getOperaciones("PERSONAS", this.selectPersona.estado);
         },
       };
@@ -769,6 +813,7 @@ export default {
     getOperaciones(tablaId, estadoInicial) {
       AdminUsuarios.getOperaciones(tablaId, estadoInicial)
         .then((response) => {
+          console.log(JSON.stringify(response.data.data));
           this.operacionesList = response.data.data;
         })
         .catch((error) => {
@@ -782,15 +827,16 @@ export default {
       this.selectPersona = {};
       this.formBusqueda.modulo = this.modulo;
       this.formBusqueda.subModulo = this.subModulo;
-    
+      this.data = [];
+      this.selectedRowsList=[];
       AdminUsuarios.findPersonas(this.formBusqueda)
         .then((response) => {
           this.data = response.data.data.content;
           this.loadingTable = false;
-          this.selectPersona = {};
+          this.selectedRowsList=[];
+       
         })
         .catch((error) => {
-          
           this.data = [];
           this.loadingTable = false;
           //this.$notification.error(error.response.data.message);
@@ -877,6 +923,21 @@ export default {
     procesarOperacion() {
       switch (this.transaccion) {
         case "CREAR":
+          if (this.subModulo == "ADMIN") {
+            if (this.form.entidadId == null && this.form.recaudadorId == null) {
+              this.$notification.warning(
+                "Debe seleccionar una Entidad o Recaudadora."
+              );
+              return;
+            }
+          }
+          if (this.subModulo == "ADM_RECAUDACION") {
+            if (this.form.sucursalId == null) {
+              this.$notification.warning("Debe seleccionar una Sucursal.");
+              return;
+            }
+          }
+
           this.$refs.ruleForm.validate((valid) => {
             if (valid) {
               this.$confirm({
@@ -894,8 +955,23 @@ export default {
             }
           });
 
+          this.getOperaciones("PERSONAS", "CREADO");
           break;
         case "MODIFICAR":
+          if (this.subModulo == "ADMIN") {
+            if (this.form.entidadId == null && this.form.recaudadorId == null) {
+              this.$notification.warning(
+                "Debe seleccionar una Entidad o Recaudadora."
+              );
+              return;
+            }
+          }
+          if (this.subModulo == "ADM_RECAUDACION") {
+            if (this.form.sucursalId == null) {
+              this.$notification.warning("Debe seleccionar una Sucursal.");
+              return;
+            }
+          }
           this.$refs.ruleForm.validate((valid) => {
             if (valid) {
               this.$confirm({
@@ -912,7 +988,7 @@ export default {
               });
             }
           });
-
+         
           break;
         case "ACTIVAR":
           this.$confirm({
@@ -927,7 +1003,7 @@ export default {
               this.cambiarEstadoPersona();
             },
           });
-
+          this.getOperaciones("PERSONAS", "ACTIVO");
           break;
         case "DESACTIVAR":
           this.$confirm({
@@ -942,7 +1018,7 @@ export default {
               this.cambiarEstadoPersona();
             },
           });
-
+          this.getOperaciones("PERSONAS", "INACTIVO");
           break;
         case "ELIMINAR":
           this.$confirm({
@@ -957,10 +1033,11 @@ export default {
               this.cambiarEstadoPersona();
             },
           });
-
+          this.getOperaciones("PERSONAS", "ELIMINADO");
           break;
         case "VISUALIZAR":
           this.visibleModalRegitro = false;
+           this.getOperaciones("PERSONAS", "CREADO");
           break;
       }
     },
@@ -980,10 +1057,12 @@ export default {
       this.form.subModulo = this.subModulo;
       AdminUsuarios.savePersona(this.form)
         .then((response) => {
+          console.log(JSON.stringify(response.data.data));
           this.findPersonas(1);
           this.visibleModalRegitro = false;
-          this.selectPersona = {};
-          this.getOperaciones("PERSONAS", "INICIAL");
+
+          this.getOperaciones("PERSONAS", "CREADO");
+
           this.$notification.success(response.data.message);
           this.$refs["ruleForm"].resetFields();
         })
@@ -995,10 +1074,14 @@ export default {
       this.form.modulo = this.modulo;
       AdminUsuarios.updatePersona(this.form)
         .then((response) => {
+         
+          this.form=response.data.data;
+          
           this.findPersonas(1);
           this.visibleModalRegitro = false;
-          this.selectPersona = {};
-          this.getOperaciones("PERSONAS", "INICIAL");
+           
+          this.getOperaciones("PERSONAS", this.form.estado);
+
           this.$notification.success(response.data.message);
           this.$refs["ruleForm"].resetFields();
         })
@@ -1010,10 +1093,12 @@ export default {
       this.form.modulo = this.modulo;
       AdminUsuarios.cambiarEstadoPersona(this.form)
         .then((response) => {
+
+
           this.findPersonas(1);
           this.visibleModalRegitro = false;
-          this.selectPersona = {};
-          this.getOperaciones("PERSONAS", "INICIAL");
+          this.getOperaciones("PERSONAS", this.selectPersona.estado);
+
           this.$notification.success(response.data.message);
         })
         .catch((error) => {
@@ -1026,8 +1111,7 @@ export default {
         AdminUsuarios.getSucursalesByRecaudadora()
           .then((response) => {
             this.sucursalesRecaudadorList = response.data.data;
-            this.selectPersona = {};
-            this.getOperaciones("PERSONAS", "INICIAL");
+            // this.getOperaciones("PERSONAS", this.selectPersona.estado);
           })
           .catch((error) => {
             this.sucursalesRecaudadorList = [];
@@ -1036,7 +1120,7 @@ export default {
     },
     esSessionEntidad() {
       let url = this.$route.fullPath;
-      
+
       switch (url) {
         case "/AdminUsuarios/ADMIN":
           this.modulo = "ADMIN";
@@ -1051,8 +1135,6 @@ export default {
           this.subModulo = "ADM_RECAUDACION";
           break;
       }
-
-      
     },
     viewCredenciales(record) {
       this.visibleModalCredenciales = true;
@@ -1067,7 +1149,7 @@ export default {
           this.findPersonas(1);
         })
         .catch((error) => {
-          this.$notification.success(error.response.data.message);
+          this.$notification.error(error.response.data.message);
         });
     },
     viewVisibleModalRoles(record) {
@@ -1086,7 +1168,6 @@ export default {
       AdminUsuarios.getModuloUsuario()
         .then((response) => {
           this.moduloUsuario = response.data.data;
-          
         })
         .catch((error) => {});
     },

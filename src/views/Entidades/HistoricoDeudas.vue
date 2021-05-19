@@ -335,6 +335,7 @@ export default {
         })
         .catch((error) => {
           this.data = [];
+          this.loadingTable = false;
         });
     },
     showModal(archivoId) {

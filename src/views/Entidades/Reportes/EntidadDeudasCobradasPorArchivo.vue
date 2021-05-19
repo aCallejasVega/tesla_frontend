@@ -284,6 +284,7 @@ export default {
       recaudadoresList: [],
       link: null,
       loadingTable: false,
+      viewCargando:false,
     };
   },
   created() {
