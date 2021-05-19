@@ -259,7 +259,7 @@
               :xl="10"
               class="labelTittle"
             >
-              Fecha vigencia Emision
+              Fecha vigencia Emisión
             </a-col>
             <a-col
               :xs="24"
@@ -281,7 +281,7 @@
               :xl="10"
               class="labelTittle"
             >
-              Fecha Límite Emision
+              Fecha Límite Emisión
             </a-col>
             <a-col
               :xs="24"
@@ -431,11 +431,6 @@
             format="DD/MM/YYYY"
             :locale="locale"
             v-model="dosificacionObj.fechaVigencia"
-            @blur="
-              () => {
-                $refs.fechaVigencia.onFieldBlur();
-              }
-            "
           />
         </a-form-model-item>
         <a-form-model-item ref="fechaLimiteEmision" label="Fecha Límite Emisión" prop="fechaLimiteEmision">
@@ -443,11 +438,6 @@
             format="DD/MM/YYYY"
             :locale="locale"
             v-model="dosificacionObj.fechaLimiteEmision"
-            @blur="
-              () => {
-                $refs.fechaLimiteEmision.onFieldBlur();
-              }
-            "
           />
         </a-form-model-item>
         <a-form-model-item ref="llaveDosificacion" label="Llave de Dosificación" prop="llaveDosificacion">
@@ -504,7 +494,7 @@ const columns = [
     width: "40%",
   }, 
   {
-    title: "LLave Dosificacion",
+    title: "LLave Dosificación",
     dataIndex: "llaveDosificacion",
     //fixed: "right",
     scopedSlots: { customRender: "dosificacion" },
@@ -586,7 +576,7 @@ export default {
           {
             required: true,
             message: "Debe registrar la Fecha de Vigencia de la Dosificación.",
-            trigger: "blur",
+            trigger: "change",
           },
           
         ],
@@ -594,21 +584,22 @@ export default {
           {
             required: true,
             message: "Debe registrar la Fecha Límite Emisión",
-            trigger: "blur",
+            trigger: "change",
           },
           
         ],
         llaveDosificacion: [
           {
-            required: true,
-            message: "Debe registrar el N° de Autorización",
+            min: 50,
+            message: "Mínimante la llave de dosificación debe tener 50 caracteres",
             trigger: "blur",
           },
           {
-            min: 50,
-            message: "Mínimante la llave de dosificación debe ser mayor a 50",
+            required: true,
+            message: "Debe registrar la llave de dosificación",
             trigger: "blur",
           },
+          
         ],
         monedaId: [
           {
@@ -622,39 +613,6 @@ export default {
             required: true,
             message: "Debe seleccionar un Tipo de Documento Fiscal",
             trigger: "change",
-          },
-        ],
-        direccion: [
-          {
-            required: true,
-            message: "Debe registrar la dirección",
-            trigger: "blur",
-          },
-          {
-            min: 5,
-            message: "Mínimante la dirección debe tener 5 caracteres",
-            trigger: "blur",
-          },
-        ],
-        telefono: [
-          {
-            required: true,
-            message: "Debe registrar el teléfono",
-            trigger: "blur",
-          },
-          {
-            min: 7,
-            max: 10,
-            message:
-              "El teléfono debe contener al menos 7 caracteres y máximo 10",
-            trigger: "blur",
-          },
-        ],
-        llaveDosificacion: [
-          {
-            required: true,
-            message: "Debe registrar la Llave de Dosificación",
-            trigger: "blur",
           },
         ],
       },
@@ -1029,6 +987,13 @@ export default {
     onSubmit() {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
+          if(this.dosificacionObj.fechaVigencia > this.dosificacionObj.fechaLimiteEmision) {
+            this.$notification.warning(
+              "La Fecha Límite de Emisión debe ser mayor o igual a la Fecha de Vigencia"
+            );
+            return false;
+          }
+
           this.guardarDosificacion(this.dosificacionObj);
         } else {
           console.log("error submit!!");

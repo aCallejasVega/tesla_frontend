@@ -295,7 +295,8 @@
       :footer="null"
      
     >
-      <Credenciales :entidadId="entidadIdSelect" :sucursalEntidadId="sucursalEntidadIdSelect" />
+      <Credenciales :entidadId="entidadIdSelect" :sucursalEntidadId="sucursalEntidadIdSelect" 
+        @closeComponent="closeComponente"/>
     </a-modal>
   </div>
 </template>
@@ -768,7 +769,12 @@ export default {
       this.displayModalCredenciales = true;
       this.entidadIdSelect = entidadId;
       this.sucursalEntidadIdSelect = sucursalEntidadId;
+    },
+
+    closeComponente(value) {
+      this.displayModalCredenciales = value;
     }
+    
     
   },
 };

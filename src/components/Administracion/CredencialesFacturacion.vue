@@ -69,7 +69,8 @@ export default {
             trigger: "blur",
           },
         ],
-      }
+        
+      },
     }
   },
   mounted() {
@@ -90,17 +91,22 @@ export default {
         }
 
         this.credencialesFacturacionObj = r.data.result;
+        
+        
+
       }).catch((error) => {
           console.log(error);
           this.$notification.error(error.response.data.message, error.response.data.code);
           this.credencialesFacturacionObj = {};
       });
+      
     },
     guardarCredenciales(obj) {
       this.$Progress.start();
       obj.entidadId = this.entidadId;
       obj.sucursalEntidadId = this.sucursalEntidadId;
       SucursalesEntidades.putCredencialesFacturacion(obj).then((r) => {
+        this.$emit('closeComponent', false);
         this.$notification.success(r.data.message);
         this.$Progress.finish();
       }).catch((error) => {

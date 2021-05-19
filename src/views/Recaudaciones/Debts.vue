@@ -62,15 +62,6 @@
 
       <!-- Lista de Deudas-->
       <div v-if="displayCliente">
-        <!--
-        <a-row type="flex" justify="space-around">
-          <a-col :xs="24" :sm="24" :md="24" :lg="24" align="right">
-            <a-button type="primary" @click="reload" size="small">
-              Nueva Búsqueda
-            </a-button>
-          </a-col>
-        </a-row>
-        <br />-->
         <div class="titulo-tabla">
           <a-row>
             <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:6}" :lg="{span:3}">
@@ -265,7 +256,7 @@
       </div>
       <template slot="actions" class="ant-card-actions">
         <a-tooltip placement="top" title="Registra cobro de deudas">
-          <a-button
+          <a-button v-if="lstServiciosDeudas.length > 0"  
             type="link"
             :disabled="!selectedRowKeys.length > 0"
             @click="confirmCobro"
@@ -425,6 +416,8 @@
       height="400px"
       :dialog-style="{ top: '20px' }"
       @ok="visibleModalReporte = false"
+      :maskClosable="true"
+      :closable="false"
     >
       <a-row type="flex" justify="center">
         <a-spin
@@ -438,7 +431,7 @@
       </a-row>
 
       <template slot="footer">
-        <a-button key="back" @click="visibleModalReporte = false">
+        <a-button key="back" @click="closeReporte">
           Cerrar
         </a-button>
       </template>
@@ -776,14 +769,15 @@ export default {
         this.displayModal = false;
         return;
       }
-      
+
+      /*
       if(!this.verificarPrelacion(this.selectedRowKeys)) {
         this.$notification.warning(
           "Existe Deudas que deben ser cobradas antes de las seleccionadas."
         );
         this.displayModal = false;
         return;
-      }
+      }*/
 
       this.displayModal = true;
     },
@@ -794,18 +788,20 @@ export default {
     },
     cobrarDeudas(e) {
       this.$Progress.start();
+
+      this.displayModal = false;
+      this.visibleModalReporte = true;
+
+
       this.clienteDto.montoTotalCobrado = this.sumTotal;
+      this.viewCargando = true;
       PaymentDebts.cobrarDeudas(this.clienteDto, 5) //Debe ser Ctte = 5
         .then((r) => {
           this.viewFileDownload(r);
-          //this.$notification.success(r.data.message);
-
+          
           //debe actualizar las deudas
           this.cargarServicioDeudas();
           this.inicializar();
-          this.displayModal = false;
-
-          this.visibleModalReporte = true;
           this.$Progress.finish();
         })
         .catch((error) => {
@@ -813,7 +809,7 @@ export default {
           this.cargarServicioDeudas();
           this.inicializar();
           //
-          this.displayModal = false;
+          this.visibleModalReporte = false;
           /*this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -822,6 +818,9 @@ export default {
           this.$Progress.fail();
         });
     },
+    /*******************************************
+     *Reporte
+     *******************************************/
     viewFileDownload(response) {
       var file = new Blob([response.data], {
         type: "application/pdf",
@@ -829,18 +828,21 @@ export default {
       this.link = URL.createObjectURL(file);
       this.viewCargando = false;
     },
-
+    closeReporte() {
+      this.visibleModalReporte = false;
+      this.link = null;
+    },
+   
+    /*******************************************
+     * Otros
+     *******************************************/
     ab2str(buf) {
-      //return String.fromCharCode.apply(null, new Uint16Array(buf));
       var binaryString = '', bytes = new Uint8Array(buf), length = bytes.length;
       for(var i=0; i<length; i++) {
         binaryString += String.fromCharCode(bytes[i]);
       }
       return binaryString;
     },
-    /*******************************************
-     * Otros
-     *******************************************/
     reload() {
       location.reload();
     },

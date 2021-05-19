@@ -1,10 +1,5 @@
 <template>
   <div>
-    {{entidadId}}<br/>
-    <!--
-    
-    {{opcion}}
-    ll:{{title}}-->
     <a-card style="width: 100%">
       <div
         style="
@@ -159,31 +154,6 @@
       </template>
     </a-card>
     <br/>
-    <a-card style="width: 100%">
-      <!--
-      <template slot="actions" class="ant-card-actions" v-if="lstFacturas.length > 0">
-        <a-button type="link" @click="abrirModalAnulacion" v-if="opcion.anular == true"
-          style="
-              height: 50px;
-              background-color: #ff3333;"
-              >
-               <span :style="{ fontSize: '14px', color:'white'  }">
-              <b> <a-icon type="stop" :style="{ fontSize: '22px' }" />
-                Anular</b>
-            </span>
-        </a-button>
-        <a-button type="link" @click="generarLibroVentas" v-if="opcion.libro == true" 
-        style="
-              height: 50px;
-              background-color: #33bbbb;"> 
-              <span :style="{ fontSize: '14px', color:'white'  }">
-              <b> <a-icon type="file-text" :style="{ fontSize: '22px' }" />
-                 Generar Libro Ventas </b>
-            </span>
-          
-          </a-button>
-      </template>-->
-    </a-card>
     <a-card style="width: 100%">
       <!--:row-selection="rowSelection"-->
       <a-table
@@ -844,6 +814,8 @@ export default {
           this.cargarFacturasFiltros(0);
           this.displayModal = false;
           this.$Progress.stop();
+
+          this.motivo = null;
         })
         .catch((error) => {
           this.lstFacturas = [];
@@ -853,6 +825,7 @@ export default {
             error.response.data.message,
             error.response.data.code
           );
+          this.motivo = null;
           this.$Progress.fail();
         });
     },
@@ -896,14 +869,12 @@ export default {
     generarLibroVentas() {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {  
-          console.log("ire");
           this.mensajeVisible = false;
           this.link = null;
           this.viewCargando = true;
           Invoices.postLibroVentasReport(this.facturaObj)
             .then((r) => {
               console.log(this.facturaObj.formatFile);
-              //this.viewFileDownload(r);
               this.viewCargando = false;
               if (r.status == 200) {
                 if (this.facturaObj.formatFile == "pdf") {
