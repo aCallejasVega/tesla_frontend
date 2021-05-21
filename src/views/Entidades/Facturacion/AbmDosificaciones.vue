@@ -423,7 +423,7 @@
                 $refs.numeroAutorizacion.onFieldBlur();
               }
             "
-            :maxLength="20"
+            :maxLength="15"
           />
         </a-form-model-item>
         <a-form-model-item ref="fechaVigencia" label="Fecha Vigencia Emisión" prop="fechaVigencia">
@@ -474,7 +474,7 @@ import Dosificaciones from "../../../service/Facturacion/Dosages.service";
 import SucursalesEntidades from "../../../service/Administraciones/SucursalEntidad.service";
 import locale from "ant-design-vue/es/date-picker/locale/es_ES";
 import Sidebar from "../../../service/Home/Sidebar.service";
-
+import moment from "moment";
 
 const sorter = (data) => {
   return data.slice().sort((a, b) => b.dosificacionId - a.dosificacionId);
@@ -588,7 +588,7 @@ export default {
           },
           
         ],
-        llaveDosificacion: [
+        llaveDosificacion: [  
           {
             min: 50,
             message: "Mínimante la llave de dosificación debe tener 50 caracteres",
@@ -987,8 +987,12 @@ export default {
     onSubmit() {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
-          if(this.dosificacionObj.fechaVigencia > this.dosificacionObj.fechaLimiteEmision) {
-            this.$notification.warning(
+
+          let f1 = moment(this.dosificacionObj.fechaVigencia).startOf('day');
+          let f2 = moment(this.dosificacionObj.fechaLimiteEmision).startOf('day');
+
+          if(f1 > f2) {
+          this.$notification.warning(
               "La Fecha Límite de Emisión debe ser mayor o igual a la Fecha de Vigencia"
             );
             return false;
