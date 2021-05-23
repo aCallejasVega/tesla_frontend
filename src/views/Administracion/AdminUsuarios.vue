@@ -46,9 +46,15 @@
       <a-table
         :columns="columns"
         :data-source="data"
+        :pagination="pagination"
         align="center"
         :loading="loadingTable"
-        :row-selection="rowSelection"
+        :row-selection="{
+          type: 'radio',
+          selectedRowKeys: selectedRowKeys,
+          selectedRows: selectedRows,
+          onChange: onSelectChange,
+        }"
       >
         <template slot="nombreCompleto" slot-scope="text, record">
           <font size="2">
@@ -71,10 +77,7 @@
                 <th>TELÉFONO :</th>
                 <td>{{ record.telefono }}</td>
               </tr>
-              <tr>
-                <th>DIRECCIÓN :</th>
-                <td>{{ record.direccion }}</td>
-              </tr>
+              
               <tr v-if="record.nombreEntidad != null">
                 <th>ENTIDAD :</th>
                 <td>
@@ -84,7 +87,7 @@
                 </td>
               </tr>
               <tr v-if="record.nombreRecaudadora != null">
-                <th>Recaudador :</th>
+                <th>RECAUDADOR :</th>
                 <td>
                   <a-tag color="cyan">
                     <a-icon type="caret-up" />
@@ -116,10 +119,10 @@
           <a-timeline>
             <a-timeline-item
               style="margin: 0px; padding: 0"
-              v-for="(rol, index) in record.rolTransferList"
+              v-for="(privilegio, index) in record.privilegioEntities"
               :key="index"
             >
-              <font size="2"> {{ rol.description }} </font>
+              <font size="2"> {{ privilegio.descripcion }} </font>
             </a-timeline-item>
           </a-timeline>
         </template>
@@ -484,11 +487,29 @@
       :dialog-style="{ top: '20px' }"
       :width="700"
     >
+      <a-row v-if="this.subModulo == 'ADMIN'">
+        <a-col type="flex" justify="space-around" align="middle">
+          <a-form-item>
+            <a-select
+              v-model="moduloId"
+              style="width: 50%"
+              @change="findPrivilegiosByModuloId()"
+            >
+              <a-select-option
+                v-for="item in modulosList"
+                v-bind:value="item.moduloId"
+                v-bind:key="item.moduloId"
+                >{{ item.descripcion }}</a-select-option
+              >
+            </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
       <a-row type="flex" justify="center" align="top">
         <a-col>
           <a-transfer
             :data-source="mockData"
-            :titles="['Roles por Asignar', 'Roles asignados']"
+            :titles="['Roles por Asignar', 'Roles Asignados']"
             :target-keys="targetKeys"
             :selected-keys="selectedKeys"
             :render="(item) => item.title"
@@ -647,6 +668,8 @@ export default {
       transaccion: "",
       modulo: "",
       subModulo: "",
+      moduloId: null,
+      modulosList: [],
       sucursalmoduloList: [],
       sucursalesRecaudadorList: [],
       visibleModalCredenciales: false,
@@ -657,12 +680,12 @@ export default {
       privilegiosAsignar: [],
       privilegiosAsignados: [],
       privilegiosKey: [],
-
+      usuarioModulos:{},
       privilegiosActivar: [],
       privilegiosDesActivar: [],
       entidadesList: [],
       recaudadorasList: [],
-      selectedRowsList:[],
+      selectedRowsList: [],
       rules: {
         nombres: [
           {
@@ -752,17 +775,19 @@ export default {
           {
             min: 5,
             max: 10,
-            message: "El rango de caracteres debe ser de 5 a 100.",
+            message: "El rango de caracteres debe ser de 5 a 10.",
             trigger: "blur",
           },
         ],
       },
+      selectedRowKeys: [],
+      selectedRows: null,
     };
   },
   computed: {
     ...mapGetters("AdmStore", ["getform"]),
 
-    rowSelection() {
+    /* rowSelection() {
       return {
         type: "radio",
         onChange: (selectedRowKeys, selectedRows) => {
@@ -772,9 +797,10 @@ export default {
           this.getOperaciones("PERSONAS", this.selectPersona.estado);
         },
       };
-    },
+    },*/
   },
   created() {
+    this.findModulos();
     this.esSessionEntidad();
     this.findAllEntidad();
     this.findAllRecaudadoras();
@@ -794,6 +820,13 @@ export default {
   methods: {
     ...mapActions("AdmStore", ["almacenarDataStore"]),
 
+    onSelectChange(selectedRowKeys, selectedRows) {
+      
+
+      this.selectedRowKeys = selectedRowKeys;
+      this.selectPersona = selectedRows[0];
+      this.getOperaciones("PERSONAS", this.selectPersona.estado);
+    },
     handleChange(nextTargetKeys, direction, moveKeys) {
       this.targetKeys = nextTargetKeys;
 
@@ -813,7 +846,7 @@ export default {
     getOperaciones(tablaId, estadoInicial) {
       AdminUsuarios.getOperaciones(tablaId, estadoInicial)
         .then((response) => {
-          console.log(JSON.stringify(response.data.data));
+          
           this.operacionesList = response.data.data;
         })
         .catch((error) => {
@@ -828,13 +861,19 @@ export default {
       this.formBusqueda.modulo = this.modulo;
       this.formBusqueda.subModulo = this.subModulo;
       this.data = [];
-      this.selectedRowsList=[];
+      this.selectedRowsList = [];
       AdminUsuarios.findPersonas(this.formBusqueda)
         .then((response) => {
           this.data = response.data.data.content;
+          this.pagination.pageSize = response.data.data.numberOfElements;
+          this.pagination.total = response.data.data.totalElements;
+          
+
           this.loadingTable = false;
-          this.selectedRowsList=[];
-       
+          this.selectedRowsList = [];
+          this.selectedRowKeys = [];
+          this.selectPersona = {};
+          this.getOperaciones("PERSONAS", "INICIAL");
         })
         .catch((error) => {
           this.data = [];
@@ -844,6 +883,7 @@ export default {
     },
     prepararOperacion(operacion) {
       this.getSucursalesByRecaudadora();
+      this.form = {};
       switch (operacion.transaccion) {
         case "CREAR":
           this.visibleModalRegitro = true;
@@ -889,7 +929,7 @@ export default {
           break;
         case "DESACTIVAR":
           this.visibleModalRegitro = true;
-          this.tituloModal = "REGISTRO DE NUEVA PERSONA";
+          this.tituloModal = "DESACTIVAR PERSONA";
           this.dissabled = true;
           this.labelButton = operacion.etiqueta;
           this.imagenButton = operacion.imagen;
@@ -899,7 +939,7 @@ export default {
           break;
         case "ELIMINAR":
           this.visibleModalRegitro = true;
-          this.tituloModal = "REGISTRO DE NUEVA PERSONA";
+          this.tituloModal = "ELIMINAR PERSONA";
           this.dissabled = true;
           this.labelButton = operacion.etiqueta;
           this.imagenButton = operacion.imagen;
@@ -909,7 +949,7 @@ export default {
           break;
         case "VISUALIZAR":
           this.visibleModalRegitro = true;
-          this.tituloModal = "REGISTRO DE NUEVA PERSONA";
+          this.tituloModal = "DATOS DE LA PERSONA";
           this.dissabled = true;
           this.labelButton = operacion.etiqueta;
           this.imagenButton = operacion.imagen;
@@ -988,7 +1028,7 @@ export default {
               });
             }
           });
-         
+
           break;
         case "ACTIVAR":
           this.$confirm({
@@ -1037,7 +1077,7 @@ export default {
           break;
         case "VISUALIZAR":
           this.visibleModalRegitro = false;
-           this.getOperaciones("PERSONAS", "CREADO");
+          this.getOperaciones("PERSONAS", "CREADO");
           break;
       }
     },
@@ -1057,7 +1097,7 @@ export default {
       this.form.subModulo = this.subModulo;
       AdminUsuarios.savePersona(this.form)
         .then((response) => {
-          console.log(JSON.stringify(response.data.data));
+          
           this.findPersonas(1);
           this.visibleModalRegitro = false;
 
@@ -1074,12 +1114,11 @@ export default {
       this.form.modulo = this.modulo;
       AdminUsuarios.updatePersona(this.form)
         .then((response) => {
-         
-          this.form=response.data.data;
-          
+          this.form = response.data.data;
+
           this.findPersonas(1);
           this.visibleModalRegitro = false;
-           
+
           this.getOperaciones("PERSONAS", this.form.estado);
 
           this.$notification.success(response.data.message);
@@ -1093,8 +1132,6 @@ export default {
       this.form.modulo = this.modulo;
       AdminUsuarios.cambiarEstadoPersona(this.form)
         .then((response) => {
-
-
           this.findPersonas(1);
           this.visibleModalRegitro = false;
           this.getOperaciones("PERSONAS", this.selectPersona.estado);
@@ -1111,7 +1148,7 @@ export default {
         AdminUsuarios.getSucursalesByRecaudadora()
           .then((response) => {
             this.sucursalesRecaudadorList = response.data.data;
-            // this.getOperaciones("PERSONAS", this.selectPersona.estado);
+            
           })
           .catch((error) => {
             this.sucursalesRecaudadorList = [];
@@ -1125,14 +1162,17 @@ export default {
         case "/AdminUsuarios/ADMIN":
           this.modulo = "ADMIN";
           this.subModulo = "ADMIN";
+          
           break;
         case "/AdminUsuarios/COBROS/ADM_ENTIDADES":
           this.modulo = "COBROS";
           this.subModulo = "ADM_ENTIDADES";
+          
           break;
         case "/AdminUsuarios/COBROS/ADM_RECAUDACION":
           this.modulo = "COBROS";
           this.subModulo = "ADM_RECAUDACION";
+          
           break;
       }
     },
@@ -1155,13 +1195,30 @@ export default {
     viewVisibleModalRoles(record) {
       this.personaId = record.personaId;
 
-      this.findRolesForTransfer(this.subModulo, this.modulo);
+      //this.findRolesForTransfer(this.subModulo, this.modulo);
 
-      this.findRolesForTransferByUsuario(
+      /*this.findRolesForTransferByUsuario(
         this.subModulo,
         this.modulo,
         record.usuarioId
-      );
+      );*/
+      this.moduloId=null;
+      this.modulosList=[];
+      this.mockData=[];
+      this.targetKeys=[];
+
+
+
+      this.findPrivilegiosByUsuarioId(record.usuarioId);
+
+      if( this.subModulo != "ADMIN"){
+        this.findPrivilegiosByUsuarioIdSession();
+        this.findModuloByUsuarioSession();
+      }else{
+        this.findModuloByUsuarioId(record.usuarioId);
+        this.findModulos();
+      }
+           
       this.visibleModalRoles = true;
     },
     getModuloUsuario() {
@@ -1179,18 +1236,21 @@ export default {
         })
         .catch((error) => {});
     },
-    findRolesForTransfer(subModulo, modulo) {
+    /*findRolesForTransfer(subModulo, modulo) {
       AdminUsuarios.findRolesForTransfer(subModulo, modulo)
         .then((response) => {
           this.mockData = response.data.data;
           this.privilegiosAsignar = response.data.data;
         })
         .catch((error) => {});
-    },
+    },*/
     guardarRoles() {
       let datosRoles = {};
       datosRoles.privilegiosKey = this.privilegiosKey;
       datosRoles.personaId = this.personaId;
+      datosRoles.moduloId = this.moduloId;
+      
+ 
       AdminUsuarios.savePrivilegio(datosRoles)
         .then((response) => {
           this.visibleModalRoles = false;
@@ -1220,6 +1280,78 @@ export default {
           this.recaudadorasList = [];
         });
     },
+
+    findModulos() {
+      this.modulosList = [];
+      AdminUsuarios.findModulos()
+        .then((response) => {
+          this.modulosList = response.data.data;
+        })
+        .catch((error) => {
+          this.modulosList = [];
+        });
+    },
+    findPrivilegiosByModuloId() {
+      
+      AdminUsuarios.findPrivilegiosByModuloId(this.moduloId)
+        .then((response) => {
+          this.mockData = response.data.data;
+        })
+        .catch((error) => {
+          this.mockData = [];
+        });
+    },
+    findPrivilegiosByUsuarioId(usuarioId) {
+      this.targetKeys = [];
+      
+      AdminUsuarios.findPrivilegiosByUsuarioId(usuarioId)
+        .then((response) => {
+      
+          this.targetKeys = response.data.data;
+        })
+        .catch((error) => {
+          this.targetKeys = [];
+        });
+    },
+    findModuloByUsuarioId(usuarioId) {
+      this.usuarioModulos = {};      
+      AdminUsuarios.findModuloByUsuarioId(usuarioId)
+        .then((response) => {          
+
+          this.usuarioModulos = response.data.data;
+          this.moduloId=this.usuarioModulos.moduloId;   
+          this.findPrivilegiosByModuloId();       
+        })
+        .catch((error) => {
+          this.usuarioModulos = {};
+        });
+    },
+
+  findModuloByUsuarioSession() {
+      this.usuarioModulos = {};
+      
+      AdminUsuarios.findModuloByUsuarioSession()
+        .then((response) => {
+          
+
+          this.usuarioModulos = response.data.data;
+          this.moduloId=this.usuarioModulos.moduloId;             
+        })
+        .catch((error) => {
+          this.usuarioModulos = {};
+        });
+    },
+
+    findPrivilegiosByUsuarioIdSession() {
+      AdminUsuarios.findPrivilegiosByUsuarioIdSession(this.subModulo)
+        .then((response) => {
+          this.mockData = response.data.data;     
+        })
+        .catch((error) => {
+          this.mockData = {};
+        });
+    },
+    
   },
 };
 </script>

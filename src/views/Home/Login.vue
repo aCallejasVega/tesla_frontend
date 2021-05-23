@@ -83,6 +83,7 @@ export default {
   methods: {
     login() {
       // this.usuario.username = this.usuario.username.toUpperCase();
+     
       loginServices
         .login(this.usuario)
         .then((response) => {

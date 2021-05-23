@@ -152,7 +152,7 @@
         :loading="loadingTable"
       >
         <template slot="estado" slot-scope="text, record">
-          <div v-if="record.estado == 'COBRADAS'">
+          <div v-if="record.estado == 'COBRADOS'">
             <a-tag color="green">
               <a-icon type="check" :style="{ fontSize: '15px' }" />
               {{ record.estado }}
@@ -328,6 +328,7 @@ export default {
     };
   },
   created() {
+    console.log(JSON.stringify());
     this.findDeudasByParameterForReport(1);
     this.getEstadoHistoricos();
     this.getRecaudadores();

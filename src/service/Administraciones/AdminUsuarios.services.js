@@ -28,13 +28,13 @@ export default {
     return Api().get(`api/dominios/ciudad_id`, this.headersConfig());
   },
   savePersona(form) {
-    return Api().post(`api/personas/savePersona`,form, this.headersConfig());
+    return Api().post(`api/personas/savePersona`, form, this.headersConfig());
   },
   updatePersona(form) {
-    return Api().post(`api/personas/updatePersona`,form, this.headersConfig());
+    return Api().post(`api/personas/updatePersona`, form, this.headersConfig());
   },
   cambiarEstadoPersona(form) {
-    return Api().post(`api/personas/cambiarEstado`,form, this.headersConfig());
+    return Api().post(`api/personas/cambiarEstado`, form, this.headersConfig());
   },
   getSucursalesByEntidad() {
     return Api().get(`api/sucursalesentidades/entidades`, this.headersConfig());
@@ -43,28 +43,51 @@ export default {
     return Api().get(`api/sucursales/findByRecaudadoraId`, this.headersConfig());
   },
   generarCredenciales(personaId) {
-    return Api().post(`api/personas/generarCredenciales/${personaId}`,{}, this.headersConfig());
+    return Api().post(`api/personas/generarCredenciales/${personaId}`, {}, this.headersConfig());
   },
   generarCredenciales(personaId) {
-    return Api().post(`api/personas/generarCredenciales/${personaId}`,{}, this.headersConfig());
+    return Api().post(`api/personas/generarCredenciales/${personaId}`, {}, this.headersConfig());
   },
-  findRolesForTransfer(subModulo,modulo) {
-    return Api().get(`api/Rol/findRolesForTransfer/${subModulo}/${modulo}`,this.headersConfig());
+  findRolesForTransfer(subModulo, modulo) {
+    return Api().get(`api/Rol/findRolesForTransfer/${subModulo}/${modulo}`, this.headersConfig());
   },
-  findRolesForTransferByUsuario(subModulo,modulo,usuarioId) {
+  findRolesForTransferByUsuario(subModulo, modulo, usuarioId) {
     return Api().get(`api/Rol/findRolesForTransferByUsuario/${subModulo}/${modulo}/${usuarioId}`, this.headersConfig());
   },
   getModuloUsuario() {
     return Api().get(`api/Rol/getModuloUsuario`, this.headersConfig());
   },
   savePrivilegio(datosRoles) {
-    return Api().post(`api/Rol/savePrivilegio`,datosRoles,this.headersConfig());
+    return Api().post(`api/Rol/savePrivilegio`, datosRoles, this.headersConfig());
   },
   findAllEntidad() {
-    return Api().get(`api/entidades/findAllEntidad`,this.headersConfig());
+    return Api().get(`api/entidades/findAllEntidad`, this.headersConfig());
   },
   findAllRecaudadoras() {
-    return Api().get(`api/recaudadores/findAllRecaudadoras`,this.headersConfig());
+    return Api().get(`api/recaudadores/findAllRecaudadoras`, this.headersConfig());
   },
+  findModulos() {
+    return Api().get(`api/Rol/findModulos`, this.headersConfig());
+  },
+  findPrivilegiosByModuloId(moduloId) {
+    return Api().get(`api/Rol/findPrivilegiosByModuloId/${moduloId}`, this.headersConfig());
+  },
+
+  findPrivilegiosByUsuarioId(usuarioId) {
+    return Api().get(`api/Rol/findPrivilegiosByUsuarioId/${usuarioId}`, this.headersConfig());
+  },
+
+  findModuloByUsuarioId(usuarioId) {
+    return Api().get(`api/Rol/findModuloByUsuarioId/${usuarioId}`, this.headersConfig());
+  },
+
+  findPrivilegiosByUsuarioIdSession(subModulo) {
+    return Api().get(`api/Rol/findPrivilegiosByUsuarioIdForTransfer/${subModulo}`, this.headersConfig());
+  },
+
+  findModuloByUsuarioSession() {
+    return Api().get(`api/Rol/findModuloByUsuarioSession`, this.headersConfig());
+  },
+
 
 };
