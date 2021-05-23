@@ -411,18 +411,18 @@
 
     <a-modal
       v-model="visibleModalReporte"
-      title="Reporte Generado"
+      title="Documento Generado"
       width="900px"
       height="400px"
       :dialog-style="{ top: '20px' }"
       @ok="visibleModalReporte = false"
-      :maskClosable="true"
-      :closable="false"
+      @cancel="link = null"
+      :closable="true"
     >
       <a-row type="flex" justify="center">
         <a-spin
           size="large"
-          tip="El reporte se esta cargando...."
+          tip="Cargando Factura...."
           v-if="viewCargando"
         >
         </a-spin>
