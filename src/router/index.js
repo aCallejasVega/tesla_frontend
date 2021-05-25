@@ -236,7 +236,7 @@ const routes = [
         component: AbmSucursalesEntidades,
         meta: {
           libre: false,
-          rol: []
+          rol: ['ROLE_ADMINISTRACION']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
@@ -252,7 +252,7 @@ const routes = [
         component: AbmRecaudadores,
         meta: {
           libre: false,
-          rol: ["ROLE_ADMINISTRACION"]
+          rol: ['ROLE_ADMINISTRACION']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
@@ -268,7 +268,7 @@ const routes = [
         component: AbmSucursales,
         meta: {
           libre: false,
-          rol: []
+          rol: ['ROLE_ADMINISTRACION']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
