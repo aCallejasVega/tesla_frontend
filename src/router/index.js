@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import store from '../store';
 import home from "../views/Home/Home.vue";
 import Login from "../views/Home/Login.vue";
 import UploadFile from "../views/Entidades/UploadFile.vue";
@@ -51,7 +52,8 @@ const routes = [
     name: "home",
     component: home,
     meta: {
-      libre: false
+      libre: false,
+      rol: []
     },
     children: [
 
@@ -60,7 +62,8 @@ const routes = [
         name: "index",
         component: Index,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
         }
       },
 
@@ -69,7 +72,15 @@ const routes = [
         name: "UploadFile",
         component: UploadFile,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCAECA']
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -77,8 +88,16 @@ const routes = [
         name: "HistoricoDeudas",
         component: HistoricoDeudas,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCAEAH']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
 
       },
       {
@@ -86,55 +105,111 @@ const routes = [
         name: "HistoricoDeudasDetalle",
         component: HistoricoDeudasDetalle,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/ReporteDeudasEntidades",
         name: "ReporteDeudasEntidades",
         component: ReporteDeudasEntidades,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/EntidadDeudasCobradasPorArchivo",
         name: "EntidadDeudasCobradasPorArchivo",
         component: EntidadDeudasCobradasPorArchivo,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCAERA']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/EntidadReportesDeudasCobradas",
         name: "EntidadReportesDeudasCobradas",
         component: EntidadReportesDeudasCobradas,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCAERG']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/RecaudacionReportesDeudasCobradas",
         name: "RecaudacionReportesDeudasCobradas",
         component: RecaudacionReportesDeudasCobradas,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCRGC']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/AdminReportesDeudasCobradas",
         name: "AdminReportesDeudasCobradas",
         component: AdminReportesDeudasCobradas,
         meta: {
-          libre: false
+          libre: false,
+          rol: ["ROLE_ADMINISTRACION"]
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/debts/:entidadId",
         name: "Debts",
         component: Debts,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCARC']
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -142,7 +217,17 @@ const routes = [
         name: "AbmEntidades",
         component: AbmEntidades,
         meta: {
-          libre: false
+          libre: false,
+          rol: [
+            "ROLE_ADMINISTRACION"
+          ]
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -150,7 +235,15 @@ const routes = [
         name: "AbmSucursalesEntidades",
         component: AbmSucursalesEntidades,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -158,7 +251,15 @@ const routes = [
         name: "AbmRecaudadores",
         component: AbmRecaudadores,
         meta: {
-          libre: false
+          libre: false,
+          rol: ["ROLE_ADMINISTRACION"]
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -166,7 +267,15 @@ const routes = [
         name: "AbmSucursales",
         component: AbmSucursales,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -174,7 +283,15 @@ const routes = [
         name: "UploadFileAbonos",
         component: UploadFileAbonos,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MPAPECA']
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -182,7 +299,15 @@ const routes = [
         name: "SearchServicios",
         component: SearchServicios,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -190,7 +315,15 @@ const routes = [
         name: "PaymentsServicios",
         component: PaymentsServicios,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -198,7 +331,15 @@ const routes = [
         name: "EntidadReportesPagos",
         component: EntidadReportesPagos,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -206,7 +347,15 @@ const routes = [
         name: "RecaudadoraReportesPagos",
         component: RecaudadoraReportesPagos,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -214,7 +363,15 @@ const routes = [
         name: "AdministracionReportesPagos",
         component: AdministracionReportesPagos,
         meta: {
-          libre: false
+          libre: false,
+          rol: ["ROLE_ADMINISTRACION"]
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
 
@@ -223,7 +380,15 @@ const routes = [
         name: "ReImpresionComprobantes",
         component: ReImpresionComprobantes,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MPAPRI']
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -231,7 +396,15 @@ const routes = [
         name: "AdminUsuarios/COBROS/ADM_ENTIDADES",
         component: AdminUsuarios,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCADAU']
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -239,7 +412,15 @@ const routes = [
         name: "AdminUsuarios/COBROS/ADM_RECAUDACION",
         component: AdminUsuarios,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCARAU']
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -247,16 +428,32 @@ const routes = [
         name: "AdminUsuarios/ADMIN",
         component: AdminUsuarios,
         meta: {
-          libre: false
+          libre: false,
+          rol: ["ROLE_ADMINISTRACION"]
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
-      
+
       {
         path: "/RegistroPersona",
         name: "RegistroPersona",
         component: RegistroPersona,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -264,7 +461,16 @@ const routes = [
         name: "RecaudacionReporteCajero",
         component: RecaudacionReporteCajero,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCARRCJ']
+
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
       },
       {
@@ -272,120 +478,234 @@ const routes = [
         name: "GenerateCodigoControl",
         component: GenerateCodigoControl,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
-      },  
+      },
       {
         path: "/SearchEntidadesDebts",
         name: "SearchEntidadesDebts",
         component: SearchEntidadesDebts,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCARC']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/LibroVentas",
         name: "LibroVentas",
         component: LibroVentas,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCLV']
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
         }
-      }, 
+      },
       {
         path: "/ListInvoices/:entidadId",
         name: "ListInvoicesA",
         component: ListInvoicesA,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/ListInvoices/:entidadId",
         name: "ListInvoicesAR",
         component: ListInvoicesAR,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/ListInvoices/:entidadId",
         name: "ListInvoicesR",
         component: ListInvoicesR,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/SearchEntidadesInvoicesA",
         name: "SearchEntidadesInvoicesA",
         component: SearchEntidadesInvoicesA,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCRA']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/SearchEntidadesInvoicesAR",
         name: "SearchEntidadesInvoicesAR",
         component: SearchEntidadesInvoicesAR,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCRRA']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/SearchEntidadesInvoicesR",
         name: "SearchEntidadesInvoicesR",
         component: SearchEntidadesInvoicesR,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCARA']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/Dosificaciones",
         name: "Dosificaciones",
         component: Dosificaciones,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCED']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/RegCredenciales",
         name: "RegCredenciales",
         component: RegCredenciales,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/RegCredenciales",
         name: "RegCredenciales",
         component: RegCredenciales,
         meta: {
-          libre: false
+          libre: false,
+          rol: []
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/AdmEntSucursalEntidades",
         name: "AdmEntSucursalEntidades",
         component: AdmEntSucursalEntidades,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCAEAE']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
       {
         path: "/AdmRecSucursales",
         name: "AdmRecSucursales",
         component: AdmRecSucursales,
         meta: {
-          libre: false
+          libre: false,
+          rol: ['ROLES_MCARA']
         },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
       },
-
-
-
-
-
-      
-          
+      {
+        path: "*",
+        name: "index",
+        component: Index,
+        meta: {
+          libre: false,
+          rol: []
+        }
+      },
     ]
   },
   {
@@ -393,7 +713,17 @@ const routes = [
     name: "login",
     component: Login,
     meta: {
-      libre: true
+      libre: true,
+      rol: []
+    }
+  },
+  {
+    path: "*",
+    name: "login",
+    component: Login,
+    meta: {
+      libre: true,
+      rol: []
     }
   }
 ];
@@ -406,8 +736,8 @@ const router = new VueRouter({
 
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem("token");
 
+  const token = localStorage.getItem("token");
   if (to.matched.some(record => record.meta.libre)) {
     next();
   } else if (token) {
@@ -415,8 +745,7 @@ router.beforeEach((to, from, next) => {
     if (exp < (new Date().getTime() + 1) / 1000) {
       localStorage.clear();
       next({ name: "login" });
-    } else {
-
+    } else {   
       next();
     }
   } else {
@@ -424,4 +753,18 @@ router.beforeEach((to, from, next) => {
   }
 });
 
+
+function tienePermiso(to, from, next) {
+  let bandera = false;
+  store.state.authorities.forEach((autorities) => {
+    to.meta.rol.forEach((rol) => {
+      if (autorities == rol) {
+        bandera = true;
+        return true;
+      }
+    });
+  });
+  return bandera;
+
+}
 export default router;

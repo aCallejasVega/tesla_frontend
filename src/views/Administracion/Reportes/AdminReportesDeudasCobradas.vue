@@ -244,18 +244,19 @@ const columns = [
     scopedSlots: { customRender: "nombreComercial" },
   },
   {
+    title: "Tipo Servicio",
+    dataIndex: "tipoServicio",
+    key: "tipoServicio",
+    width: "12%",
+  },
+  {
     title: "Servicio",
     dataIndex: "servicio",
     key: "servicio",
     width: "10%",
     scopedSlots: { customRender: "servicio" },
   },
-  {
-    title: "Tipo Servicio",
-    dataIndex: "tipoServicio",
-    key: "tipoServicio",
-    width: "12%",
-  },
+  
   {
     title: "Periodo",
     dataIndex: "periodo",

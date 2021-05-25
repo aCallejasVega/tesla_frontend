@@ -358,7 +358,7 @@ export default {
       ReportesEntidad.getEstadoHistoricos()
         .then((response) => {
           this.estadoList = response.data.data;
-          console.log(JSON.stringify(this.estadoList));
+          
         })
         .catch((error) => {
           this.estadoList = [];
@@ -419,7 +419,7 @@ export default {
       ReportesEntidad.getRecaudadoresByEntidad()
         .then((response) => {
           this.recaudadoresList = response.data.data;
-          console.log(JSON.stringify(this.recaudadoresList));
+          
         })
         .catch((error) => {
           this.recaudadoresList = [];

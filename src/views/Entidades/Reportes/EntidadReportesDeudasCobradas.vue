@@ -164,6 +164,12 @@
               {{ record.estado }}
             </a-tag>
           </div>
+           <div v-if="record.estado == 'ANULADO'">
+            <a-tag color="red">
+              <a-icon type="exclamation-circle" :style="{ fontSize: '15px' }" />
+              {{ record.estado }}
+            </a-tag>
+          </div>
         </template>
       </a-table>
     </a-card>
@@ -232,18 +238,19 @@ import moment from "moment";
 import "moment/locale/es";
 
 const columns = [
+  
+  {
+    title: "Tipo Servicio",
+    dataIndex: "tipoServicio",
+    key: "tipoServicio",
+    width: "12%",
+  },
   {
     title: "Servicio",
     dataIndex: "servicio",
     key: "servicio",
     width: "10%",
     scopedSlots: { customRender: "servicio" },
-  },
-  {
-    title: "Tipo Servicio",
-    dataIndex: "tipoServicio",
-    key: "tipoServicio",
-    width: "12%",
   },
   {
     title: "Periodo",
@@ -328,7 +335,7 @@ export default {
     };
   },
   created() {
-    console.log(JSON.stringify());
+    
     this.findDeudasByParameterForReport(1);
     this.getEstadoHistoricos();
     this.getRecaudadores();
