@@ -44,6 +44,7 @@
               <a-select
                 v-model="facturaObj.estado"
                 placeholder="Seleccione Tipo Entidad"
+                :allowClear="true"
               >
                 <a-select-option
                   v-for="(item, i) in lstEstados"
@@ -118,6 +119,32 @@
                 "
               />
             </a-form-model-item>
+          </a-col>
+        </a-row>
+        
+        <a-row type="flex">
+          <a-col span="12">
+            <a-form-model-item
+              ref="codigoActividadEconomica"
+              label="Actividad Económica"
+              prop="codigoActividadEconomica"
+            >
+              <a-select
+                v-model="facturaObj.codigoActividadEconomica"
+                placeholder="Seleccione Actividad Economica"
+                :allowClear="true"
+              >
+                <a-select-option
+                  v-for="(item, i) in lstActividadesEconomicas"
+                  :key="i"
+                  :value="item.codigoActividadEconomica"
+                >
+                  {{ item.codigoActividadEconomica }} - {{ item.actividadEconomica }}
+                </a-select-option>
+              </a-select>
+              
+            </a-form-model-item>
+            
           </a-col>
         </a-row>
       </a-form-model>
@@ -229,7 +256,29 @@
               :xl="14"
               class="labelValue"
             >
-              {{ record.actividadEconomica }}
+              {{record.codigoActividadEconomica}} - {{ record.actividadEconomica }}
+            </a-col>
+          </a-row>
+          <a-row type="flex" v-if="record.codigoActividadEconomicaSecundaria != null">
+            <a-col
+              :xs="24"
+              :sm="24"
+              :md="24"
+              :lg="24"
+              :xl="10"
+              class="labelTittle"
+            >
+              Actividad Económica Secundaria
+            </a-col>
+            <a-col
+              :xs="24"
+              :sm="24"
+              :md="24"
+              :lg="24"
+              :xl="14"
+              class="labelValue"
+            >
+              {{record.codigoActividadEconomicaSecundaria}} - {{ record.actividadEconomicaSecundaria }}
             </a-col>
           </a-row>
         </template>
@@ -602,6 +651,7 @@ const columns = [
 
 import Entidades from "../../service/Administraciones/Entidad.service";
 import Invoices from "../../service/Facturacion/Invoices.service";
+import ActividadesEconomicas from "../../service/Facturacion/ActividadesEconomicasServices";
 import locale from "ant-design-vue/es/date-picker/locale/es_ES";
 import moment from "moment";
 
@@ -619,9 +669,10 @@ export default {
       /**Formulario */
       title: null,
       labelCol: { span: 6 },
-      wrapperCol: { span: 14 },
+      wrapperCol: { span: 15 },
       facturaObj: {},
       lstEstados: [],
+      lstActividadesEconomicas: [],
       locale,
       rules: {
         fechaInicioFactura: [
@@ -671,11 +722,11 @@ export default {
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
-          console.log(
+          /*console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             "selectedRows: ",
             selectedRows
-          );
+          );*/
           this.selectedRowKeys = selectedRowKeys;
         },
       };
@@ -684,6 +735,8 @@ export default {
   created() {
     this.cargarEstados();
     this.cargarEntidad(this.entidadId);
+
+    this.cargarActividadesEconomicas(this.entidadId);
 
     this.pagination = {
       total: this.total,
@@ -695,7 +748,7 @@ export default {
   methods: {
     /**DATOS INICIALS**/
     cargarEntidad(entidadId) {
-      console.log('Entidad=' + entidadId)
+      //console.log('Entidad=' + entidadId)
       if(entidadId != null) {
         Entidades.getEntidad(entidadId)
           .then((r) => {
@@ -703,7 +756,7 @@ export default {
             this.title = this.entidadObj.nombre + ": Facturas";
           })
           .catch((error) => {
-            console.log(error);
+            //console.log(error);
             this.$notification.error(
               error.response.data.message,
               error.response.data.code
@@ -715,17 +768,36 @@ export default {
     },
     cargarEstados() {
       this.lstEstados = [
-        { key: "", value: "Todo..." },
+        //{ key: "", value: "Todo..." },
         { key: "VALIDO", value: "VALIDO" },
         { key: "ANULADO", value: "ANULADO" },
       ];
+    },
+    cargarActividadesEconomicas(entidadId) {
+      ActividadesEconomicas.getActividadesEconomicas(entidadId).then((r) => { 
+          if (r.status === 204) {
+            this.lstActividadesEconomicas = [];
+            this.$notification.warning(
+              "No existe actvidad registrada con el código."
+            );
+            return;
+          }
+          this.lstActividadesEconomicas = r.data.result;
+        })
+        .catch((error) => {
+          //console.log(error);
+          this.lstActividadesEconomicas = [];
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
+        });
     },
     /**OPCIONES */
     cargarFacturasFiltros(page) {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.loading = true;
-
           Invoices.postListFacturaFilter(this.facturaObj, this.entidadId, page)
               .then((r) => {
                 if (r.status === 204) {
@@ -742,11 +814,10 @@ export default {
                 this.pagination.pageSize = r.data.result.numberOfElements;
                 this.pagination.total = r.data.result.totalElements;
 
-                console.log(this.pagination);
+                //console.log(this.pagination);
 
               })
               .catch((error) => {
-                console.log("errrr");
                 this.lstFacturas = [];
                 this.$notification.error(
                   error.response.data.message,
@@ -756,7 +827,7 @@ export default {
               });
 
         } else {
-          console.log("error submit!!");
+         // console.log("error submit!!");
           this.$notification.warning(
             "Debe resolver las validaciones del formulario."
           );
@@ -774,7 +845,7 @@ export default {
       this.facturaIdSelect = facturaId;
     },
     confirmarAnulacion() {
-      console.log(this.motivoAnulacion)
+     // console.log(this.motivoAnulacion)
       if(this.motivoAnulacion == null || this.motivoAnulacion == '') {
             this.$notification.warning("Debe registrar el motivo de la Anulación.");
             return;
@@ -813,7 +884,7 @@ export default {
           this.$notification.success(r.data.message);
           this.cargarFacturasFiltros(0);
           this.displayModal = false;
-          this.$Progress.stop();
+          this.$Progress.finish();
 
           this.motivo = null;
         })
@@ -838,10 +909,11 @@ export default {
           this.displayModalReport = true;
         })
         .catch((error) => {
-          this.$notification.error(
+          //console.log(error);
+          /*this.$notification.error(
             error.response.data.message,
             error.response.data.code
-          );
+          );*/
         });
     },
     forceFileDownload(response, fileName) {
@@ -859,7 +931,7 @@ export default {
       this.viewCargando = false;
     },
     viewFileDownload(response) {
-      console.log(this.facturaObj.formatFile)
+      //console.log(this.facturaObj.formatFile)
       var file = new Blob([response.data], {
         type: "application/" + this.facturaObj.formatFile,
       });
@@ -874,7 +946,7 @@ export default {
           this.viewCargando = true;
           Invoices.postLibroVentasReport(this.facturaObj)
             .then((r) => {
-              console.log(this.facturaObj.formatFile);
+              //console.log(this.facturaObj.formatFile);
               this.viewCargando = false;
               if (r.status == 200) {
                 if (this.facturaObj.formatFile == "pdf") {
@@ -894,7 +966,7 @@ export default {
             this.displayModalReport = true;
             this.displayModalTypeReport = false;
         } else {
-          console.log("error submit!!");
+          //console.log("error submit!!");
           this.$notification.warning(
             "Debe resolver las validaciones del formulario."
           );
@@ -905,7 +977,8 @@ export default {
     disabledDate(current) {
       let customDate = new Date();
       return current && current > moment(customDate, "YYYY-MM-DD");
-    }
+    },
+   
   },
 };
 </script>

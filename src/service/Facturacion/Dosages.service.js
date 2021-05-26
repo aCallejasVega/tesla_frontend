@@ -27,4 +27,5 @@ export default {
   getDosificacionesLstAlertas() {
     return Api().get(`api/dosificaciones/alertas`, this.headersConfig());
   },
+  
 };

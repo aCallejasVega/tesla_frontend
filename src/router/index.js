@@ -32,6 +32,8 @@ import RecaudacionReporteCajero from '../views/Recaudaciones/Reportes/Recaudacio
 
 import GenerateCodigoControl from "../views/Administracion/GenerateCodigoControl";
 import LibroVentas from "../views/Entidades/Facturacion/LibroVentas";
+import ReimpresionFacturas from "../views/Entidades/Facturacion/Reimpresion";
+
 import ListInvoicesA from "../views/Recaudaciones/Facturacion/ListInvoicesA";
 import ListInvoicesR from "../views/Recaudaciones/Facturacion/ListInvoicesR";
 import ListInvoicesAR from "../views/Recaudaciones/Facturacion/ListInvoicesAR";
@@ -479,7 +481,7 @@ const routes = [
         component: GenerateCodigoControl,
         meta: {
           libre: false,
-          rol: []
+          rol: ['ROLES_MCLV']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
@@ -522,12 +524,28 @@ const routes = [
         }
       },
       {
+        path: "/ReimpresionFacturas",
+        name: "ReimpresionFacturas",
+        component: ReimpresionFacturas,
+        meta: {
+          libre: false,
+          rol: ['ROLES_MCLV']
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
+      },
+      {
         path: "/ListInvoices/:entidadId",
         name: "ListInvoicesA",
         component: ListInvoicesA,
         meta: {
           libre: false,
-          rol: []
+          rol: ['ROLES_MCARA']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
@@ -543,7 +561,7 @@ const routes = [
         component: ListInvoicesAR,
         meta: {
           libre: false,
-          rol: []
+          rol: ['ROLES_MCARA']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
@@ -559,7 +577,7 @@ const routes = [
         component: ListInvoicesR,
         meta: {
           libre: false,
-          rol: []
+          rol: ['ROLES_MCARA']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
