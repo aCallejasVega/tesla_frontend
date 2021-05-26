@@ -332,7 +332,7 @@ const routes = [
         component: EntidadReportesPagos,
         meta: {
           libre: false,
-          rol: []
+          rol: ['ROLES_MPRGP']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {

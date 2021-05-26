@@ -11,11 +11,11 @@
         "
       >
         <div>
-          SIN
+         <!-- SIN
           <a-badge
             count="."
             :number-style="{ backgroundColor: '#52c41a', color: '#52c41a' }"
-          />
+          />-->
           <a-divider type="vertical" />
           {{ datos.nombreUsuario }}
           <a-divider type="vertical" />
