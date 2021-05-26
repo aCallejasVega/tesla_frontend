@@ -16,15 +16,6 @@ export default {
   postCodigoControl(codigoControlObj) {
     return Api().post(`api/facturas/codigoscontroles`, codigoControlObj, this.headersConfig());
   },
- /*
-  postListFacturaFilter(facturaObj, page) {
-    console.log('dentro');
-    return Api().post(`api/facturas/filters/${page}`, facturaObj, this.headersConfig());
-  },
-  postListFacturaFilterEntidad(facturaObj, entidadId, page) {
-    console.log('dentro');
-    return Api().post(`api/facturas/entidades/${entidadId}/filters/${page}`, facturaObj, this.headersConfig());
-  },*/
   postListFacturaFilter(facturaObj, entidadId, page) {
     if(entidadId != null) 
       return Api().post(`api/facturas/entidades/${entidadId}/filters/${page}`, facturaObj, this.headersConfig());
@@ -32,12 +23,21 @@ export default {
       return Api().post(`api/facturas/filters/${page}`, facturaObj, this.headersConfig());
   },
   getReportFactura(entidadId, facturaId) {
-    return Api().get(`api/facturas/entidades/${entidadId}/reportes/${facturaId}`, {
-      responseType: 'arraybuffer',
-      headers: {
-        'Accept': 'application/pdf',
-        Authorization: `Bearer `+localStorage.getItem("token")
-      }});
+    if(entidadId != null) {
+      return Api().get(`api/facturas/entidades/${entidadId}/reportes/${facturaId}`, {
+        responseType: 'arraybuffer',
+        headers: {
+          'Accept': 'application/pdf',
+          Authorization: `Bearer `+localStorage.getItem("token")
+        }});
+      } else {
+        return Api().get(`api/facturas/entidades/reportes/${facturaId}`, {
+          responseType: 'arraybuffer',
+          headers: {
+            'Accept': 'application/pdf',
+            Authorization: `Bearer `+localStorage.getItem("token")
+          }});
+      }
   },
 
   postAnulacionLst(entidadId,facturaLstObj) {

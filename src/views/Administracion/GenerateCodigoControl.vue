@@ -229,7 +229,7 @@ export default {
     FormatearFechaSinHoras(pFecha) {
       if (pFecha != null && pFecha != "")
         return moment(pFecha, "YYYY-MM-DDTHH:mm:ssZ").format("YYYY-MM-DD");
-      return "";
+      return null;
     },
     generarCodigoControl() {
       this.$refs.ruleForm.validate((valid) => {
