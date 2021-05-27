@@ -531,7 +531,6 @@ export default {
             nombreCliente: selectedRows[0].nombreCliente,
             servicioDeudaDtoList: [],
           };
-          //console.log(JSON.stringify(this.clienteDto));
           this.cargarServicioDeudas();
         },
       };
@@ -548,7 +547,6 @@ export default {
           this.selectedRowKeys = selectedRowKeys;
         },
         onSelect: (record, selected, selectedRows) => {
-//          console.log(record, selected, selectedRows);
           //calcular suma
           this.sumTotal = 0;
           this.sumTotal = selectedRows.reduce((tot, current) => {
@@ -562,8 +560,6 @@ export default {
           //console.log(JSON.stringify(this.clienteDto));
         },
         onSelectAll: (selected, selectedRows, changeRows) => {
-          //console.log("onSelectAll");
-          //console.log(selected, selectedRows, changeRows);
           //calcular total
           this.sumTotal = 0;
           this.sumTotal = selectedRows.reduce((tot, current) => {

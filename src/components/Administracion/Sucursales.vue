@@ -356,11 +356,11 @@ export default {
         //type: "radio",
         selectedRowKeys: this.selectedRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
-          console.log(
+          /*console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             "selectedRows: ",
             selectedRows
-          );
+          );*/
           this.selectedRowKeys = selectedRowKeys;
 
           //Opciones
@@ -390,9 +390,7 @@ export default {
     /**Menú */
     cargarOpcionesByEstado(estadoInicial) {
       Sidebar.getOpcionesByEstado("SUCURSALES", estadoInicial).then((r) => {
-        console.log(r);
         this.lstOpciones = r.data.data;
-        console.log(JSON.stringify(this.lstOpciones));
       });
     },
     seleccionarOpcion(opcion) {
@@ -422,12 +420,10 @@ export default {
               okType: "danger",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log('ok')
                 this.actualizaListaSucursalTransaccion(this.selectedRowKeys, "ELIMINAR");
                 //this.selectedRowKeys = [];
               },
               onCancel() {  
-                console.log('Cancel');
               },
               class: 'test',
             });
@@ -444,11 +440,9 @@ export default {
               okText: "Aceptar",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log('ok')
                 this.actualizaListaSucursalTransaccion(this.selectedRowKeys, "ACTIVAR");
               },
               onCancel() {  
-                console.log('Cancel');
               },
               class: 'test',
             });
@@ -466,11 +460,9 @@ export default {
               okType: "danger",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log('ok')
                 this.actualizaListaSucursalTransaccion(this.selectedRowKeys, "INACTIVAR");
               },
               onCancel() {  
-                console.log('Cancel');
               },
               class: 'test',
             });
@@ -520,7 +512,6 @@ export default {
         this.$notification.success(r.data.message);
         this.$Progress.finish();
       }).catch((error) => {
-        console.log(error)
         this.$notification.error(error.response.data.message, error.response.data.code);
         this.$Progress.fail();
       });
@@ -545,7 +536,6 @@ export default {
 
         this.lstDepartamentos = r.data.result;
       }).catch((error) => {
-          console.log(error);
           this.lstDepartamentos = [];
           this.$notification.error(error.response.data.message, error.response.data.code);
         });
@@ -560,7 +550,6 @@ export default {
 
         this.lstLocalidades = r.data.result;
       }).catch((error) => {
-          console.log(error);
           this.lstLocalidades = [];
           this.$notification.error(error.response.data.message, error.response.data.code);
         });
@@ -577,14 +566,12 @@ export default {
       this.sucursalObj.recaudadorId = this.recaudadorId;
       Sucursales.postSucursal(this.sucursalObj)
         .then((r) => {
-          console.log(r);
           this.displayForm = false;
           this.cargarSucursalesPorRecaudadora(this.recaudadorId);
           this.$notification.success(r.data.message);
           this.$Progress.finish();
         })
         .catch((error) => {
-          console.log(error);
           this.$notification.error(error.response.data.message, error.response.data.code);
           this.$Progress.fail();
         });
@@ -598,7 +585,6 @@ export default {
 
           this.selectedRowKeys = [];
         } else {
-          console.log("error submit!!");
           this.$notification.warning("Debe resolver las validaciones del formulario.");
           return false;
         }

@@ -19,7 +19,6 @@ export default {
     return Api().get(`api/recaudadores`, this.headersConfig());
   },
   postRecaudador(recaudadorObj) {
-    console.log(JSON.stringify(recaudadorObj))
     return Api().post(`api/recaudadores`, recaudadorObj, this.headersConfig());
   },
   putRecaudadorTransaccion(recaudadorId, transaccion) {

@@ -59,7 +59,7 @@ export default {
           this.$Progress.finish();
         })
         .catch((error) => {
-          (this.lstEntidades = []), console.log(error);
+          this.lstEntidades = [];
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -74,13 +74,11 @@ export default {
         okText: "Aceptar",
         cancelText: "Cancelar",
         onOk: () => {
-          console.log("ok");
           this.$router.push({
             name: "AbmEntidades",
           });
         },
         onCancel() {
-          console.log("Cancel");
         },
         class: "test",
       });

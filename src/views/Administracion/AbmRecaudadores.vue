@@ -390,11 +390,11 @@ export default {
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
-          console.log(
+          /*console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             "selectedRows: ",
             selectedRows
-          );
+          );*/
           this.selectedRowKeys = selectedRowKeys;
 
           //Opciones
@@ -424,9 +424,7 @@ export default {
     /**Menú */
     cargarOpcionesByEstado(estadoInicial) {
       Sidebar.getOpcionesByEstado("RECAUDADORES", estadoInicial).then((r) => {
-        console.log(r);
         this.lstOpciones = r.data.data;
-        console.log(JSON.stringify(this.lstOpciones));
       });
     },
     seleccionarOpcion(opcion) {
@@ -459,7 +457,6 @@ export default {
               okType: "danger",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log("ok");
                 this.actualizaListaRecaudadoresTransaccion(
                   this.selectedRowKeys,
                   "ELIMINAR"
@@ -467,7 +464,6 @@ export default {
             
               },
               onCancel() {
-                console.log("Cancel");
               },
               class: "test",
             });
@@ -487,14 +483,12 @@ export default {
               okText: "Aceptar",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log("ok");
                 this.actualizaListaRecaudadoresTransaccion(
                   this.selectedRowKeys,
                   "ACTIVAR"
                 );
               },
               onCancel() {
-                console.log("Cancel");
               },
               class: "test",
             });
@@ -515,14 +509,12 @@ export default {
               okType: "danger",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log("ok");
                 this.actualizaListaRecaudadoresTransaccion(
                   this.selectedRowKeys,
                   "INACTIVAR"
                 );
               },
               onCancel() {
-                console.log("Cancel");
               },
               class: "test",
             });
@@ -539,7 +531,6 @@ export default {
       this.loading = true;
       Recaudadores.getLstRecaudadores()
         .then((r) => {
-          console.log(r);
           if (r.status === 204) {
             this.lstRecaudadores = [];
             this.lstFilter = [];
@@ -549,7 +540,6 @@ export default {
             this.loading = false;
             return;
           }
-          console.log("aqui");
           this.lstRecaudadores = r.data.result;
           this.lstFilter = sorter(this.lstRecaudadores);
           this.countRows();
@@ -577,7 +567,6 @@ export default {
           this.$Progress.finish();
         })
         .catch((error) => {
-          console.log(error);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -598,7 +587,6 @@ export default {
           this.$Progress.finish();
         })
         .catch((error) => {
-          console.log(error);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -637,7 +625,6 @@ export default {
           this.lstTipoRecaudadores = r.data.result;
         })
         .catch((error) => {
-          console.log(error);
           this.lstTipoRecaudadores = [];
           this.$notification.error(
             error.response.data.message,
@@ -655,14 +642,12 @@ export default {
       this.$Progress.start();
       Recaudadores.postRecaudador(this.recaudadorObj)
         .then((r) => {
-          console.log(r);
           this.displayForm = false;
           this.cargarRecaudadores();
           this.$notification.success(r.data.message);
           this.$Progress.finish();
         })
         .catch((error) => {
-          console.log(error);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -678,7 +663,6 @@ export default {
 
           this.selectedRowKeys = [];
         } else {
-          console.log("error submit!!");
           this.$notification.warning(
             "Debe resolver las validaciones del formulario."
           );
@@ -708,13 +692,11 @@ export default {
         okText: "Aceptar",
         cancelText: "Cancelar",
         onOk: () => {
-          console.log("ok");
           this.$router.push({
             name: "AbmEntidades",
           });
         },
         onCancel() {
-          console.log("Cancel");
         },
         class: "test",
       });
@@ -731,7 +713,7 @@ export default {
           this.$Progress.finish();
         })
         .catch((error) => {
-          (this.lstRecaudadores = []), console.log(error);
+          this.lstRecaudadores = [];
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -755,7 +737,6 @@ export default {
     /**Filtrado */
     filterTable() {
       this.lstFilter = this.lstRecaudadores.filter((s) => {
-        console.log(this.search)
         if(this.search != null || this.search != '') {
           return s.nombre.toLowerCase().includes(this.search.toLowerCase()); 
         }  

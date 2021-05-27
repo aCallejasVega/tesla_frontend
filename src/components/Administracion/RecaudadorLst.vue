@@ -65,7 +65,7 @@ export default {
           this.$Progress.finish();
         })
         .catch((error) => {
-          (this.lstRecaudadores = []), console.log(error);
+          this.lstRecaudadores = [];
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -81,13 +81,11 @@ export default {
         okText: "Aceptar",
         cancelText: "Cancelar",
         onOk: () => {
-          console.log("ok");
           this.$router.push({
             name: "AbmRecaudadores",
           });
         },
         onCancel() {
-          console.log("Cancel");
         },
         class: "test",
       });

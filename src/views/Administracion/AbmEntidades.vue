@@ -654,11 +654,11 @@ export default {
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
-          console.log(
+          /*console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             "selectedRows: ",
             selectedRows
-          );
+          );*/
           this.selectedRowKeys = selectedRowKeys;
             
           //Opciones
@@ -722,7 +722,6 @@ export default {
               okType: "danger",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log("ok");
                 this.actualizaListaEntidadesTransaccion(
                   this.selectedRowKeys,
                   "ELIMINAR"
@@ -730,7 +729,6 @@ export default {
                 
               },
               onCancel() {
-                console.log("Cancel");
               },
               class: "test",
             });
@@ -750,14 +748,12 @@ export default {
               okText: "Aceptar",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log("ok");
                 this.actualizaListaEntidadesTransaccion(
                   this.selectedRowKeys,
                   "ACTIVAR"
                 );
               },
               onCancel() {
-                console.log("Cancel");
               },
               class: "test",
             });
@@ -778,14 +774,12 @@ export default {
               okType: "danger",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log("ok");
                 this.actualizaListaEntidadesTransaccion(
                   this.selectedRowKeys,
                   "INACTIVAR"
                 );
               },
               onCancel() {
-                console.log("Cancel");
               },
               class: "test",
             });
@@ -892,7 +886,6 @@ export default {
           this.lstTiposEntidades = r.data.result;
         })
         .catch((error) => {
-          console.log(error);
           this.lstTiposEntidades = [];
           this.$notification.error(
             error.response.data.message,
@@ -913,7 +906,6 @@ export default {
           this.lstActividadesEconomicas = r.data.result;
         })
         .catch((error) => {
-          console.log(error);
           this.lstActividadesEconomicas = [];
           this.$notification.error(
             error.response.data.message,
@@ -934,7 +926,6 @@ export default {
           this.lstMunicipios = r.data.result;
         })
         .catch((error) => {
-          console.log(error);
           this.lstMunicipios = [];
           this.$notification.error(
             error.response.data.message,
@@ -955,7 +946,6 @@ export default {
           this.lstModFacturaciones = r.data.result;
         })
         .catch((error) => {
-          console.log(error);
           this.lstModFacturaciones = [];
           this.$notification.error(
             error.response.data.message,
@@ -972,16 +962,12 @@ export default {
       this.$Progress.start();
       Entidades.postEntidad(this.entidadObj)
         .then((r) => {
-          console.log('si')
-          console.log(r);
           this.displayForm = false;
           this.cargarEntidades();
           this.$notification.success(r.data.message);
           this.$Progress.finish();
         })
         .catch((error) => {
-           console.log('no')
-          console.log(error.response.data);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -997,7 +983,6 @@ export default {
 
           this.selectedRowKeys = [];
         } else {
-          console.log("error submit!!");
           this.$notification.warning(
             "Debe resolver las validaciones del formulario."
           );
@@ -1024,7 +1009,7 @@ export default {
           this.$Progress.finish();
         })
         .catch((error) => {
-          (this.lstRecaudadores = []), console.log(error);
+          this.lstRecaudadores = [];
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -1063,7 +1048,6 @@ export default {
         
         if(logo != null)
           logo = "data:image/png;base64," + r.data;
-        console.log(logo);
         return logo;
       });
     },
@@ -1082,7 +1066,6 @@ export default {
      /**Filtrado */
     filterTable() {
       this.lstFilter = this.lstEntidades.filter((s) => {
-        console.log(this.search)
         if(this.search != null || this.search != '') {
           return s.nombre.toLowerCase().includes(this.search.toLowerCase()); 
         } 

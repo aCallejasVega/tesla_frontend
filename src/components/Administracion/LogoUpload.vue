@@ -31,7 +31,6 @@
 <script>
 /**Logo */
 function getBase64(img, callback) {
-  console.log(callback);
   const reader = new FileReader();
   reader.addEventListener("load", () => callback(reader.result));
   reader.readAsDataURL(img);

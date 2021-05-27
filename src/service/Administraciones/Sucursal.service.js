@@ -25,7 +25,6 @@ export default {
       return Api().get(`api/sucursales/recaudadores`, this.headersConfig());
   },
   postSucursal(sucursalObj) {
-    console.log(JSON.stringify(sucursalObj))
     return Api().post(`api/sucursales`, sucursalObj, this.headersConfig());
   },
   putSucursalTransaccion(sucursalId, transaccion) {

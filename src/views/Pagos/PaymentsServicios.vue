@@ -723,7 +723,6 @@ export default {
         })
         .catch((error) => {
           this.visibleModalReporte = false;
-          console.log(error.response);
           this.$notification.error(
             "Ocurrió un error en el servidor, por favor intente la operación más tarde o consulte con su administrador."
           );
