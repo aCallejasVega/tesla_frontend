@@ -905,6 +905,8 @@ export default {
             error.response.data.message,
             error.response.data.code
           );*/
+          this.$notification.error(this.ab2str(error.response.data));
+            
         });
     },
     forceFileDownload(response, fileName) {
@@ -951,6 +953,8 @@ export default {
               this.viewCargando = false;
               this.mensajeVisible = true;
               this.link = null;
+              this.$notification.error(this.ab2str(error.response.data));
+            
             });
             this.displayModalReport = true;
             this.displayModalTypeReport = false;
@@ -967,6 +971,14 @@ export default {
       return current && current > moment(customDate, "YYYY-MM-DD");
     },
    
+    ab2str(buf) {
+      var binaryString = '', bytes = new Uint8Array(buf), length = bytes.length;
+      for(var i=0; i<length; i++) {
+        binaryString += String.fromCharCode(bytes[i]);
+      }
+      return binaryString;
+    },
+
   },
 };
 </script>
