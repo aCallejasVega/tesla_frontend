@@ -38,8 +38,13 @@
           </a-col>
         </a-row>
       </div>
-
-
+      <!--
+      {{displayCliente}}<br/>
+      {{lstClientes}}<br/>
+      selectedRowKeys = {{selectedRowKeys}}<br/>
+      sumTotal =  {{sumTotal}}<br/>
+      efectivo = {{efectivo}}<br/>
+      search = {{search}}-->
       <br/>
       <div v-if="!displayCliente">
         <!--Lista de Clientes-->
@@ -68,7 +73,7 @@
               <b>CI/NIT:</b>
             </a-col>
             <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:12}" :lg="{span:12}">
-              <a-input v-model="clienteDto.nroDocumento" size="small" :maxLength="13" />
+              <a-input v-model="clienteDto.nroDocumento" size="small" :maxLength="12" />
             </a-col>
             <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:3}" :lg="{span:3}">
               <b>Código Cliente: </b>
@@ -840,7 +845,10 @@ export default {
       return binaryString;
     },
     reload() {
-      location.reload();
+      this.displayCliente = false;
+      this.lstClientes = [];
+      this.search = "";
+      this.inicializar();
     },
     resetear(record) {
       record.editando = false;
