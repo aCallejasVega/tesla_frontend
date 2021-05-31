@@ -237,7 +237,6 @@ export default {
 
           this.codigoControlObj.fechaFactura = this.FormatearFechaSinHoras(this.codigoControlObj.fechaFactura);
           this.$Progress.start();
-          console.log(JSON.stringify(this.codigoControlObj));
           Invoices.postCodigoControl(this.codigoControlObj)
             .then((r) => {
               this.codigoControl = r.data.result;
@@ -253,7 +252,6 @@ export default {
               this.$Progress.fail();
             });
         } else {
-          console.log("error submit!!");
           this.$notification.warning(
             "Debe resolver las validaciones del formulario."
           );

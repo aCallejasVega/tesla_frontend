@@ -83,7 +83,6 @@ export default {
   },
   methods: {
     cargarCredencial(sucursalEntidadId) {
-      console.log('se=' + sucursalEntidadId)
       SucursalesEntidades.getCredencialFacturacion(sucursalEntidadId).then((r) => {
         if(r.status === 204) {
           this.credencialesFacturacionObj = {};
@@ -95,7 +94,6 @@ export default {
         
 
       }).catch((error) => {
-          console.log(error);
           this.$notification.error(error.response.data.message, error.response.data.code);
           this.credencialesFacturacionObj = {};
       });
@@ -110,18 +108,15 @@ export default {
         this.$notification.success(r.data.message);
         this.$Progress.finish();
       }).catch((error) => {
-          console.log(error);
           this.$notification.error(error.response.data.message, error.response.data.code);
           this.$Progress.fail();
       });
     },
     onSubmit() {
       this.$refs.ruleFromCred.validate((valid) => {
-        console.log(valid);
         if (valid) {
           this.guardarCredenciales(this.credencialesFacturacionObj);
         } else {
-          console.log("error submit!!");
           this.$notification.warning("Debe resolver las validaciones del formulario.");
           return false;
         }

@@ -1008,7 +1008,6 @@ export default {
           this.$Progress.finish();
         })
         .catch((error) => {
-          //console.log(error);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -1039,7 +1038,6 @@ export default {
           this.lstMonedas = r.data.result;
         })
         .catch((error) => {
-          //console.log(error);
           this.lstMonedas = [];
           this.$notification.error(
             error.response.data.message,
@@ -1060,7 +1058,6 @@ export default {
           this.lstTipoDocumentoFiscal = r.data.result;
         })
         .catch((error) => {
-          //console.log(error);
           this.lstTipoDocumentoFiscal = [];
           this.$notification.error(
             error.response.data.message,
@@ -1081,7 +1078,6 @@ export default {
           this.lstCaracEspeciales = r.data.result;
         })
         .catch((error) => {
-          //console.log(error);
           this.lstCaracEspeciales = [];
           this.$notification.error(
             error.response.data.message,
@@ -1115,7 +1111,6 @@ export default {
           }
         })
         .catch((error) => {
-          //console.log(error);
           if (secundaria) this.actEcoSec = null;
           else this.actEco = null;
 
@@ -1162,7 +1157,6 @@ export default {
           this.$Progress.finish();
         })
         .catch((error) => {
-          //console.log(error);
           this.$notification.error(
             error.response.data.message,
             error.response.data.code
@@ -1188,7 +1182,6 @@ export default {
 
           this.guardarDosificacion(this.dosificacionObj);
         } else {
-          //console.log("error submit!!");
           this.$notification.warning(
             "Debe resolver las validaciones del formulario."
           );

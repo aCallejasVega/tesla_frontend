@@ -173,7 +173,7 @@
               background-color: #33bbbb;"> 
               <span :style="{ fontSize: '14px', color:'white'  }">
               <b> <a-icon type="file-text" :style="{ fontSize: '22px' }" />
-                 Generar Libro Ventas </b>
+                 Generar Impresión </b>
             </span>
           
           </a-button>
@@ -553,7 +553,7 @@
     </a-modal>
     <a-modal
       v-model="displayModalReport"
-      title="Libro Ventas"
+      title="Impresión"
       width="900px"
       height="400px"
       :dialog-style="{ top: '20px' }"
@@ -748,7 +748,6 @@ export default {
   methods: {
     /**DATOS INICIALS**/
     cargarEntidad(entidadId) {
-      //console.log('Entidad=' + entidadId)
       if(entidadId != null) {
         Entidades.getEntidad(entidadId)
           .then((r) => {
@@ -756,7 +755,6 @@ export default {
             this.title = this.entidadObj.nombre + ": Facturas";
           })
           .catch((error) => {
-            //console.log(error);
             this.$notification.error(
               error.response.data.message,
               error.response.data.code
@@ -785,7 +783,6 @@ export default {
           this.lstActividadesEconomicas = r.data.result;
         })
         .catch((error) => {
-          //console.log(error);
           this.lstActividadesEconomicas = [];
           this.$notification.error(
             error.response.data.message,
@@ -813,9 +810,6 @@ export default {
                 this.loading = false;
                 this.pagination.pageSize = r.data.result.numberOfElements;
                 this.pagination.total = r.data.result.totalElements;
-
-                //console.log(this.pagination);
-
               })
               .catch((error) => {
                 this.lstFacturas = [];
@@ -827,7 +821,6 @@ export default {
               });
 
         } else {
-         // console.log("error submit!!");
           this.$notification.warning(
             "Debe resolver las validaciones del formulario."
           );
@@ -845,7 +838,6 @@ export default {
       this.facturaIdSelect = facturaId;
     },
     confirmarAnulacion() {
-     // console.log(this.motivoAnulacion)
       if(this.motivoAnulacion == null || this.motivoAnulacion == '') {
             this.$notification.warning("Debe registrar el motivo de la Anulación.");
             return;
@@ -909,11 +901,12 @@ export default {
           this.displayModalReport = true;
         })
         .catch((error) => {
-          //console.log(error);
           /*this.$notification.error(
             error.response.data.message,
             error.response.data.code
           );*/
+          this.$notification.error(this.ab2str(error.response.data));
+            
         });
     },
     forceFileDownload(response, fileName) {
@@ -931,7 +924,6 @@ export default {
       this.viewCargando = false;
     },
     viewFileDownload(response) {
-      //console.log(this.facturaObj.formatFile)
       var file = new Blob([response.data], {
         type: "application/" + this.facturaObj.formatFile,
       });
@@ -946,7 +938,6 @@ export default {
           this.viewCargando = true;
           Invoices.postLibroVentasReport(this.facturaObj)
             .then((r) => {
-              //console.log(this.facturaObj.formatFile);
               this.viewCargando = false;
               if (r.status == 200) {
                 if (this.facturaObj.formatFile == "pdf") {
@@ -962,11 +953,12 @@ export default {
               this.viewCargando = false;
               this.mensajeVisible = true;
               this.link = null;
+              this.$notification.error(this.ab2str(error.response.data));
+            
             });
             this.displayModalReport = true;
             this.displayModalTypeReport = false;
         } else {
-          //console.log("error submit!!");
           this.$notification.warning(
             "Debe resolver las validaciones del formulario."
           );
@@ -979,6 +971,14 @@ export default {
       return current && current > moment(customDate, "YYYY-MM-DD");
     },
    
+    ab2str(buf) {
+      var binaryString = '', bytes = new Uint8Array(buf), length = bytes.length;
+      for(var i=0; i<length; i++) {
+        binaryString += String.fromCharCode(bytes[i]);
+      }
+      return binaryString;
+    },
+
   },
 };
 </script>

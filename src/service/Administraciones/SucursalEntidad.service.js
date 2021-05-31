@@ -19,14 +19,12 @@ export default {
     return Api().get(`api/sucursalesentidades`, this.headersConfig());
   },
   getLstSucursalEntidadByEntidadId(entidadId) {
-    console.log('*******' + entidadId);
     if(entidadId != null)
       return Api().get(`api/sucursalesentidades/entidades/${entidadId}`, this.headersConfig());
     else
       return Api().get(`api/sucursalesentidades/entidades`, this.headersConfig());
   },
   postSucursalEntidad(sucursalEntidadObj) {
-    console.log(JSON.stringify(sucursalEntidadObj))
     return Api().post(`api/sucursalesentidades`, sucursalEntidadObj, this.headersConfig());
   },
   putSucursalEntidadTransaccion(sucursalEntidadId, transaccion) {

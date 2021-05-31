@@ -38,8 +38,13 @@
           </a-col>
         </a-row>
       </div>
-
-
+      <!--
+      {{displayCliente}}<br/>
+      {{lstClientes}}<br/>
+      selectedRowKeys = {{selectedRowKeys}}<br/>
+      sumTotal =  {{sumTotal}}<br/>
+      efectivo = {{efectivo}}<br/>
+      search = {{search}}-->
       <br/>
       <div v-if="!displayCliente">
         <!--Lista de Clientes-->
@@ -68,7 +73,7 @@
               <b>CI/NIT:</b>
             </a-col>
             <a-col :xs="{span:24}" :sm="{span:14}" :md="{span:12}" :lg="{span:12}">
-              <a-input v-model="clienteDto.nroDocumento" size="small" :maxLength="13" />
+              <a-input v-model="clienteDto.nroDocumento" size="small" :maxLength="12" />
             </a-col>
             <a-col :xs="{span:24}" :sm="{span:10}" :md="{span:3}" :lg="{span:3}">
               <b>Código Cliente: </b>
@@ -531,7 +536,6 @@ export default {
             nombreCliente: selectedRows[0].nombreCliente,
             servicioDeudaDtoList: [],
           };
-          //console.log(JSON.stringify(this.clienteDto));
           this.cargarServicioDeudas();
         },
       };
@@ -548,7 +552,6 @@ export default {
           this.selectedRowKeys = selectedRowKeys;
         },
         onSelect: (record, selected, selectedRows) => {
-//          console.log(record, selected, selectedRows);
           //calcular suma
           this.sumTotal = 0;
           this.sumTotal = selectedRows.reduce((tot, current) => {
@@ -562,8 +565,6 @@ export default {
           //console.log(JSON.stringify(this.clienteDto));
         },
         onSelectAll: (selected, selectedRows, changeRows) => {
-          //console.log("onSelectAll");
-          //console.log(selected, selectedRows, changeRows);
           //calcular total
           this.sumTotal = 0;
           this.sumTotal = selectedRows.reduce((tot, current) => {
@@ -844,7 +845,10 @@ export default {
       return binaryString;
     },
     reload() {
-      location.reload();
+      this.displayCliente = false;
+      this.lstClientes = [];
+      this.search = "";
+      this.inicializar();
     },
     resetear(record) {
       record.editando = false;

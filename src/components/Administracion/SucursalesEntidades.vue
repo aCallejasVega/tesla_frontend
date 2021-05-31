@@ -153,12 +153,12 @@
             </a-col>
           </a-row>
         </template>
-         <template
+         <template 
           slot="opciones"
           slot-scope="text, record"
           v-if="(record.estado == 'ACTIVO' || record.estado == 'CREADO') && record.emiteFacturaTesla"
         >
-          <a href="javascript:; " @click="abrirModal(record.entidadId, record.sucursalEntidadId)">
+          <a href="javascript:; " @click="abrirModal(record.entidadId, record.sucursalEntidadId)" v-if="entidadId != null">
             Credenciales Facturacion
           </a>
         </template>
@@ -293,11 +293,11 @@
       :centered="true"
       :destroyOnClose="true"
       :footer="null"
-     
     >
       <Credenciales :entidadId="entidadIdSelect" :sucursalEntidadId="sucursalEntidadIdSelect" 
         @closeComponent="closeComponente"/>
     </a-modal>
+   
   </div>
 </template>
 <script>
@@ -497,11 +497,11 @@ export default {
         //type: "radio",
         selectedRowKeys: this.selectedRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
-          console.log(
+          /*console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             "selectedRows: ",
             selectedRows
-          );
+          );*/
           this.selectedRowKeys = selectedRowKeys;
            //Opciones
           const mismoEstado = [...new Set(selectedRows.map(i => i.estado))];
@@ -538,7 +538,6 @@ export default {
 
         this.lstDepartamentos = r.data.result;
       }).catch((error) => {
-          console.log(error);
           this.lstDepartamentos = [];
           this.$notification.error(error.response.data.message, error.response.data.code);
         });
@@ -553,7 +552,6 @@ export default {
 
         this.lstMunicipios = r.data.result;
       }).catch((error) => {
-          console.log(error);
           this.lstMunicipios = [];
           this.$notification.error(error.response.data.message, error.response.data.code);
         });
@@ -562,9 +560,7 @@ export default {
     /**Menú */
     cargarOpcionesByEstado(estadoInicial) {
       Sidebar.getOpcionesByEstado("SUCURSALES_ENTIDADES", estadoInicial).then((r) => {
-        console.log(r);
         this.lstOpciones = r.data.data;
-        console.log(JSON.stringify(this.lstOpciones));
       });
     },
     seleccionarOpcion(opcion) {
@@ -592,11 +588,9 @@ export default {
               okType: "danger",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log('ok')
                 this.actualizaListaSucursalEntidadTransaccion(this.selectedRowKeys, "ELIMINAR");
               },
               onCancel() {  
-                console.log('Cancel');
               },
               class: 'test',
             });
@@ -613,11 +607,9 @@ export default {
               okText: "Aceptar",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log('ok')
                 this.actualizaListaSucursalEntidadTransaccion(this.selectedRowKeys, "ACTIVAR");
               },
               onCancel() {  
-                console.log('Cancel');
               },
               class: 'test',
             });
@@ -635,11 +627,9 @@ export default {
               okType: "danger",
               cancelText: "Cancelar",
               onOk: () => {
-                console.log('ok')
                 this.actualizaListaSucursalEntidadTransaccion(this.selectedRowKeys, "INACTIVAR");
               },
               onCancel() {  
-                console.log('Cancel');
               },
               class: 'test',
             });
@@ -655,8 +645,6 @@ export default {
     cargarSucursalEntidadesPorEntidad(entidadId) {
       this.loading = true;
       SucursalesEntidades.getLstSucursalEntidadByEntidadId(entidadId).then((r) => {
-        console.log('cargar')
-        console.log(r)
         if(r.status === 204 ) {
           this.lstSucursalesEntidades = [];
           this.lstFilter = [];
@@ -688,7 +676,6 @@ export default {
         this.$notification.success(r.data.message);
         this.$Progress.finish();
       }).catch((error) => {
-        console.log(error)
         this.$notification.error(error.response.data.message, error.response.data.code);
         this.$Progress.fail();
       });
@@ -714,14 +701,12 @@ export default {
       this.sucursalEntidadObj.entidadId = this.entidadId;
       SucursalesEntidades.postSucursalEntidad(this.sucursalEntidadObj)
         .then((r) => {
-          console.log(r);
           this.displayForm = false;
           this.cargarSucursalEntidadesPorEntidad(this.entidadId);
           this.$notification.success(r.data.message);
           this.$Progress.finish();
         })
         .catch((error) => {
-          console.log(error);
           this.$notification.error(error.response.data.message, error.response.data.code);
           this.$Progress.fail();
         });
@@ -735,7 +720,6 @@ export default {
 
           this.selectedRowKeys = [];
         } else {
-          console.log("error submit!!");
           this.$notification.warning("Debe resolver las validaciones del formulario.");
           return false;
         }

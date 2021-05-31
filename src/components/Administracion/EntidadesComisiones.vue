@@ -175,11 +175,11 @@ export default {
       return {
         type: "radio",
         onChange: (selectedRowKeys, selectedRows) => {
-          console.log(
+          /*console.log(
             `selectedRowKeys: ${selectedRowKeys}`,
             "selectedRows: ",
             selectedRows
-          );
+          );*/
           this.selectedRowKeysComision = selectedRowKeys;
         },
         getCheckboxProps: record => ({
@@ -211,7 +211,6 @@ export default {
           this.lstTipoComisiones = r.data.result;
         })
         .catch((error) => {
-          console.log(error);
           this.lstTipoComisiones = [];
           this.$notification.error(
             error.response.data.message,
@@ -225,8 +224,6 @@ export default {
       this.displayFormComision = true;
     },
     editarEntidadComision() {
-      console.log(this.selectedRowKeysComision)
-      
        if (this.selectedRowKeysComision.length === 1) {
             this.cargarEntidadComision(this.selectedRowKeysComision);
             this.displayFormComision = true;
@@ -246,7 +243,6 @@ export default {
            this.loading = false;
         }
       ).catch((error) => {
-          console.log(error);
           this.$notification.error(error.response.data.message, error.response.data.code);
           this.loading = false;
         });
@@ -255,25 +251,20 @@ export default {
       EnitdadesComisiones.getEntidadComision(entidadComisionId).then((r) => {
         this.entidadComisionObj = r.data.result;
       }).catch((error) => {
-          console.log(error);
           this.$notification.error(error.response.data.message, error.response.data.code);
         });
     },
 
     guardarEntidadComision() {
-      console.log('wntra')
       this.$Progress.start();
       EnitdadesComisiones.postEntidadComision(this.entidadComisionObj)
         .then((r) => {
-          console.log('wntra');
-          console.log(r);
           this.displayFormComision = false;
           this.cargarEntidadesComisiones(this.entidadId);
           this.$notification.success(r.data.message);
           this.$Progress.finish();
         })
         .catch((error) => {
-          console.log(error);
           this.$notification.error(error.response.data.message, error.response.data.code);
           this.$Progress.fail();
         });
@@ -287,7 +278,6 @@ export default {
           this.entidadComisionObj.fechaModificacion = null;
           this.guardarEntidadComision(this.entidadComisionObj);
         } else {
-          console.log("error submit!!");
           this.$notification.warning("Debe resolver las validaciones del formulario de Comisiones.");
           return false;
         }
