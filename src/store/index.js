@@ -59,6 +59,17 @@ export default new Vuex.Store({
       localStorage.removeItem('token');
       router.push({ name: 'login' });
     },
+    autoLoginRoot({ commit }) {
+      
+      const token = localStorage.getItem('token');
+      if (token) {
+        commit('setToken', token);
+        const usuario = decode(token);
+        commit('setUsuario', usuario.user_name);
+        commit('setAuthorities', usuario.authorities);
+      }
+      
+    },
   },
   modules: {
     AdmStore,

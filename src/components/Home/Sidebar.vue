@@ -22,13 +22,11 @@
     </a-row>
     <br />
     <div v-if="!collapsed" class="entiades">
-      {{ datos.nombreEntidad }} 
+      {{ datos.nombreEntidad }}
     </div>
-    <a-divider v-if="!collapsed" style="color: #f5962a"
-      >
+    <a-divider v-if="!collapsed" style="color: #f5962a">
       {{ datos.modulo }}
-      </a-divider
-    >
+    </a-divider>
 
     <a-menu
       theme="dark"
@@ -57,7 +55,6 @@
         </a-menu-item>
       </a-sub-menu>
     </a-menu>
-    
   </a-layout-sider>
 </template>
 

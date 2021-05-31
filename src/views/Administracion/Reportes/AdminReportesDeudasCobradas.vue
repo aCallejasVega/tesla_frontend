@@ -102,11 +102,8 @@
               :wrapper-col="{ span: 16 }"
               class="a-item-form"
             >
-              <a-select v-model="formBusqueda.estado" :disabled="disableEstado">
-                <a-select-option value="All">
-                  TODOS LOS ESTADOS
-                </a-select-option>
-                <a-select-option
+              <a-select mode="tags"  v-model="checkedListEstado" :disabled="disableEstado">
+               <a-select-option
                   v-for="item in estadoList"
                   v-bind:value="item.value"
                   v-bind:key="item.value"
@@ -329,6 +326,7 @@ export default {
       viewCargando: false,
       disableEstado: false,
       loadingTable: false,
+      checkedListEstado: [],
     };
   },
   created() {
@@ -347,7 +345,7 @@ export default {
     findDeudasByParameterForReport(page) {
       this.loadingTable = true;
       this.formBusqueda.paginacion = page;
-
+      this.formBusqueda.estadoArray=this.checkedListEstado;
       ReportesAdmin.findDeudasByParameterForReport(this.formBusqueda)
         .then((response) => {
           this.data = response.data.data.content;
@@ -390,7 +388,7 @@ export default {
     openModalGenerarReporte() {
       this.link = null;
       this.viewCargando = true;
-
+      this.formBusqueda.estadoArray=this.checkedListEstado;
       ReportesAdmin.openModalGenerarReporte(this.formBusqueda)
         .then((response) => {
           if (this.formBusqueda.export == "pdf") {

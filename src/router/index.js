@@ -45,6 +45,11 @@ import Dosificaciones from "../views/Entidades/Facturacion/AbmDosificaciones";
 import RegCredenciales from "../views/Entidades/Facturacion/RegCredenciales";
 import AdmEntSucursalEntidades from "../views/Entidades/Administracion/AdmEntSucursalesEntidades";
 import AdmRecSucursales from "../views/Recaudaciones/Administracion/AdmRecSucursales";
+import DescargaArchivoLARazon from "../views/Entidades/Reportes/DescargaArchivoLARazon";
+
+
+
+
 
 Vue.use(VueRouter);
 
@@ -208,8 +213,10 @@ const routes = [
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
+            console.log("ingreso por si");
             next();
           } else {
+            console.log("ingreso por no");
             next({ name: "index" });
           }
         }
@@ -716,6 +723,22 @@ const routes = [
         }
       },
       {
+        path: "/DescargaArchivoLARazon",
+        name: "DescargaArchivoLARazon",
+        component: DescargaArchivoLARazon,
+        meta: {
+          libre: false,
+          rol: ['ROLES_MCERRDA']
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
+      },
+      {
         path: "*",
         name: "index",
         component: Index,
@@ -773,6 +796,7 @@ router.beforeEach((to, from, next) => {
 
 
 function tienePermiso(to, from, next) {
+  store.dispatch("autoLoginRoot");
   let bandera = false;
   store.state.authorities.forEach((autorities) => {
     to.meta.rol.forEach((rol) => {

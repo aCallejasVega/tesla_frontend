@@ -9,7 +9,7 @@
   background: linear-gradient(
     90deg,
     rgba(0, 21, 41, 1) 28%,
-    rgba(113, 145, 184, 1) 74%
+  
   );
   color: azure;
   padding: 0;

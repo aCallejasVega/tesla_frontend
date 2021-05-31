@@ -105,7 +105,7 @@
         <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
           <a-button
             type="danger"
-            @click="findDeudasByParameterForReport(1)"
+            @click="findDeudasByparameter()"
             block
             :style="{
               fontSize: '19px',
@@ -118,7 +118,7 @@
         <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
           <a-button
             type="primary"
-            @click="visibleModalTipoReporte = true"
+            @click="openModalTipoReporte()"
             block
             :style="{
               fontSize: '19px',
@@ -468,6 +468,32 @@ export default {
         i++;
       });
       this.checkedListEstado = v;
+    },
+     openModalTipoReporte() {
+      
+      if (this.formBusqueda.fechaFin < this.formBusqueda.fechaInicio) {
+        this.$warning({
+          title: "Corrija los campos en el formulario de búsqueda.",
+          content: "La ‘Fecha Fin’ no puede ser menor a la ‘Fecha Inicio’",
+          okText: 'Aceptar',
+         
+        });
+      }else{
+          this.visibleModalTipoReporte = true
+      }
+    },
+    findDeudasByparameter() {
+      
+      if (this.formBusqueda.fechaFin < this.formBusqueda.fechaInicio) {
+        this.$warning({
+          title: "Corrija los campos en el formulario de búsqueda.",
+          content: "La ‘Fecha Fin’ no puede ser menor a la ‘Fecha Inicio’",
+          okText: 'Aceptar',
+         
+        });
+      }else{
+          this.findDeudasByParameterForReport(1);
+      }
     },
   },
 };

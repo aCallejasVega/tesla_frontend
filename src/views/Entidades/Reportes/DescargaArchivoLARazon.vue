@@ -4,7 +4,7 @@
       <div class="card-head">
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
-            <b style="color: #08632d"> REPORTE GENERAL DE DEUDAS. </b>
+            <b style="color: #08632d"> DESCARGA DE ARCHIVOS. </b>
           </h2>
         </a-col>
       </div>
@@ -134,7 +134,7 @@
             }"
           >
             <span :style="{ fontSize: '20px' }">
-              <a-icon type="printer" /> Generar Reporte
+              <a-icon type="printer" /> Descargar Archivo
             </span>
           </a-button>
         </a-col>
