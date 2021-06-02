@@ -4,7 +4,7 @@
       <div class="card-head">
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
-            <b style="color: #08632D"> REPORTE GENERAL DE DEUDAS. </b>
+            <b style="color: #08632d"> REPORTE GENERAL DE DEUDAS. </b>
           </h2>
         </a-col>
       </div>
@@ -102,8 +102,12 @@
               :wrapper-col="{ span: 16 }"
               class="a-item-form"
             >
-              <a-select mode="tags"  v-model="checkedListEstado" :disabled="disableEstado">
-               <a-select-option
+              <a-select
+                mode="tags"
+                v-model="checkedListEstado"
+                :disabled="disableEstado"
+              >
+                <a-select-option
                   v-for="item in estadoList"
                   v-bind:value="item.value"
                   v-bind:key="item.value"
@@ -253,7 +257,7 @@ const columns = [
     width: "10%",
     scopedSlots: { customRender: "servicio" },
   },
-  
+
   {
     title: "Periodo",
     dataIndex: "periodo",
@@ -345,7 +349,7 @@ export default {
     findDeudasByParameterForReport(page) {
       this.loadingTable = true;
       this.formBusqueda.paginacion = page;
-      this.formBusqueda.estadoArray=this.checkedListEstado;
+      this.formBusqueda.estadoArray = this.checkedListEstado;
       ReportesAdmin.findDeudasByParameterForReport(this.formBusqueda)
         .then((response) => {
           this.data = response.data.data.content;
@@ -388,17 +392,26 @@ export default {
     openModalGenerarReporte() {
       this.link = null;
       this.viewCargando = true;
-      this.formBusqueda.estadoArray=this.checkedListEstado;
+      this.formBusqueda.estadoArray = this.checkedListEstado;
       ReportesAdmin.openModalGenerarReporte(this.formBusqueda)
         .then((response) => {
-          if (this.formBusqueda.export == "pdf") {
-            this.viewFileDownload(response);
+          if (response.status == 200) {
+            if (this.formBusqueda.export == "pdf") {
+              this.viewFileDownload(response);
+            } else {
+              this.forceFileDownload(response, "reporte");
+            }
           } else {
-            this.forceFileDownload(response, "reporte");
+            this.viewCargando = false;
+            this.$notification.warning(
+              "No hay datos para mostrar en el reporte."
+            );
           }
         })
         .catch((error) => {
-          this.link = null;
+           this.link = null;
+          this.viewCargando = false;
+          this.visibleModalReporte = true;
         });
 
       this.visibleModalTipoReporte = false;

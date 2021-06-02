@@ -438,6 +438,9 @@ export default {
             }
           } else {
             this.mensajeVisible = true;
+            this.$notification.warning(
+              "No hay datos para mostrar en el reporte."
+            );
           }
         })
         .catch((error) => {

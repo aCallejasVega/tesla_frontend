@@ -41,9 +41,8 @@
               label="Seleccione Entidad :"
               :label-col="{ span: 8 }"
               :wrapper-col="{ span: 16 }"
-              
             >
-              <a-select v-model="idEntidad" style="width:100%" >
+              <a-select v-model="idEntidad" style="width: 100%">
                 <a-select-option
                   v-for="item in entidadesList"
                   v-bind:value="item.value"
@@ -53,7 +52,7 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="24" style="margin:2px">
+          <a-col :span="24" style="margin: 2px">
             <a-button type="danger" block @click="generarReporte()">
               Generar Reporte
             </a-button>
@@ -75,6 +74,9 @@
           v-if="viewCargando"
         >
         </a-spin>
+      </a-row>
+
+      <a-row type="flex" justify="center" v-if="!viewCargando">
         <iframe width="100%" height="400px" :src="this.link" frameborder="0">
         </iframe>
       </a-row>
@@ -102,11 +104,11 @@ export default {
       link: null,
       visibleModalReporte: false,
       viewCargando: false,
-       entidadesList: [],
-       idEntidad:null,
+      entidadesList: [],
+      idEntidad: null,
     };
   },
-  created(){
+  created() {
     this.getEntidadesByRecaudadora();
   },
   methods: {
@@ -123,14 +125,23 @@ export default {
       let parametros = {};
       parametros.fechaSeleccionada = this.selectedValue;
       parametros.idEntidad = this.idEntidad;
-  
+
       ReportesRecaudacion.findDeudasCobradasByUsuarioCreacionForGrid(parametros)
         .then((response) => {
-          this.viewFileDownload(response);
-
-          this.viewCargando = false;
+          if (response.status == 200) {
+            this.viewFileDownload(response);
+            this.viewCargando = false;
+          } else {          
+            this.viewCargando = false;
+            this.$notification.warning(
+              "No hay datos para mostrar en el reporte."
+            );
+          }
         })
-        .catch((error) => {});
+        .catch((error) => {
+          this.viewCargando = false;
+          this.visibleModalReporte = false;
+        });
     },
     viewFileDownload(response) {
       var file = new Blob([response.data], {

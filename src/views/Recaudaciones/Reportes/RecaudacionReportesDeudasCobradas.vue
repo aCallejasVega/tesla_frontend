@@ -199,6 +199,9 @@
           v-if="viewCargando"
         >
         </a-spin>
+      </a-row>
+
+      <a-row type="flex" justify="center" v-if="!viewCargando">
         <iframe width="100%" height="400px" :src="this.link" frameborder="0">
         </iframe>
       </a-row>
@@ -225,7 +228,7 @@ const columns = [
     width: "10%",
     scopedSlots: { customRender: "nombreComercial" },
   },
-   {
+  {
     title: "Tipo Servicio",
     dataIndex: "tipoServicio",
     key: "tipoServicio",
@@ -237,7 +240,7 @@ const columns = [
     key: "servicio",
     width: "10%",
     scopedSlots: { customRender: "servicio" },
-  }, 
+  },
   {
     title: "Periodo",
     dataIndex: "periodo",
@@ -362,11 +365,10 @@ export default {
     getEstadoHistoricos() {
       ReportesRecaudacion.getEstadoHistoricos()
         .then((response) => {
-
           console.log(JSON.stringify(response.data.data));
-          response.data.data.forEach((value)=>{
-            if(value.label!="POR PAGAR"){
-               this.estadoList.push(value); 
+          response.data.data.forEach((value) => {
+            if (value.label != "POR COBRAR") {
+              this.estadoList.push(value);
             }
           });
         })
@@ -397,14 +399,23 @@ export default {
       this.formBusqueda.estadoArray = this.checkedListEstado;
       ReportesRecaudacion.openModalGenerarReporte(this.formBusqueda)
         .then((response) => {
-          if (this.formBusqueda.export == "pdf") {
-            this.viewFileDownload(response);
+          if (response.status == 200) {
+            if (this.formBusqueda.export == "pdf") {
+              this.viewFileDownload(response);
+            } else {
+              this.forceFileDownload(response, "reporte");
+            }
           } else {
-            this.forceFileDownload(response, "reporte");
+            this.viewCargando = false;
+            this.$notification.warning(
+              "No hay datos para mostrar en el reporte."
+            );
           }
         })
         .catch((error) => {
           this.link = null;
+          this.viewCargando = false;
+          this.visibleModalReporte = true;
         });
 
       this.visibleModalTipoReporte = false;
@@ -469,30 +480,26 @@ export default {
       });
       this.checkedListEstado = v;
     },
-     openModalTipoReporte() {
-      
+    openModalTipoReporte() {
       if (this.formBusqueda.fechaFin < this.formBusqueda.fechaInicio) {
         this.$warning({
           title: "Corrija los campos en el formulario de búsqueda.",
           content: "La ‘Fecha Fin’ no puede ser menor a la ‘Fecha Inicio’",
-          okText: 'Aceptar',
-         
+          okText: "Aceptar",
         });
-      }else{
-          this.visibleModalTipoReporte = true
+      } else {
+        this.visibleModalTipoReporte = true;
       }
     },
     findDeudasByparameter() {
-      
       if (this.formBusqueda.fechaFin < this.formBusqueda.fechaInicio) {
         this.$warning({
           title: "Corrija los campos en el formulario de búsqueda.",
           content: "La ‘Fecha Fin’ no puede ser menor a la ‘Fecha Inicio’",
-          okText: 'Aceptar',
-         
+          okText: "Aceptar",
         });
-      }else{
-          this.findDeudasByParameterForReport(1);
+      } else {
+        this.findDeudasByParameterForReport(1);
       }
     },
   },

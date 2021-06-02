@@ -374,6 +374,7 @@ export default {
       this.buttonModal = true;
       UploadFileService.processFile(this.archivo.archivoId)
         .then((response) => {
+          console.log("TERMINO BIEN");
           this.info = false;
           this.sucess = true;
           this.error = false;
@@ -382,6 +383,7 @@ export default {
           this.findDeudasClientesByArchivoId(this.archivo.archivoId, 1, "");
         })
         .catch((error) => {
+          console.log("TERMINO MAL");
           if (error.response.data.causa == "A") {
             this.mensaje = error.response.data.mensaje;
             this.detalle = error.response.data.detalle;

@@ -156,7 +156,7 @@
               {{ record.estado }}
             </a-tag>
           </div>
-          <div v-if="record.estado == 'POR PAGAR'">
+          <div v-if="record.estado == 'POR COBRAR'">
             <a-tag color="blue">
               <a-icon type="exclamation-circle" :style="{ fontSize: '15px' }" />
               {{ record.estado }}
@@ -413,6 +413,9 @@ export default {
             }
           } else {
             this.mensajeVisible = true;
+            this.$notification.warning(
+              "No hay datos para mostrar en el reporte."
+            );
           }
         })
         .catch((error) => {

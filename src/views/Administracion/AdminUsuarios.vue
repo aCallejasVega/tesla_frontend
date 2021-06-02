@@ -77,7 +77,7 @@
                 <th>TELÉFONO :</th>
                 <td>{{ record.telefono }}</td>
               </tr>
-              
+
               <tr v-if="record.nombreEntidad != null">
                 <th>ENTIDAD :</th>
                 <td>
@@ -489,20 +489,22 @@
     >
       <a-row v-if="this.subModulo == 'ADMIN'">
         <a-col type="flex" justify="space-around" align="middle">
-          <a-form-item>
-            <a-select
-              v-model="moduloId"
-              style="width: 50%"
-              @change="findPrivilegiosByModuloId()"
-            >
-              <a-select-option
-                v-for="item in modulosList"
-                v-bind:value="item.moduloId"
-                v-bind:key="item.moduloId"
-                >{{ item.descripcion }}</a-select-option
+          <a-form :label-col="{ span: 7 }" :wrapper-col="{ span: 17 }">
+            <a-form-item label="Seleccione un Módulo">
+              <a-select
+                v-model="moduloId"
+                style="width: 100%"
+                @change="findPrivilegiosByModuloId()"
               >
-            </a-select>
-          </a-form-item>
+                <a-select-option
+                  v-for="item in modulosList"
+                  v-bind:value="item.moduloId"
+                  v-bind:key="item.moduloId"
+                  >{{ item.descripcion }}</a-select-option
+                >
+              </a-select>
+            </a-form-item>
+          </a-form>
         </a-col>
       </a-row>
       <a-row type="flex" justify="center" align="top">
@@ -680,7 +682,7 @@ export default {
       privilegiosAsignar: [],
       privilegiosAsignados: [],
       privilegiosKey: [],
-      usuarioModulos:{},
+      usuarioModulos: {},
       privilegiosActivar: [],
       privilegiosDesActivar: [],
       entidadesList: [],
@@ -821,8 +823,6 @@ export default {
     ...mapActions("AdmStore", ["almacenarDataStore"]),
 
     onSelectChange(selectedRowKeys, selectedRows) {
-      
-
       this.selectedRowKeys = selectedRowKeys;
       this.selectPersona = selectedRows[0];
       this.getOperaciones("PERSONAS", this.selectPersona.estado);
@@ -846,7 +846,6 @@ export default {
     getOperaciones(tablaId, estadoInicial) {
       AdminUsuarios.getOperaciones(tablaId, estadoInicial)
         .then((response) => {
-          
           this.operacionesList = response.data.data;
         })
         .catch((error) => {
@@ -867,7 +866,6 @@ export default {
           this.data = response.data.data.content;
           this.pagination.pageSize = response.data.data.numberOfElements;
           this.pagination.total = response.data.data.totalElements;
-          
 
           this.loadingTable = false;
           this.selectedRowsList = [];
@@ -1097,7 +1095,6 @@ export default {
       this.form.subModulo = this.subModulo;
       AdminUsuarios.savePersona(this.form)
         .then((response) => {
-          
           this.findPersonas(1);
           this.visibleModalRegitro = false;
 
@@ -1148,7 +1145,6 @@ export default {
         AdminUsuarios.getSucursalesByRecaudadora()
           .then((response) => {
             this.sucursalesRecaudadorList = response.data.data;
-            
           })
           .catch((error) => {
             this.sucursalesRecaudadorList = [];
@@ -1162,17 +1158,17 @@ export default {
         case "/AdminUsuarios/ADMIN":
           this.modulo = "ADMIN";
           this.subModulo = "ADMIN";
-          
+
           break;
         case "/AdminUsuarios/COBROS/ADM_ENTIDADES":
           this.modulo = "COBROS";
           this.subModulo = "ADM_ENTIDADES";
-          
+
           break;
         case "/AdminUsuarios/COBROS/ADM_RECAUDACION":
           this.modulo = "COBROS";
           this.subModulo = "ADM_RECAUDACION";
-          
+
           break;
       }
     },
@@ -1202,23 +1198,21 @@ export default {
         this.modulo,
         record.usuarioId
       );*/
-      this.moduloId=null;
-      this.modulosList=[];
-      this.mockData=[];
-      this.targetKeys=[];
-
-
+      this.moduloId = null;
+      this.modulosList = [];
+      this.mockData = [];
+      this.targetKeys = [];
 
       this.findPrivilegiosByUsuarioId(record.usuarioId);
 
-      if( this.subModulo != "ADMIN"){
+      if (this.subModulo != "ADMIN") {
         this.findPrivilegiosByUsuarioIdSession();
         this.findModuloByUsuarioSession();
-      }else{
+      } else {
         this.findModuloByUsuarioId(record.usuarioId);
         this.findModulos();
       }
-           
+
       this.visibleModalRoles = true;
     },
     getModuloUsuario() {
@@ -1249,8 +1243,7 @@ export default {
       datosRoles.privilegiosKey = this.privilegiosKey;
       datosRoles.personaId = this.personaId;
       datosRoles.moduloId = this.moduloId;
-      
- 
+
       AdminUsuarios.savePrivilegio(datosRoles)
         .then((response) => {
           this.visibleModalRoles = false;
@@ -1292,7 +1285,6 @@ export default {
         });
     },
     findPrivilegiosByModuloId() {
-      
       AdminUsuarios.findPrivilegiosByModuloId(this.moduloId)
         .then((response) => {
           this.mockData = response.data.data;
@@ -1303,10 +1295,9 @@ export default {
     },
     findPrivilegiosByUsuarioId(usuarioId) {
       this.targetKeys = [];
-      
+
       AdminUsuarios.findPrivilegiosByUsuarioId(usuarioId)
         .then((response) => {
-      
           this.targetKeys = response.data.data;
         })
         .catch((error) => {
@@ -1314,28 +1305,25 @@ export default {
         });
     },
     findModuloByUsuarioId(usuarioId) {
-      this.usuarioModulos = {};      
+      this.usuarioModulos = {};
       AdminUsuarios.findModuloByUsuarioId(usuarioId)
-        .then((response) => {          
-
+        .then((response) => {
           this.usuarioModulos = response.data.data;
-          this.moduloId=this.usuarioModulos.moduloId;   
-          this.findPrivilegiosByModuloId();       
+          this.moduloId = this.usuarioModulos.moduloId;
+          this.findPrivilegiosByModuloId();
         })
         .catch((error) => {
           this.usuarioModulos = {};
         });
     },
 
-  findModuloByUsuarioSession() {
+    findModuloByUsuarioSession() {
       this.usuarioModulos = {};
-      
+
       AdminUsuarios.findModuloByUsuarioSession()
         .then((response) => {
-          
-
           this.usuarioModulos = response.data.data;
-          this.moduloId=this.usuarioModulos.moduloId;             
+          this.moduloId = this.usuarioModulos.moduloId;
         })
         .catch((error) => {
           this.usuarioModulos = {};
@@ -1345,13 +1333,12 @@ export default {
     findPrivilegiosByUsuarioIdSession() {
       AdminUsuarios.findPrivilegiosByUsuarioIdSession(this.subModulo)
         .then((response) => {
-          this.mockData = response.data.data;     
+          this.mockData = response.data.data;
         })
         .catch((error) => {
           this.mockData = {};
         });
     },
-    
   },
 };
 </script>

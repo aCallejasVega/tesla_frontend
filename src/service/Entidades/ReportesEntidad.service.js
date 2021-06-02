@@ -160,6 +160,19 @@ export default {
       });
     },
 
+     /*
+     REPORTES LA RAZON
+    */ 
+     downloaArchivo(formBusqueda) {
+
+        return Api().post(`api/ReportLaRazon/downloaArchivo`, formBusqueda, {
+            responseType: 'arraybuffer',
+            headers: {
+              'Accept': 'text/csv',
+              Authorization: `Bearer ` + localStorage.getItem("token")
+            }
+      });
+    },
 
 
 };

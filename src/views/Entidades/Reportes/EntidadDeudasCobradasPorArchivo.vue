@@ -4,7 +4,7 @@
       <div class="card-head">
         <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <h2>
-            <b style="color: #08632D"> REPORTE POR ARCHIVOS CARGADOS. </b>
+            <b style="color: #08632d"> REPORTE POR ARCHIVOS CARGADOS. </b>
           </h2>
         </a-col>
       </div>
@@ -284,7 +284,7 @@ export default {
       recaudadoresList: [],
       link: null,
       loadingTable: false,
-      viewCargando:false,
+      viewCargando: false,
     };
   },
   created() {
@@ -324,7 +324,7 @@ export default {
       this.archivoId = archivoId;
     },
     closeModal() {
-      this.visibleModalForm=false;
+      this.visibleModalForm = false;
       this.visibleModal = false;
       this.archivoId = null;
     },
@@ -339,6 +339,8 @@ export default {
       this.formBusqueda.estado = null;
       this.formBusqueda.recaudadorId = null;
       this.formBusqueda.export = "pdf";
+      this.formBusqueda.fechaInicio=null;
+      this.formBusqueda.fechaFin=null;
       this.findArchivos(1);
     },
     showModalReportes(archivoId) {
@@ -358,7 +360,6 @@ export default {
       ReportesEntidad.getEstadoHistoricos()
         .then((response) => {
           this.estadoList = response.data.data;
-          
         })
         .catch((error) => {
           this.estadoList = [];
@@ -381,14 +382,23 @@ export default {
 
       ReportesEntidad.openReportesPorArchivo(this.formBusqueda)
         .then((response) => {
-          if (this.formBusqueda.export == "pdf") {
-            this.viewFileDownload(response);
+          if (response.status == 200) {
+            if (this.formBusqueda.export == "pdf") {
+              this.viewFileDownload(response);
+            } else {
+              this.forceFileDownload(response, "reporte");
+            }
           } else {
-            this.forceFileDownload(response, "reporte");
+            this.viewCargando = false;
+            this.$notification.warning(
+              "No hay datos para mostrar en el reporte."
+            );
           }
         })
         .catch((error) => {
           this.link = null;
+          this.viewCargando = false;
+          this.visibleModalReporte = true;
         });
 
       this.visibleModalTipoReporte = false;
@@ -419,7 +429,6 @@ export default {
       ReportesEntidad.getRecaudadoresByEntidad()
         .then((response) => {
           this.recaudadoresList = response.data.data;
-          
         })
         .catch((error) => {
           this.recaudadoresList = [];

@@ -402,20 +402,17 @@ export default {
       this.viewCargando = true;
       this.formBusqueda.recaudadorArray = this.checkedListRecaudacion;
       this.formBusqueda.estadoArray = this.checkedListEstado;
-      ReportesEntidad.openModalGenerarReporte(this.formBusqueda)
+      
+      ReportesEntidad.downloaArchivo(this.formBusqueda)
         .then((response) => {
-          this.viewCargando = false;
-          if (response.status == 200) {
-            if (this.formBusqueda.export == "pdf") {
-              this.viewFileDownload(response);
-            } else {
-              this.forceFileDownload(response, "reporte");
-            }
-          } else {
-            this.mensajeVisible = true;
-          }
+          console.log('ingreso por si');
+            this.forceFileDownload(response);
+            this.viewCargando = false;
+            this.mensajeVisible=false;
+            this.visibleModalReporte=false;
         })
         .catch((error) => {
+          console.log('ingreso por no');
           this.viewCargando = false;
           this.mensajeVisible = true;
           this.link = null;
@@ -424,27 +421,15 @@ export default {
       this.visibleModalTipoReporte = false;
       this.visibleModalReporte = true;
     },
-    forceFileDownload(response, fileName) {
+    forceFileDownload(response) {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      if (this.formBusqueda.export == "msword") {
-        link.setAttribute("download", `${fileName}.doc`);
-      } else {
-        link.setAttribute("download", `${fileName}.xlsx`);
-      }
+      link.setAttribute("download", `reporte.csv`);
       document.body.appendChild(link);
       link.click();
-      this.visibleModalReporte = false;
-      this.viewCargando = false;
     },
-    viewFileDownload(response) {
-      var file = new Blob([response.data], {
-        type: "application/" + this.formBusqueda.export,
-      });
-      this.link = URL.createObjectURL(file);
-      this.viewCargando = false;
-    },
+   
     onChangeRecaudadora() {
       if (this.formBusqueda.recaudadorId != "All") {
         this.formBusqueda.estado = "COBRADO";
@@ -497,6 +482,7 @@ export default {
     },
 
     openModalTipoReporte() {
+      console.log("-----------openModalTipoReporte--------")
       
       if (this.formBusqueda.fechaFin < this.formBusqueda.fechaInicio) {
         this.$warning({
@@ -506,7 +492,7 @@ export default {
          
         });
       }else{
-          this.visibleModalTipoReporte = true;
+          this.openModalGenerarReporte();
       }
     },
   },
