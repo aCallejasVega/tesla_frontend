@@ -37,4 +37,10 @@ export default {
             }
       });
   },
+  getCamposBusquedaDeudas() {
+    return Api().get(`api/deudaCliente/camposdeudas`, this.headersConfig());
+  },
+  getAllClientesByEntidadIdAndCampos(entidadId, campoBusqueda, datoCliente) {
+    return Api().get(`api/entidades/${entidadId}/busquedas/${campoBusqueda}/clientes/${datoCliente}`, this.headersConfig());
+  }
 };

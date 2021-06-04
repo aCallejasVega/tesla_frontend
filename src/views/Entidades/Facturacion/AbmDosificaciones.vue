@@ -498,18 +498,11 @@
             "
             :maxLength="10"
           />
-         
-        </a-form-model-item>
-
-        <a-form-model-item
-          ref="actividadEconomica"
-          label="Actividad Economica"
-          prop="actividadEconomica"
-        >
           <a-input
             :disabled="true"
             v-model="actEco"
             :maxLength="250"
+            placeholder="Actividad Económica"
           />
         </a-form-model-item>
         <a-row type="flex" justify="center">
@@ -537,21 +530,11 @@
                 "
                 :maxLength="250"
               />
-            </a-form-model-item>
-            <a-form-model-item
-              ref="actividadEconomicaSecundaria"
-              label="Actividad Economica Secundaria"
-              prop="actividadEconomicaSecundaria"
-            >
               <a-input
                 :disabled="true"
                 v-model="actEcoSec"
-                @blur="
-                  () => {
-                    $refs.actividadEconomica.onFieldBlur();
-                  }
-                "
                 :maxLength="250"
+                placeholder="Actividad Económica Secundaria"
               />
             </a-form-model-item>
           </a-collapse-panel>
@@ -703,13 +686,13 @@ export default {
       labelCol: { span: 6 },
       wrapperCol: { span: 14 },
       rules: {
-        actividadEconomica: [
+        /*actividadEconomica: [
           {
             required: true,
             message: "El Código Actividad Económica introducido no devolvió ninguna descripción.",
             trigger: "change",
           },
-        ],
+        ],*/
         codigoActividadEconomica: [
           {
             required: true,
@@ -864,6 +847,9 @@ export default {
           this.dosificacionObj = {};
           this.displayForm = true;
           this.subTitle = "Registro Nuevo";
+
+          this.actEco = null;
+          this.actEcoSec = null;
 
           break;
         case "MODIFICAR": //Modiicar
@@ -1136,6 +1122,14 @@ export default {
     },
     guardarDosificacion() {
       this.$Progress.start();
+      console.log(this.dosificacionObj.actividadEconomica)
+      if(this.dosificacionObj.actividadEconomica == "" || this.dosificacionObj.actividadEconomica == null) {
+        this.$notification.warning(
+            "Debe ser un código de actividad económica válida"
+          );
+          return;
+      }
+
       this.dosificacionObj.codigoActividadEconomicaSecundaria =
         this.dosificacionObj.codigoActividadEconomicaSecundaria == ""
           ? null
@@ -1143,7 +1137,7 @@ export default {
       if (this.dosificacionObj.codigoActividadEconomicaSecundaria != null) {
         if (this.dosificacionObj.actividadEconomicaSecundaria == null) {
           this.$notification.warning(
-            "Debe ser un código de actividad secundario válido"
+            "Debe ser un código de actividad económica secundaria válida"
           );
           return;
         }
@@ -1191,6 +1185,8 @@ export default {
     },
     resetForm() {
       this.$refs.ruleForm.resetFields();
+      this.actEco = null;
+      this.actEcoSec = null;
     },
 
     /**Filtrado */

@@ -16,14 +16,31 @@
             <h2><b style="color: #21618c"><a-icon type="arrow-left" @click="$router.back()"/> {{title}}</b></h2></a-col
           >
           <a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
-            <a-row type="flex" justify="end">
-              <a-col :xs="24" :sm="24" :md="24" :lg="4" :xl="4"
-                ><b></b></a-col
+            <a-row type="flex" justify="space-between">
+              <a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8"
+                >
+                <a-select 
+                  v-model="campoBusquedaCliente"
+                  placeholder="Campo de Búsqueda"
+                  size="small"
+                  style="width:100%"
+                  v-if="!displayCliente"  
+                  @change="resetSearch(campoBusquedaCliente)"
+                >
+                  <a-select-option
+                    v-for="(item, i) in lstCamposBusqueda"
+                    :key="i"
+                    :value="item" 
+                  >
+                    {{ item }}
+                  </a-select-option>
+                </a-select>
+              </a-col
               >
-              <a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20" align="right">
+              <a-col :xs="24" :sm="24" :md="24" :lg="16" :xl="16" align="right">
                <a-input-search
                   v-model="search"
-                  placeholder="Datos Cliente: Código, CI/NIT o Nombre "
+                  :placeholder="placeholderBC"
                   @search="buscar"
                   enter-button=" Buscar "
                   :maxLength="15"
@@ -293,9 +310,8 @@
         :okButtonProps = "{ style: { color:'white', background: '#339966', border: '0px' } }"
         :cancelButtonProps = "{ style: {  color:'white', background: 'red', border: '0px'  } }"
       >
-      <!-- :okButtonProps = "{ style: { color:'white', background: 'green' } }"-->
         <p> <a-icon type="question-circle" theme="twoTone" two-tone-color="#FAAD14" :style="{ fontSize: '2em' }"/>
-        ¿Está seguro de cobrar las deudas seleccionadas? (Comprobante {{entidadObj.comprobanteEnUno ? 'En Uno' : 'Por Transacción'}})</p>
+        ¿Está seguro de cobrar las deudas seleccionadas? (Comprobante {{entidadObj.comprobanteEnUno ? 'agrupado' : 'Por Transacción'}})</p>
         <br/>
         <div class="titulo-tabla">
           <a-row>
@@ -448,6 +464,8 @@
 import PaymentDebts from "../../service/Recaudaciones/PaymentDebts.service";
 import Entidades from "../../service/Administraciones/Entidad.service";
 import { Money } from "v-money";
+import PaymentDebtsService from '../../service/Recaudaciones/PaymentDebts.service';
+
 //TABLA CLIENTES
 const columns = [
   { title: "Código Cliente", dataIndex: "codigoCliente", key: "codigoCliente" },
@@ -513,11 +531,18 @@ export default {
       visibleModalReporte: false,
       link: null,
       viewCargando: false,
+
+      /**Campos de Búsqueda */
+      lstCamposBusqueda: [],
+      campoBusquedaCliente: 'CÓDIGO CLIENTE',
+      placeholderBC: 'Ingrese CÓDIGO CLIENTE',
     };
   },
   created() {
     this.entidadId = this.$route.params.entidadId;
     this.cargarEntidad(this.entidadId);
+
+    this.cargarCamposBusquedasDeudas();
   },
   computed: {
     rowSelectionC() {
@@ -602,6 +627,7 @@ export default {
       },
       deep: true,
     },
+   
   },
 
   methods: {
@@ -625,8 +651,9 @@ export default {
     ************************************************/
     cargarClientes(dato) {
       this.loading = true;
-      PaymentDebts.cargarClientes(this.entidadId, dato)
-        .then((r) => {
+      //PaymentDebts.cargarClientes(this.entidadId, dato)
+      PaymentDebts.getAllClientesByEntidadIdAndCampos(this.entidadId, this.campoBusquedaCliente, dato)
+      .then((r) => {
           if (r.status === 204) {
             this.lstClientes = [];
             this.$notification.warning(
@@ -849,6 +876,8 @@ export default {
       this.lstClientes = [];
       this.search = "";
       this.inicializar();
+      this.campoBusquedaCliente = 'CÓDIGO CLIENTE';
+      this.placeholderBC = 'Ingrese CÓDIGO CLIENTE';
     },
     resetear(record) {
       record.editando = false;
@@ -872,7 +901,36 @@ export default {
       } else {
         return true;
       }
+    },
+    /************************************ */
+    //Cargar Campos de búqeuda
+    /************************************ */
+    cargarCamposBusquedasDeudas(){
+      PaymentDebtsService.getCamposBusquedaDeudas()
+        .then((r) => {
+          if (r.status === 204) {
+            this.lstCamposBusqueda = [];
+            this.$notification.warning(
+              "No se ha encontrado ningun campo de búsqueda de clientes."
+            );
+            return;
+          }
+          this.lstCamposBusqueda = r.data.result;
+          //this.defaultValue = this.lstCamposBusqueda[0];
+        })
+        .catch((error) => {
+          this.lstCamposBusqueda = [];
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
+        });
+    },
+    resetSearch(valor) {
+      this.search = '';
+      this.placeholderBC = 'Ingrese ' + valor;
     }
+    
   },
 };
 </script>
