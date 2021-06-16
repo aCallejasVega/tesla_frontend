@@ -88,6 +88,11 @@ export default {
   findModuloByUsuarioSession() {
     return Api().get(`api/Rol/findModuloByUsuarioSession`, this.headersConfig());
   },
+  findByRecaudadoraId() {
+    return Api().get(`api/sucursales/findByRecaudadoraId`, this.headersConfig());
+  },
 
-
+  toUnlock(personaId) {
+    return Api().post(`api/personas/toUnlock/${personaId}`,{}, this.headersConfig());
+  },
 };

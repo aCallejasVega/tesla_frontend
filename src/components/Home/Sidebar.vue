@@ -4,6 +4,7 @@
     collapsible
     style="width: 256px"
     theme="dark"
+    
   >
     <br />
     <a-row type="flex" justify="space-around" align="middle">
@@ -34,6 +35,7 @@
       :default-selected-keys="['0']"
       mode="inline"
       collapsedWidth="150"
+      
     >
       <a-menu-item v-for="menu in menuList" :key="menu.privilegiosId">
         <a-icon :type="menu.icono" @click="navegar(menu.link)" />
@@ -63,7 +65,7 @@ import Sidebar from "@/service/Home/Sidebar.service";
 export default {
   data() {
     return {
-      collapsed: false,
+      collapsed: true,
       menuList: [],
       subMenuList: [],
       datos: {

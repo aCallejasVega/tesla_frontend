@@ -10,7 +10,49 @@
       </div>
     </a-card>
     <a-card style="width: 100%">
-      <a-row>
+     
+        <a-row type="flex" justify="end">
+        <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8" v-if="subModulo == 'ADM_RECAUDACION'">
+          <a-form-model-item
+            label="Seleccione Sucursal :"
+            :label-col="formItemTowLayout.labelCol"
+            :wrapper-col="formItemTowLayout.wrapperCol"
+          >
+            <a-select  style="width: 100%" 
+              v-model="formBusqueda.sucursalId" 
+               @change="findPersonas(1)"
+            >  
+             <a-select-option value="0">
+                  TODAS LAS ENTIDADES
+                </a-select-option>    
+            <a-select-option
+                  v-for="item in sucursalesList"
+                  v-bind:value="item.sucursalId"
+                  v-bind:key="item.sucursalId"
+                  >{{ item.nombre }}</a-select-option
+                >
+              </a-select>
+          </a-form-model-item>
+          
+        </a-col>
+          <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+         <a-form-model-item
+            label="Buscar por :"
+            :label-col="formItemTowLayout.labelCol"
+            :wrapper-col="formItemTowLayout.wrapperCol"
+          >
+            <a-input-search
+              placeholder="Nombre, Nro. Documento"
+              enter-button
+              @search="findPersonas(1)"
+              v-model="formBusqueda.parametro"
+            />
+          </a-form-model-item>
+        </a-col>
+      
+      </a-row>
+
+       <a-row>
         <a-col :xs="24" :sm="24" :md="14" :lg="14" :xl="14">
           <a-button
             v-for="(operaciones, index) in operacionesList"
@@ -26,21 +68,7 @@
             {{ operaciones.etiqueta }}
           </a-button>
         </a-col>
-        <a-col :xs="24" :sm="24" :md="10" :lg="10" :xl="10">
-          <a-form-model-item
-            label="Buscar por :"
-            :label-col="formItemTowLayout.labelCol"
-            :wrapper-col="formItemTowLayout.wrapperCol"
-          >
-            <a-input-search
-              placeholder="Nombre, Nro. Documento"
-              enter-button
-              @search="findPersonas(1)"
-              v-model="formBusqueda.parametro"
-            />
-          </a-form-model-item>
-        </a-col>
-      </a-row>
+        </a-row>
       <a-divider orientation="left">LISTA DE USUARIOS</a-divider>
 
       <a-table
@@ -55,6 +83,7 @@
           selectedRows: selectedRows,
           onChange: onSelectChange,
         }"
+        :scroll="{ x: 700 }"
       >
         <template slot="nombreCompleto" slot-scope="text, record">
           <font size="2">
@@ -144,8 +173,9 @@
         <template
           slot="opciones"
           slot-scope="text, record"
-          v-if="record.estado == 'DESACTIVO' || record.estado == 'CREADO'"
+         
         >
+        <div  v-if="record.estado == 'DESACTIVO' || record.estado == 'CREADO'">
           <a-button type="dashed" block @click="viewCredenciales(record)"
             ><a-icon type="lock" /> Generar Credenciales
           </a-button>
@@ -156,6 +186,12 @@
             :disabled="record.estadoUsuario == null"
             ><a-icon type="user-add" />Asignar Roles
           </a-button>
+        </div>
+      
+          <a-button type="danger" block @click="viewDesBloqueo(record)" v-if="record.bloqueado"
+            ><a-icon type="lock" /> Desbloquear
+          </a-button>
+
         </template>
       </a-table>
     </a-card>
@@ -480,7 +516,30 @@
         </a-button>
       </template>
     </a-modal>
-
+    <a-modal
+      v-model="visibleModalCredenciales"
+      title="Desbloqueo de Usuario"
+      :dialog-style="{ top: '20px' }"
+      :width="400"
+    >
+      <a-result
+        title="¿Está seguro de desbloquear al usuario?"
+        :sub-title="subTitle"
+        style="padding: 0px"
+      >
+        <template #icon>
+          <a-icon type="question-circle" />
+        </template>
+      </a-result>
+      <template slot="footer">
+        <a-button key="back" @click="visibleModalCredenciales = false">
+          Cancelar
+        </a-button>
+        <a-button key="submit" type="primary" @click="toUnlock">
+          Aceptar
+        </a-button>
+      </template>
+    </a-modal>
     <a-modal
       v-model="visibleModalRoles"
       title="ASIGNACIÓN DE ROLES"
@@ -578,8 +637,9 @@ const columns = [
     title: "DATOS DEL USUARIO",
     dataIndex: "nombreCompleto",
     key: "nombreCompleto",
-    width: "35%",
+    width: "30%",
     scopedSlots: { customRender: "nombreCompleto" },
+    
   },
   {
     title: "CREDENCIALES",
@@ -608,7 +668,7 @@ const columns = [
     title: "OPCIONES",
     dataIndex: "opciones",
     key: "opciones",
-    width: "15%",
+    width: "20%",
     align: "center",
     scopedSlots: { customRender: "opciones" },
   },
@@ -635,7 +695,9 @@ export default {
       total: 0,
       pagination: {},
       selectPersona: {},
-      formBusqueda: {},
+      formBusqueda: {
+        sucursalId:"0",
+      },
       visibleModalRegitro: false,
       tituloModal: "",
       dissabled: true,
@@ -784,6 +846,8 @@ export default {
       },
       selectedRowKeys: [],
       selectedRows: null,
+      sucursalesList:[],
+      sucursalId:null,
     };
   },
   computed: {
@@ -802,6 +866,7 @@ export default {
     },*/
   },
   created() {
+    this.findByRecaudadoraId();
     this.findModulos();
     this.esSessionEntidad();
     this.findAllEntidad();
@@ -861,6 +926,7 @@ export default {
       this.formBusqueda.subModulo = this.subModulo;
       this.data = [];
       this.selectedRowsList = [];
+      
       AdminUsuarios.findPersonas(this.formBusqueda)
         .then((response) => {
           this.data = response.data.data.content;
@@ -1140,8 +1206,8 @@ export default {
         });
     },
 
-    getSucursalesByRecaudadora() {
-      if (this.subModulo == "ADM_RECAUDACION") {
+    getSucursalesByRecaudadora() {    
+      if (this.subModulo == "ADM_RECAUDACION") {   
         AdminUsuarios.getSucursalesByRecaudadora()
           .then((response) => {
             this.sucursalesRecaudadorList = response.data.data;
@@ -1176,6 +1242,11 @@ export default {
       this.visibleModalCredenciales = true;
       this.personaId = record.personaId;
       this.subTitle = `Las credenciales que se generaran para ${record.nombreCompleto} se enviaran a su correo ${record.correoElectronico}.`;
+    },
+    viewDesBloqueo(record) {
+      this.visibleModalCredenciales = true;
+      this.personaId = record.personaId;
+      this.subTitle = `La cuenta del usuario  ${record.nombreCompleto} se desbloqueará y sus credenciales serán enviadas a su correo electrónico  ${record.correoElectronico}`;
     },
     generarCredenciales() {
       AdminUsuarios.generarCredenciales(this.personaId)
@@ -1339,6 +1410,31 @@ export default {
           this.mockData = {};
         });
     },
+     findByRecaudadoraId() {
+      if (this.subModulo == "ADM_RECAUDACION") {  
+          AdminUsuarios.findByRecaudadoraId()
+              .then((response) => {
+                  this.sucursalesList = response.data.data;          
+                })
+              .catch((error) => {
+                  this.sucursalesList = {};
+          });
+       }      
+    },
+    toUnlock() {
+      console.log(this.personaId);
+      AdminUsuarios.toUnlock(this.personaId)
+        .then((response) => {
+          this.visibleModalCredenciales = false;
+          this.findPersonas(1);
+          this.$notification.success(response.data.message);
+          
+        })
+        .catch((error) => {
+          this.visibleModalCredenciales = false;
+          this.$notification.error("No se pudo ejecutar la operación, comuníquese con su administrador.");
+        });
+    }
   },
 };
 </script>
