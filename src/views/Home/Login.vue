@@ -16,9 +16,7 @@
             data-validate="Username is required"
           >
             <span class="label-input100">Usuario</span>
-            <input
-              class="input100"
-              type="text"
+            <a-input
               name="username"
               placeholder="Ingrese su usuario"
               v-model="usuario.username"
@@ -31,26 +29,27 @@
             data-validate="Password is required"
           >
             <span class="label-input100">Contraseña</span>
-            <input
-              class="input100"
-              type="password"
-              name="pass"
+            <a-input-password
               v-model="usuario.password"
               placeholder="Ingrese su contraseña"
             />
-            <span class="focus-input100"></span>
           </div>
 
           <div class="container-login100-form-btn">
-            <a-button type="primary" @click="login" style="width: 50%">
+            <a-button type="primary" @click="login" style="width: 100%">
               Login
             </a-button>
           </div>
-          <br/>
-          <div wrap-input100 validate-input m-b-18 style="width: 100%; margin:5px" v-if="showError">
+          <div
+            wrap-input100
+            validate-input
+            m-b-18
+            style="width: 100%; margin: 5px"
+            v-if="showError"
+          >
             <a-alert
               message="Hay un problema en el ingreso al sistema."
-              description="El usuario o contraseña no son correctos."
+              description="El usuario o contraseña no son correctos. Si realizo más de 5 intentos fallidos el sistema bloqueara su cuenta."
               type="error"
               show-icon
             />
@@ -77,27 +76,27 @@ export default {
         password: "",
       },
       errorCredenciales: false,
-      showError:false,
+      showError: false,
     };
   },
   methods: {
     login() {
       // this.usuario.username = this.usuario.username.toUpperCase();
-     
+      this.showError = false;
       loginServices
         .login(this.usuario)
         .then((response) => {
           return response.data;
         })
         .then((data) => {
-          this.showError=true;
+          this.showError = true;
           this.$store.dispatch("guardarToken", data.access_token);
           this.$router.push({
             name: "index",
           });
         })
         .catch((error) => {
-          this.showError=true;
+          this.showError = true;
         });
     },
   },

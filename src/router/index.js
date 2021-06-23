@@ -113,7 +113,7 @@ const routes = [
         component: HistoricoDeudasDetalle,
         meta: {
           libre: false,
-          rol: []
+          rol: ['ROLES_MCAEAH']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {

@@ -89,26 +89,31 @@
           <font size="2">
             <table style="width: 100%">
               <tr>
-                <th>NOMBRE :</th>
-                <td>{{ record.nombreCompleto }}</td>
+                <th>Usuario:</th>
+                <td>{{ record.login }}</td>
               </tr>
               <tr>
-                <th>NRO. DOC. :</th>
+                <th>Nombre:</th>
+                <td>{{ record.nombreCompleto }}</td>
+              </tr>
+
+              <tr>
+                <th>Nro. Doc.:</th>
                 <td>
                   {{ record.nroDocumento }} {{ record.extensionDocumento }}
                 </td>
               </tr>
               <tr>
-                <th>CORREO :</th>
+                <th>Correo:</th>
                 <td>{{ record.correoElectronico }}</td>
               </tr>
               <tr>
-                <th>TELÉFONO :</th>
+                <th>Teléfono:</th>
                 <td>{{ record.telefono }}</td>
               </tr>
 
               <tr v-if="record.nombreEntidad != null">
-                <th>ENTIDAD :</th>
+                <th>Entidad:</th>
                 <td>
                   <a-tag color="cyan">
                     <a-icon type="caret-up" /> {{ record.nombreEntidad }}
@@ -116,7 +121,7 @@
                 </td>
               </tr>
               <tr v-if="record.nombreRecaudadora != null">
-                <th>RECAUDADOR :</th>
+                <th>Recaudadora:</th>
                 <td>
                   <a-tag color="cyan">
                     <a-icon type="caret-up" />
@@ -125,7 +130,7 @@
                 </td>
               </tr>
               <tr v-if="record.nombreSucursal != null">
-                <th>SUCURSAL :</th>
+                <th>Sucursal:</th>
                 <td>
                   <a-tag color="cyan">
                     <a-icon type="caret-up" />
@@ -517,7 +522,7 @@
       </template>
     </a-modal>
     <a-modal
-      v-model="visibleModalCredenciales"
+      v-model="visibleModalDesbloqueo"
       title="Desbloqueo de Usuario"
       :dialog-style="{ top: '20px' }"
       :width="400"
@@ -532,7 +537,7 @@
         </template>
       </a-result>
       <template slot="footer">
-        <a-button key="back" @click="visibleModalCredenciales = false">
+        <a-button key="back" @click="visibleModalDesbloqueo = false">
           Cancelar
         </a-button>
         <a-button key="submit" type="primary" @click="toUnlock">
@@ -848,6 +853,7 @@ export default {
       selectedRows: null,
       sucursalesList:[],
       sucursalId:null,
+      visibleModalDesbloqueo:false,
     };
   },
   computed: {
@@ -1244,14 +1250,14 @@ export default {
       this.subTitle = `Las credenciales que se generaran para ${record.nombreCompleto} se enviaran a su correo ${record.correoElectronico}.`;
     },
     viewDesBloqueo(record) {
-      this.visibleModalCredenciales = true;
+      this.visibleModalDesbloqueo = true;
       this.personaId = record.personaId;
       this.subTitle = `La cuenta del usuario  ${record.nombreCompleto} se desbloqueará y sus credenciales serán enviadas a su correo electrónico  ${record.correoElectronico}`;
     },
     generarCredenciales() {
       AdminUsuarios.generarCredenciales(this.personaId)
-        .then((response) => {
-          this.visibleModalCredenciales = false;
+        .then((response) => {          
+          this.visibleModalCredenciales=false;
           this.$notification.success(response.data.message);
           this.findPersonas(1);
         })
@@ -1425,13 +1431,14 @@ export default {
       console.log(this.personaId);
       AdminUsuarios.toUnlock(this.personaId)
         .then((response) => {
-          this.visibleModalCredenciales = false;
+          
+          this.visibleModalDesbloqueo = false;
           this.findPersonas(1);
           this.$notification.success(response.data.message);
           
         })
         .catch((error) => {
-          this.visibleModalCredenciales = false;
+          this.visibleModalDesbloqueo = false;
           this.$notification.error("No se pudo ejecutar la operación, comuníquese con su administrador.");
         });
     }

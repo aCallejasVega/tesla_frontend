@@ -131,8 +131,12 @@ export default {
           if (response.status == 200) {
             this.viewFileDownload(response);
             this.viewCargando = false;
+            this.$notification.success(
+              "El reporte se genero con exito."
+            );
           } else {          
             this.viewCargando = false;
+            this.visibleModalReporte = false;
             this.$notification.warning(
               "No hay datos para mostrar en el reporte."
             );
@@ -144,7 +148,9 @@ export default {
         });
     },
     viewFileDownload(response) {
-      var file = new Blob([response.data], {
+      this.link=null;
+      var file=null;
+      file = new Blob([response.data], {
         type: "application/pdf",
       });
       this.link = URL.createObjectURL(file);

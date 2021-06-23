@@ -21,7 +21,7 @@
               method="post"
               :action="this.url"
               :headers="{ Authorization: 'Bearer ' + this.token }"
-              @change="handleChange"
+              @change="handleChange"            
               :showUploadList="this.showUpload"
               :before-upload="handleClick"
             >
@@ -105,9 +105,7 @@
                     <td class="td-align-right">Nombre de Cliente:</td>
                     <td class="td-align-left">{{ record.nombreCliente }}</td>
                     <td class="td-align-right">Teléfono / correo:</td>
-                    <td class="td-align-left">
-                      {{ record.telefono }} / {{ record.correoCliente }}
-                    </td>
+                    <td class="td-align-left">{{ record.telefono }} / {{record.correoCliente}}</td>
                   </tr>
                   <tr>
                     <td class="td-align-right">Dirección:</td>
@@ -124,17 +122,17 @@
                       <div v-else>PREPAGO</div>
                     </td>
                   </tr>
-                  <tr>
+                   <tr>
                     <td class="td-align-right">Tipo Servicio:</td>
                     <td class="td-align-left">{{ record.tipoServicio }}</td>
                     <td class="td-align-right">Servicio:</td>
                     <td class="td-align-left">
-                      {{ record.servicio }}
+                      {{record.servicio}}
                     </td>
                   </tr>
                 </table>
               </font>
-
+              
               <font size="2">
                 <table style="width: 100%" class="styled-table">
                   <thead>
@@ -250,7 +248,6 @@
           </p>
         </div>
       </div>
-      <div id="output" class="container"></div>
     </a-modal>
   </div>
 </template>
@@ -338,7 +335,8 @@ export default {
         this.titutloMensaje = "Éxito";
         this.buttonProcesar = false;
         this.showUpload = false;
-        this.data = [];
+        this.data=[];
+
       } else if (status === "error") {
         this.mensajeUpload = info.file.response.mensaje;
         this.tipoMensaje = "warning";
@@ -374,17 +372,8 @@ export default {
       this.sucess = false;
       this.error = false;
       this.buttonModal = true;
-     /* const config = {
-        onUploadProgress: (progressEvent) => {
-          console.log("***********onUploadProgress********************");
-          let { progress } = this.state;
-          progress = (progressEvent.loaded / progressEvent.total) * 100;
-          this.setState({ progress });
-        },
-      };*/
       UploadFileService.processFile(this.archivo.archivoId)
         .then((response) => {
-          console.log("TERMINO BIEN");
           this.info = false;
           this.sucess = true;
           this.error = false;
@@ -393,7 +382,6 @@ export default {
           this.findDeudasClientesByArchivoId(this.archivo.archivoId, 1, "");
         })
         .catch((error) => {
-          console.log("TERMINO MAL");
           if (error.response.data.causa == "A") {
             this.mensaje = error.response.data.mensaje;
             this.detalle = error.response.data.detalle;

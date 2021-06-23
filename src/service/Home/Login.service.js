@@ -14,6 +14,7 @@ export default {
       password: usuario.password,
       grant_type: 'password',
     };
+  
 
     return Api().post('oauth/token', qs.stringify(params), {
       headers,
