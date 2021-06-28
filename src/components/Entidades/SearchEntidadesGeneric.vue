@@ -193,7 +193,6 @@ export default {
 </script>
 
 <style scoped>
-
 .wrapper {
   display: flex;
   width: 100%;
@@ -201,10 +200,11 @@ export default {
 }
 
 .card {
-  width: 180px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
+  margin:5px;
   border-radius: 3px;
-  padding: 1.5rem;
+ 
   background: white;
   position: relative;
   display: flex;
@@ -276,5 +276,13 @@ export default {
 .card .info button:hover {
   background: dodgerblue;
   color: white;
+}
+.card-head {
+  border: 2px solid #086346;
+  border-radius: 8px;
+  height: 60px;
+  width: 100%;
+  padding: 1%;
+  color: #086346;
 }
 </style>
