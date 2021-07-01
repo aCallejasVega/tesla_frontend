@@ -76,7 +76,7 @@
               @click="seleccionar(item)"
             >
               <img :src="item.imagen64" />
-              <div>
+              <div style="padding-left: 10px;">
                 <h1>{{ item.nombre }}</h1>
               </div>
             </a-col>

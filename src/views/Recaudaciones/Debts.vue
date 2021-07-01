@@ -74,12 +74,16 @@
       <div v-if="!displayCliente">
         <!--Lista de Clientes-->
         <a-table
-          :row-selection="rowSelectionC"
           :columns="columns"
           :data-source="lstClientes"
           rowKey="codigoCliente"
+          :locale="{
+            emptyText: 'No hay data',
+          }"
+          :scroll="{ x: 350 }"
           :pagination="pagination"
           :loading="loading"
+          
         >
           <a slot="name" slot-scope="text">{{ text }}</a>
           <span slot="COBRAR" slot-scope="text, record">
@@ -87,9 +91,8 @@
               type="danger"
               block
               size="small"
-              @click="realizarCobro(record)"
-              >Revisar Deudas<a-icon type="export"
-            /></a-button>
+              @click="mostrarDeudas(record)"
+              >Ver Deudas<a-icon type="export"/></a-button>
           </span>
         </a-table>
       </div>
@@ -99,48 +102,27 @@
         v-if="displayCliente"
         style="padding: 0px; margin: 0px; border: 0px"
       >
-        <div id="components-form-demo-advanced-search" style="width: 100%">
+        <div id="components-form-demo-advanced-search" style="width: 100%;">
           <a-form
             class="ant-advanced-search-form"
-            style="padding: 7px; margin: 0px; border: 0px"
+            style="padding: 7px; margin: 0px; border: 0px;"
           >
-            <b style="color: #21618c">DATOS DEL CLIENTE</b>
-            <a-row style="padding: 0px; margin: 0px; border: 0px">
-              <a-col
-                :xs="22"
-                :sm="24"
-                :md="24"
-                :lg="7"
-                :xl="7"
-                style="padding: 0px; margin: 0px; border: 0px"
-              >
-                
-
-                <a-form-item
-                  label="Cód. Cliente:"
-                  :label-col="{ span: 8 }"
-                  :wrapper-col="{ span: 16 }"
-                  style="padding: 0px; margin: 0px"
-                >
-                  <a-input v-model="clienteDto.codigoCliente" :maxLength="12" :disabled="editcCdigoCliente">
-                    <a-icon slot="addonAfter" />
-                  </a-input>
-                </a-form-item>
-              </a-col>
-
+          <!--
+            <b style="color: #21618c">DATOS DEL CLIENTE</b>-->
+            <a-row style="padding: 0px; margin: 0px; border: 0px;">
               <a-col
                 :xs="22"
                 :sm="24"
                 :md="24"
                 :lg="6"
                 :xl="6"
-                style="padding: 0px; margin: 0px; border: 0px"
+                style="padding: 0px; margin: 0px; border: 0px;"
               >
                 <a-form-item
-                  label="Ci/Nit :"
+                  label="CI/NIT :"
                   :label-col="{ span: 8 }"
                   :wrapper-col="{ span: 16 }"
-                  style="padding: 0px; margin: 0px"
+                  style="padding: 0px; margin: 0px;"
                 >
                   <a-input v-model="clienteDto.nroDocumento" :maxLength="12" :disabled="editCi">
                     <a-icon slot="addonAfter" type="edit"  @click="editCi=!editCi" />
@@ -166,6 +148,25 @@
                   </a-input>
                 </a-form-item>
               </a-col>
+               <a-col
+                :xs="22"
+                :sm="24"
+                :md="24"
+                :lg="7"
+                :xl="7"
+                style="padding: 0px; margin: 0px; border: 0px"
+              >
+                <a-form-item
+                  label="Código Cliente:"
+                  :label-col="{ span: 8 }"
+                  :wrapper-col="{ span: 16 }"
+                  style="padding: 0px; margin: 0px;"
+                >
+                  <a-input v-model="clienteDto.codigoCliente" :maxLength="12" :disabled="editcCdigoCliente">
+                    <a-icon slot="addonAfter" />
+                  </a-input>
+                </a-form-item>
+              </a-col>
             </a-row>
           </a-form>
         </div>
@@ -188,9 +189,8 @@
               bordered
               :row-selection="rowSelectionS"
               :pagination="false"
-              :scroll="{ x: 700 }"
+              :scroll="{ x: 600 }"
               :loading="loadingServ"
-              :showHeader="false"
             >
               <template slot="key" slot-scope="text, record">
                 <div class="grupo-tabla">
@@ -302,7 +302,7 @@
                   <tr class="subgrupo-tabla">
                     <td></td>
                     <td>
-                      <div align="right" v-if="record.editable">
+                      <div align="right" v-if="record.editable" style="background-color:#96C5CB;">
                         <a-button
                           type="default"
                           @click="record.editando = true"
@@ -320,7 +320,7 @@
                       </div>
                     </td>
                     <td align="right">
-                      <div style="background-color: #ded8da;padding-r">
+                      <div style="background-color: #96C5CB;padding-r">
                         <b>Sub Total (Bs)</b>
                       </div>
                     </td>
@@ -338,51 +338,55 @@
             </a-table>
           </div>
         </a-col>
-        <a-col :xs="22" :sm="24" :md="24" :lg="7" :xl="7">
-          <div class="grupo-tabla">
-            <a-row>
-              <a-col span="10" align="right" style="padding-right: 5px">
-                <b>Total (Bs)</b>
-              </a-col>
-              <a-col span="14">
-                <money
-                  v-model="sumTotal"
-                  v-bind="money"
-                  class="ant-input"
-                  :disabled="true"
-                ></money>
-              </a-col>
-            </a-row>
-            <a-row>
-              <a-col span="10" align="right" style="padding-right: 5px">
-                <b>Efectivo (Bs)</b>
-              </a-col>
-              <a-col span="14">
-                <money
-                  v-model="efectivo"
-                  v-bind="money"
-                  class="input-amount"
-                  :disabled="!selectedRowKeys.length > 0"
-                  @keydown.native="
-                    $event.key === '-' ? $event.preventDefault() : null
-                  "
-                ></money>
-              </a-col>
-            </a-row>
-            <a-row>
-              <a-col span="10" align="right" style="padding-right: 5px">
-                <b>Cambio (Bs)</b>
-              </a-col>
-              <a-col span="14">
-                <money
-                  v-model="cambio"
-                  v-bind="money"
-                  class="ant-input"
-                  :disabled="true"
-                ></money>
-              </a-col>
-            </a-row>
+        <a-col :xs="24" :sm="24" :md="24" :lg="7" :xl="7">
+          <div class="tablaTit">
+            TOTAL DEUDA A COBRAR
           </div>
+        <div class="tabla">
+           <div class="grupo-tabla">
+              <a-row>
+                <a-col :xs="24" :sm="24" :md="15" :lg="15" :xl="15" align="right">
+                  <b>Total (Bs)</b>
+                </a-col>
+                <a-col :xs="24" :sm="24" :md="9" :lg="9" :xl="9">
+                  <money
+                    v-model="sumTotal"
+                    v-bind="money"
+                    class="ant-input"
+                    :disabled="true"
+                  ></money>
+                </a-col>
+              </a-row>
+              <a-row>
+                <a-col :xs="24" :sm="24" :md="15" :lg="15" :xl="15" align="right">
+                  <b>Efectivo (Bs)</b>
+                </a-col>
+                <a-col :xs="24" :sm="24" :md="9" :lg="9" :xl="9">
+                  <money
+                    v-model="efectivo"
+                    v-bind="money"
+                    class="input-amount"
+                    :disabled="!selectedRowKeys.length > 0"
+                    @keydown.native="
+                      $event.key === '-' ? $event.preventDefault() : null
+                    "
+                  ></money>
+                </a-col>
+              </a-row>
+              <a-row>
+               <a-col :xs="24" :sm="24" :md="15" :lg="15" :xl="15" align="right">
+                  <b>Cambio (Bs)</b>
+                </a-col>
+                <a-col :xs="24" :sm="24" :md="9" :lg="9" :xl="9">
+                  <money
+                    v-model="cambio"
+                    v-bind="money"
+                    class="ant-input"
+                    :disabled="true"
+                  ></money>
+                </a-col>
+              </a-row>
+            </div>
           <p />
           <a-button
             type="danger"
@@ -398,6 +402,7 @@
               </b>
             </span>
           </a-button>
+        </div>
         </a-col>
       </a-row>
 
@@ -429,7 +434,266 @@
           ¿Está seguro de cobrar las deudas seleccionadas? (Comprobante
           {{ entidadObj.comprobanteEnUno ? "agrupado" : "Por Transacción" }})
         </p>
-        <br />
+         <a-row
+        v-if="displayCliente"
+        style="padding: 0px; margin: 0px; border: 0px"
+      >
+        <div id="components-form-demo-advanced-search" style="width: 100%;">
+          <a-form
+            class="ant-advanced-search-form"
+            style="padding: 7px; margin: 0px; border: 0px;"
+          >
+          <!--
+            <b style="color: #21618c">DATOS DEL CLIENTE</b>-->
+            <a-row style="padding: 0px; margin: 0px; border: 0px;">
+              <a-col
+                :xs="22"
+                :sm="24"
+                :md="24"
+                :lg="6"
+                :xl="6"
+                style="padding: 0px; margin: 0px; border: 0px;"
+              >
+                <a-form-item
+                  label="CI/NIT :"
+                  :label-col="{ span: 8 }"
+                  :wrapper-col="{ span: 16 }"
+                  style="padding: 0px; margin: 0px;"
+                >
+                  <a-input v-model="clienteDto.nroDocumento" :maxLength="12" :disabled="true">
+                  </a-input>
+                </a-form-item>
+              </a-col>
+              <a-col
+                :xs="22"
+                :sm="24"
+                :md="24"
+                :lg="11"
+                :xl="11"
+                style="padding: 0px; margin: 0px; border: 0px"
+              >
+                <a-form-item
+                  label="Nombre Cliente:"
+                  :label-col="{ span: 8 }"
+                  :wrapper-col="{ span: 16 }"
+                  style="padding: 0px; margin: 0px; border: 0px"
+                >
+                  <a-input v-model="clienteDto.nombreCliente" :maxLength="200" :disabled="true">
+                  </a-input>
+                </a-form-item>
+              </a-col>
+               <a-col
+                :xs="22"
+                :sm="24"
+                :md="24"
+                :lg="7"
+                :xl="7"
+                style="padding: 0px; margin: 0px; border: 0px"
+              >
+                <a-form-item
+                  label="Código Cliente:"
+                  :label-col="{ span: 8 }"
+                  :wrapper-col="{ span: 16 }"
+                  style="padding: 0px; margin: 0px;"
+                >
+                  <a-input v-model="clienteDto.codigoCliente" :maxLength="12" :disabled="editcCdigoCliente">
+                  </a-input>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-form>
+        </div>
+      </a-row>
+      <p />
+
+      <a-row :gutter="16" v-if="displayCliente">
+        <a-col :xs="22" :sm="24" :md="24" :lg="17" :xl="17">
+          <div>
+            <div>
+              <a-row> </a-row>
+            </div>
+            <!--TABLA DE DEUDAS-->
+            <!--
+            {{selectedRowKeys}}
+            {{clienteDto.servicioDeudaDtoList}}-->
+            <a-table
+              :columns="columnsA"
+              :data-source="clienteDto.servicioDeudaDtoList"
+              bordered
+              :pagination="false"
+              :scroll="{ x: 500 }"
+              :loading="loadingServ"
+              :showHeader="false"
+            >
+              <template slot="key" slot-scope="text, record">
+                <div class="grupo-tabla">
+                  <a-row>
+                    <a-col
+                      :xs="{ span: 24 }"
+                      :sm="{ span: 6 }"
+                      :md="{ span: 6 }"
+                      :lg="{ span: 4 }"
+                      style="padding-left: 5px; padding-right: 3px"
+                    >
+                      <b>Tipo Servicio:</b>
+                    </a-col>
+                    <a-col
+                      :xs="{ span: 24 }"
+                      :sm="{ span: 6 }"
+                      :md="{ span: 6 }"
+                      :lg="{ span: 5 }"
+                      style="padding-right: 3px"
+                    >
+                      {{ record.tipoServicio }}
+                    </a-col>
+                    <a-col
+                      :xs="{ span: 24 }"
+                      :sm="{ span: 6 }"
+                      :md="{ span: 6 }"
+                      :lg="{ span: 3 }"
+                    >
+                      <b>Servicio:</b>
+                    </a-col>
+                    <a-col
+                      :xs="{ span: 24 }"
+                      :sm="{ span: 6 }"
+                      :md="{ span: 6 }"
+                      :lg="{ span: 6 }"
+                    >
+                      {{ record.servicio }}
+                    </a-col>
+                    <a-col
+                      :xs="{ span: 24 }"
+                      :sm="{ span: 6 }"
+                      :md="{ span: 3 }"
+                      :lg="{ span: 3 }"
+                    >
+                      <b>Período:</b>
+                    </a-col>
+                    <a-col
+                      :xs="{ span: 24 }"
+                      :sm="{ span: 6 }"
+                      :md="{ span: 5 }"
+                      :lg="{ span: 3 }"
+                    >
+                      {{ record.periodo }}
+                    </a-col>
+                  </a-row>
+                </div>
+
+                <br />
+                <table style="tabla">
+                  <tr>
+                    <th align="rigth" style="width: 10%">Cantidad</th>
+                    <th style="width: 50%">Concepto</th>
+                    <th class="th-amount">Monto Unit. (Bs)</th>
+                    <th class="th-amount">Monto (Bs)</th>
+                    <th style="width: 5px"></th>
+                  </tr>
+                  <tr v-for="(deuda, i) in record.deudaClienteDtos" :key="i">
+                    <td align="center">{{ deuda.cantidad }}</td>
+                    <td>{{ deuda.concepto }}</td>
+                    <td align="right">
+                      <money
+                        v-model="deuda.montoUnitario"
+                        v-bind="money"
+                        :disabled="true"
+                        class="ant-input"
+                        size="small"
+                      ></money>
+                    </td>
+
+                    <!-- Mostrando Botones de edicion y resteo-->
+                    <td align="right">
+                      <!-- OJO Sin Botones de edicion y resteo, habilitando los campos con prepago y subtotal=0>
+                <td align="right" v-if="deuda.editable>  -->
+                      <money
+                        v-model="deuda.subTotal"
+                        v-bind="money"
+                        class="input-amount"
+                        :disabled="true"
+                      ></money>
+                    </td>
+                  </tr>
+                  <tr class="subgrupo-tabla">
+                    <td></td>
+                    <td>
+                      
+                    </td>
+                    <td align="right">
+                      <div style="background-color: #ded8da;padding-r">
+                        <b>Sub Total (Bs)</b>
+                      </div>
+                    </td>
+                    <td align="right">
+                      <money
+                        v-model="record.subTotal"
+                        v-bind="money"
+                        :disabled="true"
+                        class="ant-input"
+                      ></money>
+                    </td>
+                  </tr>
+                </table>
+              </template>
+            </a-table>
+          </div>
+        </a-col>
+        <a-col :xs="24" :sm="24" :md="24" :lg="7" :xl="7">
+        <div class="tabla">
+           <div class="grupo-tabla">
+              <a-row>
+                <a-col span="15" align="right">
+                  <b>Total (Bs)</b>
+                </a-col>
+                <a-col span="9">
+                  <money
+                    v-model="sumTotal"
+                    v-bind="money"
+                    class="ant-input"
+                    :disabled="true"
+                  ></money>
+                </a-col>
+              </a-row>
+              <a-row>
+                <a-col span="15" align="right">
+                  <b>Efectivo (Bs)</b>
+                </a-col>
+                <a-col span="9">
+                  <money
+                    v-model="efectivo"
+                    v-bind="money"
+                    class="input-amount"
+                    :disabled="!selectedRowKeys.length > 0"
+                    @keydown.native="
+                      $event.key === '-' ? $event.preventDefault() : null
+                    "
+                  ></money>
+                </a-col>
+              </a-row>
+              <a-row>
+                <a-col span="15" align="right">
+                  <b>Cambio (Bs)</b>
+                </a-col>
+                <a-col span="9">
+                  <money
+                    v-model="cambio"
+                    v-bind="money"
+                    class="ant-input"
+                    :disabled="true"
+                  ></money>
+                </a-col>
+              </a-row>
+            </div>
+          <p />
+          
+        </div>
+        </a-col>
+      </a-row>
+
+
+
+        <!--
         <div class="titulo-tabla">
           <a-row>
             <a-col
@@ -595,6 +859,8 @@
             </div>
           </template>
         </a-table>
+        -->
+
       </a-modal>
     </a-card>
 
@@ -634,15 +900,15 @@ const columns = [
     title: "Código Cliente",
     dataIndex: "codigoCliente",
     key: "codigoCliente",
-    width: 200,
+    //width: 200,
   },
   { title: "CI/NIT", dataIndex: "nroDocumento", key: "nroDocumento" },
   { title: "Nombre Cliente", dataIndex: "nombreCliente", key: "nombreCliente" },
   {
-    title: "OPERACIÓN",
+    title: "Operación",
     key: "COBRAR",
     scopedSlots: { customRender: "COBRAR" },
-    width: 200,
+    //width: 200,
   },
 ];
 
@@ -654,6 +920,7 @@ const columnsA = [
     scopedSlots: { customRender: "key" },
   },
 ];
+
 
 export default {
   components: { Money },
@@ -801,16 +1068,7 @@ export default {
   },
 
   methods: {
-    realizarCobro(record) {
-      this.displayCliente = true;
-      this.clienteDto = {
-        codigoCliente: record.codigoCliente,
-        nroDocumento: record.nroDocumento,
-        nombreCliente: record.nombreCliente,
-        servicioDeudaDtoList: [],
-      };
-      this.cargarServicioDeudas();
-    },
+    
     /********ENTIDADES***********/
     cargarEntidad(entidadId) {
       Entidades.getEntidad(entidadId)
@@ -849,6 +1107,12 @@ export default {
 
           this.lstClientes = r.data.result;
           this.loading = false;
+
+
+          console.log('cargarClientes')
+          console.log(JSON.stringify(this.lstClientes));
+
+
         })
         .catch((error) => {
           this.lstClientes = [];
@@ -891,12 +1155,20 @@ export default {
             );
             this.lstServiciosDeudas = [];
             this.loadingServ = false;
+
+            
+
+
             return;
           }
 
           this.lstServiciosDeudas = r.data.result;
           this.loadingServ = false;
-          //console.log(JSON.stringify(this.lstServiciosDeudas));
+          
+          
+          
+          console.log('cargarServicioDeudas');
+          console.log(JSON.stringify(this.lstServiciosDeudas));
           //this.$notification.success(r.data.message);
         })
         .catch((error) => {
@@ -923,10 +1195,21 @@ export default {
       );
       return record.subTotal;
     },
+    mostrarDeudas(record) {
+      this.displayCliente = true;
+      this.clienteDto = {
+        codigoCliente: record.codigoCliente,
+        nroDocumento: record.nroDocumento,
+        nombreCliente: record.nombreCliente,
+        servicioDeudaDtoList: [],
+      };
+      this.cargarServicioDeudas();
+    },
 
     /************************************************/
     //COBROS DEUDAS
     //************************************************/
+    
     verificarMontoPrepago(lstServiciosDeudas) {
       for (var i in lstServiciosDeudas) {
         for (var j in lstServiciosDeudas[i].deudaClienteDtos) {
@@ -949,7 +1232,7 @@ export default {
         this.clienteDto.nroDocumento === null
       ) {
         this.$notification.warning(
-          "Debe especificar obligatoriamente el NOMBRE CLIENTE y NÚMERO DOCUMENTO."
+          "Debe especificar obligatoriamente el NOMBRE CLIENTE y CI/NIT."
         );
         this.displayModal = false;
         return;
@@ -967,7 +1250,7 @@ export default {
       }
 
       if (isNaN(this.clienteDto.nroDocumento.trim())) {
-        this.$notification.warning("El NÚMERO DOCUMENTO es solo numérico.");
+        this.$notification.warning("El CI/NIT es solo numérico.");
         this.displayModal = false;
         return;
       }
@@ -1004,6 +1287,11 @@ export default {
 
       this.clienteDto.montoTotalCobrado = this.sumTotal;
       this.viewCargando = true;
+
+      console.log('cobrarDeudas');
+      console.log(JSON.stringify(this.clienteDto));
+
+
       PaymentDebts.cobrarDeudas(this.clienteDto, 5) //Debe ser Ctte = 5
         .then((r) => {
           this.viewFileDownload(r);
@@ -1167,7 +1455,7 @@ export default {
   color: white;
 }
 .subgrupo-tabla {
-  background: rgb(150, 197, 203);
+  background-color: rgb(150, 197, 203);
   border: 1px;
 }
 .ant-advanced-search-form {
@@ -1186,5 +1474,27 @@ export default {
   background: #ecebeb;
   border: 1px solid #d9d9d9;
   border-radius: 6px;
+}
+.tabla {
+  padding: 16px 16px;
+  overflow-wrap: break-word;  
+  border: 1px solid #e8e8e8;
+
+}
+
+.tablaTit {
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 500;
+  text-align: left;
+  background: #fafafa;
+  border-bottom: 1px solid #e8e8e8;
+  transition: background 0.3s ease;
+  padding: 16px 16px;
+  overflow-wrap: break-word;  
+  border: 1px solid #e8e8e8;
+}
+
+.ant-form-item-label.label {
+    color: blue;
 }
 </style>
