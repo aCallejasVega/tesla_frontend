@@ -1122,7 +1122,6 @@ export default {
     },
     guardarDosificacion() {
       this.$Progress.start();
-      console.log(this.dosificacionObj.actividadEconomica)
       if(this.dosificacionObj.actividadEconomica == "" || this.dosificacionObj.actividadEconomica == null) {
         this.$notification.warning(
             "Debe ser un código de actividad económica válida"

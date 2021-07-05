@@ -163,7 +163,7 @@
                   style="padding: 0px; margin: 0px;"
                 >
                   <a-input v-model="clienteDto.codigoCliente" :maxLength="12" :disabled="editcCdigoCliente">
-                    <a-icon slot="addonAfter" />
+                    <!--<a-icon slot="addonAfter" />-->
                   </a-input>
                 </a-form-item>
               </a-col>
