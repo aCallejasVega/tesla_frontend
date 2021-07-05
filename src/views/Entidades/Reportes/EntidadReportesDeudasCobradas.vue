@@ -211,6 +211,8 @@
           v-if="viewCargando"
         >
         </a-spin>
+      </a-row>
+      <a-row type="flex" justify="center" v-if="!viewCargando">
         <a-alert
           message="ADVERTENCIA"
           :description="mensajeReporte"
@@ -500,16 +502,14 @@ export default {
     },
 
     openModalTipoReporte() {
-      
       if (this.formBusqueda.fechaFin < this.formBusqueda.fechaInicio) {
         this.$warning({
           title: "Corrija los campos en el formulario de búsqueda.",
           content: "La ‘Fecha Fin’ no puede ser menor a la ‘Fecha Inicio’",
-          okText: 'Aceptar',
-         
+          okText: "Aceptar",
         });
-      }else{
-          this.visibleModalTipoReporte = true;
+      } else {
+        this.visibleModalTipoReporte = true;
       }
     },
   },

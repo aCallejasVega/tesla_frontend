@@ -45,7 +45,7 @@
                   v-model="search"
                   :placeholder="placeholderBC"
                   @search="buscar"
-                  enter-button=" Buscar "
+                  enter-button=" Buscar"
                   :maxLength="15"
                   size="small"
                   v-if="!displayCliente"
@@ -74,7 +74,7 @@
       <div v-if="!displayCliente">
         <!--Lista de Clientes-->
         <a-table
-          :row-selection="rowSelectionC"
+    
           :columns="columns"
           :data-source="lstClientes"
           rowKey="codigoCliente"

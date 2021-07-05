@@ -149,7 +149,6 @@ export default {
 
       openReportesPorArchivo(formBusqueda) {
 
-
         let urlReporte = `api/ReportEntidad/findDeudasByArchivoIdAndEstado/${formBusqueda.archivoId}/${formBusqueda.export}`;
         return Api().get(urlReporte, {
             responseType: 'arraybuffer',

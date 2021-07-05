@@ -382,12 +382,14 @@ export default {
           this.findDeudasClientesByArchivoId(this.archivo.archivoId, 1, "");
         })
         .catch((error) => {
-          if (error.response.data.causa == "A") {
+         /* if (error.response.data.causa == "A") {
+            console.log(JSON.stringify(error.response.data));
             this.mensaje = error.response.data.mensaje;
             this.detalle = error.response.data.detalle;
-          } else {
+          } else {*/
             this.mensaje = error.response.data.mensaje;
-          }
+            this.detalle = error.response.data.detalle;
+          //}
 
           this.info = false;
           this.sucess = false;
