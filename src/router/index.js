@@ -488,7 +488,7 @@ const routes = [
         component: GenerateCodigoControl,
         meta: {
           libre: false,
-          rol: ['ROLE_MCLV']
+          rol: ['ROLE_MCEVCC']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
@@ -536,7 +536,7 @@ const routes = [
         component: ReimpresionFacturas,
         meta: {
           libre: false,
-          rol: ['ROLE_MCLV']
+          rol: ['ROLE_MCERF']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
@@ -552,7 +552,7 @@ const routes = [
         component: ListInvoicesA,
         meta: {
           libre: false,
-          rol: ['ROLE_MCARA']
+          rol: ['ROLE_MCRA']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
@@ -568,7 +568,7 @@ const routes = [
         component: ListInvoicesAR,
         meta: {
           libre: false,
-          rol: ['ROLE_MCARA']
+          rol: ['ROLE_MCRRA']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
@@ -584,7 +584,7 @@ const routes = [
         component: ListInvoicesR,
         meta: {
           libre: false,
-          rol: ['ROLE_MCARA']
+          rol: ['ROLE_MCARF']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
@@ -632,7 +632,7 @@ const routes = [
         component: SearchEntidadesInvoicesR,
         meta: {
           libre: false,
-          rol: ['ROLE_MCARA']
+          rol: ['ROLE_MCARF']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
