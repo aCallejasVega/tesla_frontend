@@ -1,6 +1,6 @@
 <template>
   <!--La entidad se reucperará del usuario logueado-->
-  <compInvoices :opcion="{ anular: null, reimprimir: true, libro: false, anularErroneo: false }" />
+  <compInvoices :opcion="{ anular: true, reimprimir: false, libro: false, anularErroneo: true }" />
 </template>
 <script>
 

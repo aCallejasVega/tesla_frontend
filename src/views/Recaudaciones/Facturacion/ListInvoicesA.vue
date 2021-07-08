@@ -1,6 +1,6 @@
 <template>
 <div>
-  <compInvoices :entidadId="entidadId" :opcion="{ anular: true, reimprimir: false, libro: false}" />
+  <compInvoices :entidadId="entidadId" :opcion="{ anular: true, reimprimir: false, libro: false, anularErroneo: false }" />
 </div>
 </template>
 <script>

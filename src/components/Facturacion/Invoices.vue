@@ -29,6 +29,44 @@
         :wrapper-col="wrapperCol"
         size="small"
       >
+       <a-row type="flex" justify="center">
+          <a-col span="12">
+            <a-form-model-item
+              ref="fechaInicioFactura"
+              label="Fecha Inicio"
+              prop="fechaInicioFactura"
+            >
+              <a-date-picker :disabledDate ="disabledDate"
+                format="DD/MM/YYYY"
+                :locale="locale"
+                v-model="facturaObj.fechaInicioFactura"
+                @blur="
+                  () => {
+                    $refs.fechaInicioFactura.onFieldBlur();
+                  }
+                "
+              />
+            </a-form-model-item>
+          </a-col>
+          <a-col span="12">
+            <a-form-model-item
+              ref="fechaFinFactura"
+              label="Fecha Fin"
+              prop="fechaFinFactura"
+            >
+              <a-date-picker :disabledDate ="disabledDate"
+                format="DD/MM/YYYY"
+                :locale="locale"
+                v-model="facturaObj.fechaFinFactura"
+                @blur="
+                  () => {
+                    $refs.fechaFinFactura.onFieldBlur();
+                  }
+                "
+              />
+            </a-form-model-item>
+          </a-col>
+        </a-row>   
         <a-row type="flex" justify="center" v-if="opcion.libro == false">
           <a-col span="12">
             <a-form-model-item
@@ -83,46 +121,19 @@
           </a-col>
           
         </a-row>
-        <a-row type="flex" justify="center">
-          <a-col span="12">
-            <a-form-model-item
-              ref="fechaInicioFactura"
-              label="Fecha Inicio"
-              prop="fechaInicioFactura"
-            >
-              <a-date-picker :disabledDate ="disabledDate"
-                format="DD/MM/YYYY"
-                :locale="locale"
-                v-model="facturaObj.fechaInicioFactura"
-                @blur="
-                  () => {
-                    $refs.fechaInicioFactura.onFieldBlur();
-                  }
-                "
-              />
-            </a-form-model-item>
-          </a-col>
-          <a-col span="12">
-            <a-form-model-item
-              ref="fechaFinFactura"
-              label="Fecha Fin"
-              prop="fechaFinFactura"
-            >
-              <a-date-picker :disabledDate ="disabledDate"
-                format="DD/MM/YYYY"
-                :locale="locale"
-                v-model="facturaObj.fechaFinFactura"
-                @blur="
-                  () => {
-                    $refs.fechaFinFactura.onFieldBlur();
-                  }
-                "
-              />
-            </a-form-model-item>
-          </a-col>
-        </a-row>
-        
         <a-row type="flex">
+          <a-col span="12">
+            <a-form-model-item v-if="opcion.libro == false"
+              ref="codigoCliente"
+              label="Código Cliente"
+              prop="codigoCliente"
+            >
+              <a-input
+                  v-model="facturaObj.codigoCliente"
+                  :maxLength="200"
+                />
+            </a-form-model-item>
+          </a-col>
           <a-col span="12">
             <a-form-model-item
               ref="codigoActividadEconomica"
@@ -142,14 +153,13 @@
                   {{ item.codigoActividadEconomica }} - {{ item.actividadEconomica }}
                 </a-select-option>
               </a-select>
-              
             </a-form-model-item>
-            
           </a-col>
         </a-row>
+            
       </a-form-model>
       <template slot="actions" class="ant-card-actions">
-        <a-button type="link" @click="cargarFacturasFiltros(0)" block
+        <a-button type="link" @click="cargarFacturasFiltros(1)" block
             style="
               height: 50px;
               background-color: #3399cc;"
@@ -393,8 +403,6 @@
               {{ record.nombreRazonSocial }}
             </a-col>
           </a-row>
-        </template>
-        <template slot="montos" slot-scope="text, record">
           <a-row type="flex">
             <a-col
               :xs="24"
@@ -404,7 +412,7 @@
               :xl="10"
               class="labelTittle"
             >
-              Monto Total
+              Código Cliente
             </a-col>
             <a-col
               :xs="24"
@@ -412,6 +420,30 @@
               :md="24"
               :lg="24"
               :xl="14"
+              class="labelValue"
+            >
+              {{ record.codigoCliente }}
+            </a-col>
+          </a-row>
+        </template>
+        <template slot="montos" slot-scope="text, record">
+          <a-row type="flex">
+            <a-col
+              :xs="24"
+              :sm="24"
+              :md="24"
+              :lg="24"
+              :xl="14"
+              class="labelTittle"
+            >
+              Monto Total
+            </a-col>
+            <a-col
+              :xs="24"
+              :sm="24"
+              :md="24"
+              :lg="24"
+              :xl="10"
               class="labelValue"
             >
               {{ record.montoTotal }}
@@ -423,7 +455,7 @@
               :sm="24"
               :md="24"
               :lg="24"
-              :xl="10"
+              :xl="14"
               class="labelTittle"
             >
               Monto Base Importe Fiscal
@@ -433,12 +465,13 @@
               :sm="24"
               :md="24"
               :lg="24"
-              :xl="14"
+              :xl="10"
               class="labelValue"
             >
               {{ record.montoBaseImporteFiscal }}
             </a-col>
           </a-row>
+          <!--
           <a-row type="flex">
             <a-col
               :xs="24"
@@ -461,6 +494,7 @@
               {{ record.montoDescuento }}
             </a-col>
           </a-row>
+          -->
         </template>
         <template slot="extras" slot-scope="text, record">
           <a-row type="flex">
@@ -522,17 +556,33 @@
             </a-tag>
           </div>
         </template>
-        <template slot="opciones" slot-scope="text, record"
-          >
-            <a-tooltip placement="top" title="Anular Factura" v-if="opcion.anular == true && record.estado != 'ANULADO'">
-              <a-icon type="stop" theme="twoTone" two-tone-color="#F5222D" @click="abrirModalAnulacion(record.facturaId)"/>
-            </a-tooltip>&nbsp;&nbsp;&nbsp;&nbsp;
-          <a-tooltip placement="top" title="Reimprimir Factura" v-if="opcion.reimprimir == true">
-            <a-icon
-              type="printer"
-              theme="twoTone"
-              @click="reimprimirFactura(record.facturaId)"
-            />
+        <template slot="opciones" slot-scope="text, record">
+          <a-tooltip placement="left" title="Reimprime la factura generada."> 
+            <a-button v-if="opcion.reimprimir == true"
+                type="primary"
+                block
+                size="small"
+                @click="reimprimirFactura(record.facturaId)"
+                ><a-icon type="printer"/> Reimprimir
+            </a-button>
+          </a-tooltip>
+          <a-tooltip placement="left" title="Anula Factura, recuperando deuda."> 
+            <a-button v-if="opcion.anular == true && record.estado != 'ANULADO'"
+                block
+                size="small"
+                @click="abrirModalAnulacion(record.facturaId, false)"
+                style="background-color:#E57373; color:white; width: 100%; white-space: nowrap; height: 50px"
+                ><a-icon type="stop"/> Anular<br/>(Recupera Deuda)
+            </a-button>
+          </a-tooltip>
+          <a-tooltip placement="left" title="Anula Factura por cargado de dato erróneo."> 
+            <a-button v-if="opcion.anularErroneo == true && record.estado != 'ANULADO'"
+                block
+                size="small"
+                @click="abrirModalAnulacion(record.facturaId, true)"
+                style="background-color:#DF013A; color:white; width: 100%; white-space: nowrap; height: 50px"
+                ><span><a-icon type="disconnect"/> Anular<br/>(Por Dato Erróneo)</span>
+            </a-button>
           </a-tooltip>
         </template>
       </a-table>
@@ -628,7 +678,7 @@ const columns = [
     title: "Montos",
     dataIndex: "fechaFactura",
     scopedSlots: { customRender: "montos" },
-    width: "20%"
+    width: "15%"
   },
   /*{
     title: "Datos Extras",
@@ -645,7 +695,7 @@ const columns = [
     title: "Opciones",
     dataIndex: "",
     scopedSlots: { customRender: "opciones" },
-    width: "10%"
+    width: "15%"
   },
 ];
 
@@ -661,6 +711,7 @@ export default {
       anular: null,
       reimprimir: null,
       libro: null,
+      anularErroneo: null,
     },
     entidadId: null,
   },
@@ -704,7 +755,7 @@ export default {
       /**Modal Anulacion */
       motivoAnulacion: null,
       displayModal: false,
-
+      erroneo: false,
       /**Modal Reporte */
       displayModalReport: false,
       viewCargando: false,
@@ -833,9 +884,10 @@ export default {
       this.lstFacturas = [];
     },
     /**Modal Anulacion*/
-    abrirModalAnulacion(facturaId) {
+    abrirModalAnulacion(facturaId, erroneo) {
       this.displayModal = true;
       this.facturaIdSelect = facturaId;
+      this.erroneo = erroneo;
     },
     confirmarAnulacion() {
       if(this.motivoAnulacion == null || this.motivoAnulacion == '') {
@@ -845,14 +897,18 @@ export default {
 
       this.$confirm({
         title:
-          "¿Está seguro de ANULAR la(s) Factura(s) seleccionada(s)?",
+          "¿Está seguro de ANULAR la Factura seleccionada?",
         content:
-          "Considere que el registro ya no podrá revertirse",
+          this.erroneo ? "Considere que la deuda debe volver a cargarse para ser cobrada por anular por cargado de datos erróneos" : "Considere que el registro ya no podrá revertirse",
         okText: "Aceptar",
         okType: "danger",
         cancelText: "Cancelar",
         onOk: () => {
-          this.anularFactura();
+          if(!this.erroneo) {
+            this.anularFactura();
+          } else {
+            this.anularFacturaDatoErroneo();
+          }
         },
         onCancel: () => {
           this.selectedRowKeys = [];
@@ -871,6 +927,36 @@ export default {
       };
       this.$Progress.start();
       Invoices.postAnulacionLst(this.entidadId, facturaLstObj)
+        .then((r) => {
+          this.motivoAnulacion = null;
+          this.$notification.success(r.data.message);
+          this.cargarFacturasFiltros(0);
+          this.displayModal = false;
+          this.$Progress.finish();
+
+          this.motivo = null;
+        })
+        .catch((error) => {
+          this.lstFacturas = [];
+          this.cargarFacturasFiltros(0);
+          this.displayModal = false;
+          this.$notification.error(
+            error.response.data.message,
+            error.response.data.code
+          );
+          this.motivo = null;
+          this.$Progress.fail();
+        });
+    },
+    anularFacturaDatoErroneo() {
+      let facturaIdLst = [];
+      facturaIdLst.push(this.facturaIdSelect); 
+      let facturaLstObj = {
+        motivo: this.motivoAnulacion,
+        facturaIdLst: facturaIdLst, //this.selectedRowKeys,
+      };
+      this.$Progress.start();
+      Invoices.postListFacturaAnulacionCargadoErroneo(this.entidadId, facturaLstObj)
         .then((r) => {
           this.motivoAnulacion = null;
           this.$notification.success(r.data.message);

@@ -41,7 +41,19 @@ export default {
   },
 
   postAnulacionLst(entidadId,facturaLstObj) {
-    return Api().post(`api/facturas/entidades/${entidadId}/anulaciones/listas`, facturaLstObj, this.headersConfig());
+    if(entidadId != null) {
+      return Api().post(`api/facturas/entidades/${entidadId}/anulaciones/listas`, facturaLstObj, this.headersConfig());
+    } else {
+      return Api().post(`api/facturas/anulaciones/listas`, facturaLstObj, this.headersConfig());
+    }
+  },
+
+  postListFacturaAnulacionCargadoErroneo(entidadId, facturaLstObj) {
+    if(entidadId != null) {
+      return Api().post(`api/facturas/entidades/${entidadId}/anulaciones/listas/erroneos`, facturaLstObj, this.headersConfig());
+    } else {
+      return Api().post(`api/facturas/anulaciones/listas/erroneos`, facturaLstObj, this.headersConfig());
+    }
   },
 
   postLibroVentasReport(facturaObj) {

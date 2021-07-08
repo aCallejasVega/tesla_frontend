@@ -33,6 +33,7 @@ import RecaudacionReporteCajero from '../views/Recaudaciones/Reportes/Recaudacio
 import GenerateCodigoControl from "../views/Administracion/GenerateCodigoControl";
 import LibroVentas from "../views/Entidades/Facturacion/LibroVentas";
 import ReimpresionFacturas from "../views/Entidades/Facturacion/Reimpresion";
+import AnulacionFacturas from "../views/Entidades/Facturacion/Anulacion";
 
 import ListInvoicesA from "../views/Recaudaciones/Facturacion/ListInvoicesA";
 import ListInvoicesR from "../views/Recaudaciones/Facturacion/ListInvoicesR";
@@ -537,6 +538,22 @@ const routes = [
         meta: {
           libre: false,
           rol: ['ROLE_MCERF']
+        },
+        beforeEnter: (to, from, next) => {
+          if (tienePermiso(to, from.next)) {
+            next();
+          } else {
+            next({ name: "index" });
+          }
+        }
+      },
+      {
+        path: "/AnulacionFacturas",
+        name: "AnulacionFacturas",
+        component: AnulacionFacturas,
+        meta: {
+          libre: false,
+          rol: ['ROLE_MCEAF']
         },
         beforeEnter: (to, from, next) => {
           if (tienePermiso(to, from.next)) {
