@@ -52,7 +52,7 @@
         >
           <a-input
             v-model="codigoControlObj.numeroAutorizacion"
-            :maxLength="200"
+            :maxLength="15"
             @blur="
               () => {
                 $refs.numeroAutorizacion.onFieldBlur();
@@ -68,7 +68,7 @@
         >
           <a-input
             v-model="codigoControlObj.numeroFactura"
-            :maxLength="200"
+            :maxLength="12"
             @blur="
               () => {
                 $refs.numeroFactura.onFieldBlur();
@@ -83,7 +83,7 @@
         >
           <a-input
             v-model="codigoControlObj.numeroDocumento"
-            :maxLength="200"
+            :maxLength="12"
             @blur="
               () => {
                 $refs.numeroDocumento.onFieldBlur();
@@ -107,16 +107,6 @@
               }
             "
           />
-          <!--
-           <a-input
-            v-model="codigoControlObj.fechaFactura"
-            :maxLength="200"
-            @blur="
-              () => {
-                $refs.fechaFactura.onFieldBlur();
-              }
-            "
-          />-->
         </a-form-model-item>
         <a-form-model-item ref="montoTotal" label="Monto Total Factura" prop="montoTotal">
           <money
@@ -124,6 +114,7 @@
             v-bind="money"
             class="ant-input"
             size="small"
+            @keydown.native="$event.key === '-' ? $event.preventDefault() : null"
           ></money>
         </a-form-model-item>
         <a-form-model-item
@@ -184,6 +175,11 @@ export default {
             message: "Debe registrar el N° Autorizacion",
             trigger: "blur",
           },
+          {
+            trigger: "blur",
+            message: "Debe registrar solo números.",
+            pattern: /^[0-9,$]*$/,
+          },
         ],
         numeroFactura: [
           {
@@ -191,12 +187,22 @@ export default {
             message: "Debe registrar el N° Factura",
             trigger: "blur",
           },
+          {
+            trigger: "blur",
+            message: "Debe registrar solo números.",
+            pattern: /^[0-9,$]*$/,
+          },
         ],
         numeroDocumento: [
           {
             required: true,
             message: "Debe registrar el NIT/CI",
             trigger: "blur",
+          },
+          {
+            trigger: "blur",
+            message: "Debe registrar solo números.",
+            pattern: /^[0-9,$]*$/,
           },
         ],
         fechaFactura: [
@@ -217,6 +223,12 @@ export default {
           {
             required: true,
             message: "Debe registrar la Llave de Dosificacion",
+            trigger: "blur",
+          },
+          {
+            min: 30,
+            message:
+              "Mínimante la llave de dosificación debe tener 30 caracteres",
             trigger: "blur",
           },
         ],
