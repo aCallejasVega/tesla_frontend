@@ -598,6 +598,14 @@
       :closable="false"
       :maskClosable="false"
     >
+      <a-row type="flex" justify="center">
+        <a-spin
+          size="large"
+          tip="La factura se esta anulando...."
+          v-if="viewAnulando"
+        >
+        </a-spin>
+      </a-row>
       Motivo Anulación:
       <a-textarea v-model="motivoAnulacion" :maxLength="500" />
     </a-modal>
@@ -756,6 +764,7 @@ export default {
       motivoAnulacion: null,
       displayModal: false,
       erroneo: false,
+      viewAnulando: false,
       /**Modal Reporte */
       displayModalReport: false,
       viewCargando: false,
@@ -926,6 +935,7 @@ export default {
         facturaIdLst: facturaIdLst, //this.selectedRowKeys,
       };
       this.$Progress.start();
+      this.viewAnulando = true;
       Invoices.postAnulacionLst(this.entidadId, facturaLstObj)
         .then((r) => {
           this.motivoAnulacion = null;
@@ -933,7 +943,7 @@ export default {
           this.cargarFacturasFiltros(0);
           this.displayModal = false;
           this.$Progress.finish();
-
+          this.viewAnulando = false;
           this.motivo = null;
         })
         .catch((error) => {
@@ -946,6 +956,7 @@ export default {
           );
           this.motivo = null;
           this.$Progress.fail();
+          this.viewAnulando = false;
         });
     },
     anularFacturaDatoErroneo() {
@@ -956,6 +967,7 @@ export default {
         facturaIdLst: facturaIdLst, //this.selectedRowKeys,
       };
       this.$Progress.start();
+      this.viewAnulando = true;
       Invoices.postListFacturaAnulacionCargadoErroneo(this.entidadId, facturaLstObj)
         .then((r) => {
           this.motivoAnulacion = null;
@@ -963,7 +975,7 @@ export default {
           this.cargarFacturasFiltros(0);
           this.displayModal = false;
           this.$Progress.finish();
-
+          this.viewAnulando = false;
           this.motivo = null;
         })
         .catch((error) => {
@@ -976,6 +988,7 @@ export default {
           );
           this.motivo = null;
           this.$Progress.fail();
+          this.viewAnulando = false;
         });
     },
     /**Reimprimir */
